@@ -1,9 +1,31 @@
 <script>
-    /** @type {import('./$types').PageData} */
+  import { onMount} from "svelte"
+  import API from "../../services/api";
     import CreateAttributeGroup from '../../components/AttributeGroup/CreateAttributeGroup.svelte';
     export let data;
     let showForm = false
     let attributesGroup = []
+
+    async function fetchAttributeGroups(){
+      try {
+        const res = await API.get("/masterdata/attributegroup/")
+        attributesGroup = res.results
+      } catch (error) {
+        console.log("fetch:attributegroup:", error)
+      }
+    }
+    async function deleteAttributeGroup(group){
+      try {
+        await API.delete(`/masterdata/attributegroup/${group.id}/delete_record/`)
+        await fetchAttributeGroups()
+      } catch (error) {
+        console.log("delete:attributegroup:", error)
+      }
+    }
+    // Mount
+    onMount(async () => {
+      await fetchAttributeGroups()
+    } )
 </script>
 <div class="m-3">
     <div
@@ -61,7 +83,7 @@
                         <button class="text-gray-700" on>
                           <i class="fa-solid fa-pencil"></i>
                         </button>
-                        <button class="text-red-500" on:click={onDeleteAttribute(attribute)}>
+                        <button class="text-red-500" on:click={deleteAttributeGroup(attribute)}>
                           <i class="fa-solid fa-trash"></i>
                         </button>
                       </td>
@@ -75,6 +97,10 @@
       {:else}
         <CreateAttributeGroup
           on:close={() => (showForm = false)}
+          on:newAttributeGroup={() => {
+            showForm = false;
+            fetchAttributeGroups
+          }}
         />
       {/if}
     </div>

@@ -2,37 +2,22 @@
   /** @type {import('./$types').PageData} */
   import { onMount } from "svelte";
   import CreateAttribute from "../../components/attributes/CreateAttribute.svelte";
-  import { get } from "svelte/store";
+  import Api from "../../services/api";
   let attributes = [];
   let showForm = false;
   async function getAttributes() {
     try {
-      const res = await fetch("/api/masterdata/attribute/", {
-        headers: {
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEwMjY3OTI3LCJpYXQiOjE3MTAyNjQzMjcsImp0aSI6IjM2YTM3OTVmNDJlNzQwZWU4MzY0ZmUxMmY4MDMzOWM0IiwidXNlcl9pZCI6Mn0.TeRswnf9G6tajlHTaDf32h9a1jGZCR8hXJVDL3lOTXc",
-        },
-      });
-      const data = await res.json();
-      attributes = data.results;
+      const res = await Api.get("/masterdata/attribute/")
+      attributes = res.results;
     } catch (error) {}
   }
   // Edit Attribute
-    async function onEditAttribute(attribute){
-
-    }
+  async function onEditAttribute(attribute) {}
   // Delete Attribute
-  async function onDeleteAttribute(attribute){
+  async function onDeleteAttribute(attribute) {
     try {
-      const res = await fetch(`/api/masterdata/attribute/${attribute.id}/delete_record`, {
-        method: 'DELETE',
-        headers: {
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEwMjY3OTI3LCJpYXQiOjE3MTAyNjQzMjcsImp0aSI6IjM2YTM3OTVmNDJlNzQwZWU4MzY0ZmUxMmY4MDMzOWM0IiwidXNlcl9pZCI6Mn0.TeRswnf9G6tajlHTaDf32h9a1jGZCR8hXJVDL3lOTXc",
-        },
-      });
-
-      await getAttributes()
+      const res = await Api.delete(`/masterdata/attribute/${attribute.id}/delete_record/`)
+      await getAttributes();
     } catch (error) {}
   }
   onMount(async () => {
@@ -96,7 +81,10 @@
                       <button class="text-gray-700" on>
                         <i class="fa-solid fa-pencil"></i>
                       </button>
-                      <button class="text-red-500" on:click={onDeleteAttribute(attribute)}>
+                      <button
+                        class="text-red-500"
+                        on:click={onDeleteAttribute(attribute)}
+                      >
                         <i class="fa-solid fa-trash"></i>
                       </button>
                     </td>

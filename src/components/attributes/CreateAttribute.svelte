@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
+  import API from "../../services/api";
   import ReusableButton from "../Reusable/Button.svelte";
   let name = "";
   let value = {
@@ -13,20 +14,12 @@
         name,
         value,
       };
-      const response = await fetch(
-        "/api/masterdata/attribute/create_record/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEwMTgyMzIyLCJpYXQiOjE3MTAxNzg3MjIsImp0aSI6IjQyNDI2ZmYxNzUwMDQ2NzU5YTI0MjkzODE1Y2EzMjc4IiwidXNlcl9pZCI6Mn0.NLjfbNyijmSc8278y8T5K6QSCyqw3OmLTv2ZqMcZtYE",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
 
-      dispatch("newAttribute")
+      await API.post("/masterdata/attribute/create_record/", {
+        ...formData,
+      });
+
+      dispatch("newAttribute");
     } catch (error) {
       console.log("Attribute create:", error);
     }
@@ -56,6 +49,9 @@
     </div>
   </div>
   <div>
-    <ReusableButton label={"Create Attribute"} on:close={onCreateNewAttribute} />
+    <ReusableButton
+      label={"Create Attribute"}
+      on:click={onCreateNewAttribute}
+    />
   </div>
 </div>

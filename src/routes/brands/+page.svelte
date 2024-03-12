@@ -1,14 +1,29 @@
 <script>
   /** @type {import('./$types').PageData} */
   import { onMount } from "svelte";
+  import API from "../../services/api";
   import CreateBrand from "../../components/Brands/CreateBrand.svelte";
 
   //
   export let data;
   let brands = [];
   let showForm = false;
-  async function fetchBrands() {}
-  async function onDeleteBrand() {}
+  async function fetchBrands() {
+    try {
+      const res = await API.get("/masterdata/brand/");
+      brands = res.results;
+    } catch (error) {
+      console.log("fetch:brands:", error);
+    }
+  }
+  async function onDeleteBrand(brand) {
+    try {
+      await API.delete(`/masterdata/brand/${brand.id}/delete_record/`);
+      await fetchBrands();
+    } catch (error) {
+      console.log("delete:brand:", error);
+    }
+  }
 
   //   Mount
   onMount(async () => {
@@ -69,11 +84,19 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200">
-                {#each brands as attribute, i}
+                {#each brands as brand, i}
                   <tr>
                     <td
-                      class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
-                      >{attribute.name}</td
+                      class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0 capitalize"
+                      >{brand.name}</td
+                    >
+                    <td
+                      class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                      >{brand.logo}</td
+                    >
+                    <td
+                      class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                      >{brand.description}</td
                     >
                     <td
                       class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 flex gap-2 items-center"
@@ -83,7 +106,7 @@
                       </button>
                       <button
                         class="text-red-500"
-                        on:click={onDeleteBrand(attribute)}
+                        on:click={onDeleteBrand(brand)}
                       >
                         <i class="fa-solid fa-trash"></i>
                       </button>
@@ -98,9 +121,9 @@
     {:else}
       <CreateBrand
         on:close={() => (showForm = false)}
-        on:newAttribute={() => {
+        on:newBrand={() => {
           showForm = false;
-          fetchBrands;
+          fetchBrands();
         }}
       />
     {/if}

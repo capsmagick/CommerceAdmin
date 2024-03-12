@@ -1,10 +1,21 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import API from "../../services/api";
   import ReusableButton from "../Reusable/Button.svelte";
   const dispatch = createEventDispatcher();
   let name = "";
 
-  function createAttributeGroup() {}
+  async function createAttributeGroup() {
+    try {
+      const res = await API.post("/masterdata/attributegroup/create_record/", {
+        name,
+      });
+
+      dispatch("newAttributeGroup")
+    } catch (error) {
+      console.log("create:attributegroup:", error);
+    }
+  }
 </script>
 
 <div class="flex flex-col gap-4">

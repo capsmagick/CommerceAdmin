@@ -1,11 +1,20 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import API from "../../services/api";
   import ReusableButton from "../Reusable/Button.svelte";
   const dispatch = createEventDispatcher();
   let name = "";
   let description = "";
 
-  function createBrand() {
+  async function createBrand() {
+    try {
+      await API.post("/masterdata/brand/create_record/", {
+        name,
+        description,
+      });
+    } catch (error) {
+      console.log("create:brand:", error);
+    }
     dispatch("newBrand");
   }
 </script>
@@ -52,8 +61,11 @@
   </div>
   <div class="w-1/2 flex items-center gap-4">
     <div class="block text-sm font-medium leading-6 text-gray-500">Logo</div>
-    <button class="text-xs flex items-center gap-2 border border-blue-500 bg-blue-500 text-white px-4 py-1.5 rounded">Uploads Logo</button>
-</div>
+    <button
+      class="text-xs flex items-center gap-2 border border-blue-500 bg-blue-500 text-white px-4 py-1.5 rounded"
+      >Uploads Logo</button
+    >
+  </div>
   <div>
     <ReusableButton label={"Create Attribute group"} on:click={createBrand} />
   </div>
