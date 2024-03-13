@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { UserStore } from "$lib/store/data";
+  import { UserStore } from "$lib/stores/data";
   import { get } from "svelte/store";
   import ReusableButton from "../../../components/Reusable/Button.svelte";
   import API from "$lib/services/api";
