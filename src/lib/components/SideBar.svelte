@@ -23,7 +23,7 @@
     {
       name: "Products",
       icon: "fa-tag",
-      //route: "/products",
+      route: "/products",
       items: [
         { name: "Categories", page: "categories" },
         { name: "Brands", page: "brands" },
