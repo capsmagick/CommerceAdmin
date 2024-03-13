@@ -1,8 +1,8 @@
 <script lang="ts">
   /** @type {import('./$types').PageData} */
   import { onMount } from "svelte";
-  import API from "../../services/api";
-  import CreateCategories from "../../components/Categories/CreateCategories.svelte";
+  import API from "$lib/services/api";
+  import CreateCategories from "../../../components/Categories/CreateCategories.svelte";
 
   //
   export let data;
@@ -13,7 +13,7 @@
   async function fetchCategories() {
     try {
       const res = await API.get("/masterdata/category/");
-      categories = res.results;
+      categories = res.data.results;
     } catch (error) {
       console.log("fetch:categories:", error);
     }

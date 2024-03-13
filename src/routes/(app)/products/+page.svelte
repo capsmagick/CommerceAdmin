@@ -18,13 +18,13 @@
     },
   ];
   let showForm = false;
-  let products: any = []
+   let products:any[] = [];
 
   // 
   async function fetchProducts(){
     try {
       const res = await API.get("/products/product/")
-      products = res
+      products = res.data.results || [];
     } catch (error) {
       console.log("fetch:products:", error)
     }

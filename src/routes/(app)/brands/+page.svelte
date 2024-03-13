@@ -1,8 +1,8 @@
 <script lang="ts">
   /** @type {import('./$types').PageData} */
   import { onMount } from "svelte";
-  import API from "../../services/api";
-  import CreateBrand from "../../components/Brands/CreateBrand.svelte";
+  import API from "$lib/services/api";
+  import CreateBrand from "../../../components/Brands/CreateBrand.svelte";
   type Brand = {
   id: string;
   name: string;
@@ -16,7 +16,7 @@
   async function fetchBrands() {
     try {
       const res = await API.get("/masterdata/brand/");
-      brands = res.results;
+      brands = res.data.results;
     } catch (error) {
       console.log("fetch:brands:", error);
     }

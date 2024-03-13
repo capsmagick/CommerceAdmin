@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount} from "svelte"
-  import API from "../../services/api";
-    import CreateAttributeGroup from '../../components/AttributeGroup/CreateAttributeGroup.svelte';
+  import API from "$lib/services/api";
+    import CreateAttributeGroup from '../../../components/attributes/CreateAttribute.svelte';
     export let data;
     let showForm = false
     let attributesGroup: { id: number; name: string }[] = []
@@ -9,7 +9,7 @@
     async function fetchAttributeGroups(){
       try {
         const res = await API.get("/masterdata/attributegroup/")
-        attributesGroup = res.results
+        attributesGroup = res.data.results || []
       } catch (error) {
         console.log("fetch:attributegroup:", error)
       }

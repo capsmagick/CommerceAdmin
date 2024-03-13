@@ -91,12 +91,12 @@
   let activeMenu: number | null = null;// intended to be `number | null`
 
   function toggleMenu(index: number) {
-  activeMenu = activeMenu === index ? null : index;
-  // Navigate to the group's specified route if it exists
-  if (menus[index].route !== undefined) {
-  goto(menus[index].route as string);
-}
-}
+    activeMenu = activeMenu === index ? null : index;
+    // Navigate to the group's specified route if it exists
+    if (menus[index].route !== undefined) {
+      goto(menus[index].route as string);
+    }
+  }
 </script>
 
 <div class="md:flex hidden flex-col">

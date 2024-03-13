@@ -6,7 +6,8 @@
 
 
 
-  let attributes:any = [];
+  let attributes:any[] = [];
+
   let showForm = false;
 
   function toggleForm(){
@@ -14,13 +15,20 @@
     showForm = !showForm
   }
 
-  async function getAttributes() {
-    try {
-      const res = await Api.get("/masterdata/attribute/")
-      const data = res.data
-      if(data && data.results && data.results.length) attributes = data.results
-    } catch (error) {}
+
+
+// Ensure this is initialized as an array
+
+async function getAttributes() {
+  try {
+    const res = await Api.get("/masterdata/attribute/");
+    // Ensure attributes is always an array, even if res.data or res.data.results is undefined
+    attributes = Array.isArray(res.data?.results) ? res.data.results : [];
+  } catch (error) {
+    console.error("Error fetching attributes:", error);
+    attributes = []; // Ensure attributes is reset to an empty array in case of an error
   }
+}
   // Edit Attribute
   async function onEditAttribute(attribute: { id: number }) {}
   // Delete Attribute

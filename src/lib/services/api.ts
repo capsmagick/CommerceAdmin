@@ -47,14 +47,19 @@ axiosAPI.interceptors.response.use(
 );
 
 // Function to get CSRF token from cookies
-function getCookie(name) {
+function getCookie(name: string) {
   console.log(document.cookie)
   const value = `; ${document.cookie}`;
   console.log(value)
   let parts = []
   parts = value.split(`; ${name}=`);
   console.log(parts)
-  if (parts.length === 2) return parts.pop().split(";").shift();
+  if (parts.length === 2) {
+    const part = parts.pop();
+    if (part) {
+      return part.split(";").shift();
+    }
+  }
 }
 
 export default axiosAPI;

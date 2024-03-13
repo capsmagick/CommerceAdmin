@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { createEventDispatcher } from "svelte";
   import API from "$lib/services/api";
   import ReusableButton from "../Reusable/Button.svelte";
