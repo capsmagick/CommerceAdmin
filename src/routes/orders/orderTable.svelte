@@ -218,7 +218,7 @@
    
     const { selectedDataIds } = pluginStates.select;
    
-    const hideableCols = ["orderId", "orderStatus", "orderDate", "customerName", "amount", "paymentStatus", "paymentMethod"];
+    const hideableCols = ["orderStatus", "orderDate", "customerName", "amount", "paymentStatus", "paymentMethod"];
   </script>
    
   <div class="w-full">
