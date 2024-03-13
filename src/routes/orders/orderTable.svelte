@@ -24,41 +24,65 @@
     import DataTableCheckbox from "./orederTableCheckbox.svelte";
    
     type Payment = {
-      id: string;
+      orderId: string;
+      customerName: string;
+      orderDate: string;
+      orderStatus: "Pending" | "Processing" | "Success" | "Failed";
       amount: number;
-      status: "Pending" | "Processing" | "Success" | "Failed";
+      paymentStatus: "Pending" | "Success" | "Failed";
+      paymentMethod: "Cash" | "Credit Card" | "Debit Card" | "Paypal" | "Other";
       email: string;
     };
    
     const data: Payment[] = [
       {
-        id: "m5gr84i9",
+        orderId: "m5gr84i9",
+        customerName: "Manoj Kumar",
+        orderDate: "2021-08-10",
         amount: 316,
-        status: "Success",
+        orderStatus: "Success",
+        paymentStatus: "Pending",
+        paymentMethod: "Cash",
         email: "ken99@yahoo.com"
       },
       {
-        id: "3u1reuv4",
+        orderId: "3u1reuv4",
+        customerName: "Kudumon Potty",
+        orderDate: "2021-08-10",
         amount: 242,
-        status: "Success",
+        orderStatus: "Success",
+        paymentStatus: "Pending",
+        paymentMethod: "Cash",
         email: "Abe45@gmail.com"
       },
       {
-        id: "derv1ws0",
+        orderId: "derv1ws0",
+        customerName: "Suresh Gopi",
+        orderDate: "2021-08-10",
         amount: 837,
-        status: "Processing",
+        orderStatus: "Processing",
+        paymentStatus: "Pending",
+        paymentMethod: "Cash",
         email: "Monserrat44@gmail.com"
       },
       {
-        id: "5kma53ae",
+        orderId: "5kma53ae",
+        customerName: "Vimala Rajedran",
+        orderDate: "2021-08-10",
         amount: 874,
-        status: "Success",
+        orderStatus: "Success",
+        paymentStatus: "Pending",
+        paymentMethod: "Cash",
         email: "Silas22@gmail.com"
       },
       {
-        id: "bhqecj4p",
+        orderId: "bhqecj4p",
+        customerName: "Kunjilakshmi Ammal",
+        orderDate: "2021-08-10",
         amount: 721,
-        status: "Failed",
+        orderStatus: "Failed",
+        paymentStatus: "Pending",
+        paymentMethod: "Cash",
         email: "carmella@hotmail.com"
       }
     ];
@@ -81,7 +105,7 @@
             checked: allPageRowsSelected
           });
         },
-        accessor: "id",
+        accessor: "orderId",
         cell: ({ row }, { pluginStates }) => {
           const { getRowState } = pluginStates.select;
           const { isSelected } = getRowState(row);
@@ -100,13 +124,13 @@
         }
       }),
       table.column({
-        header: "Status",
-        accessor: "status",
+        header: "Order ID",
+        accessor: ({ orderId }) => orderId,
         plugins: { sort: { disable: true }, filter: { exclude: true } }
       }),
       table.column({
-        header: "Email",
-        accessor: "email",
+        header: "Customer Name",
+        accessor: "customerName",
         cell: ({ value }) => value.toLowerCase(),
         plugins: {
           filter: {
@@ -117,12 +141,32 @@
         }
       }),
       table.column({
-        header: "Amount",
+        header: "Order Date",
+        accessor: "orderDate",
+        plugins: { sort: { disable: true }, filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Order Status",
+        accessor: "orderStatus",
+        plugins: { sort: { disable: true }, filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Payment Status",
+        accessor: "paymentStatus",
+        plugins: { sort: { disable: true }, filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Payment Method",
+        accessor: "paymentMethod",
+        plugins: { sort: { disable: true }, filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Total Amount",
         accessor: "amount",
         cell: ({ value }) => {
           const formatted = new Intl.NumberFormat("en-US", {
             style: "currency",
-            currency: "USD"
+            currency: "INR"
           }).format(value);
           return formatted;
         },
@@ -137,7 +181,7 @@
       }),
       table.column({
         header: "",
-        accessor: ({ id }) => id,
+        accessor: ({ orderId }) => orderId,
         cell: (item) => {
           return createRender(Actions, { id: item.value });
         },
@@ -174,14 +218,14 @@
    
     const { selectedDataIds } = pluginStates.select;
    
-    const hideableCols = ["status", "email", "amount"];
+    const hideableCols = ["orderStatus", "orderDate", "customerName", "amount", "paymentStatus", "paymentMethod"];
   </script>
    
   <div class="w-full">
     <div class="mb-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter emails..."
+        placeholder="Filter Customer..."
         type="text"
         bind:value={$filterValue}
       />
@@ -223,7 +267,7 @@
                         <div class="text-right">
                           <Render of={cell.render()} />
                         </div>
-                      {:else if cell.id === "email"}
+                      {:else if cell.id === "customerName"}
                         <Button variant="ghost" on:click={props.sort.toggle}>
                           <Render of={cell.render()} />
                           <CaretSort
