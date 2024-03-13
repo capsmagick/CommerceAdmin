@@ -1,6 +1,8 @@
-<script>
+<script lang="ts">
   import { slide } from 'svelte/transition';
   import { goto } from '$app/navigation';
+  
+
   let menus = [
     {
       name: "Dashboard",
@@ -86,14 +88,14 @@
     },
   ];
 
-  let activeMenu = null;
+  let activeMenu: number | null = null;// intended to be `number | null`
 
-  function toggleMenu(index) {
+  function toggleMenu(index: number) {
   activeMenu = activeMenu === index ? null : index;
   // Navigate to the group's specified route if it exists
-  if (menus[index].route) {
-    goto(menus[index].route);
-  }
+  if (menus[index].route !== undefined) {
+  goto(menus[index].route as string);
+}
 }
 </script>
 
