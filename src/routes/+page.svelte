@@ -2,6 +2,7 @@
     import {  onMount } from "svelte";
     import API from "$lib/services/api";
 
+
     async function testFetch(){
         try {
             await API.get("/inventory/batch/")
