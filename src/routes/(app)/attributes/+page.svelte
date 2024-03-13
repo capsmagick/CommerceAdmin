@@ -1,20 +1,23 @@
 <script lang="ts">
   /** @type {import('./$types').PageData} */
   import { onMount } from "svelte";
-  import CreateAttribute from "../../components/attributes/CreateAttribute.svelte";
-  import Api from "../../services/api";
+  import CreateAttribute from "../../../components/attributes/CreateAttribute.svelte";
+  import Api from "$lib/services/api";
 
-  type Attribute = {
-    id: number;
-    name: string;
-  };
 
-  let attributes: Attribute[] = [];
+
+  let attributes:any = [];
   let showForm = false;
+
+  function toggleForm(){
+    console.log(showForm)
+    showForm = !showForm
+  }
+
   async function getAttributes() {
     try {
       const res = await Api.get("/masterdata/attribute/")
-      attributes = res.results;
+      if(res && res.data && res.data.length) attributes = res.data
     } catch (error) {}
   }
   // Edit Attribute
@@ -43,7 +46,7 @@
           <div class="flex items-center gap-2">
             <button
               class="text-xs flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-1.5 rounded"
-              on:click={() => (showForm = true)}
+              on:click={() => toggleForm}
             >
               <span>
                 <i class="fa-solid fa-plus text-sm"></i>

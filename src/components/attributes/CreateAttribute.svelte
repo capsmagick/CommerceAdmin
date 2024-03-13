@@ -1,7 +1,7 @@
 <script>
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
-  import API from "../../services/api";
+  import API from "$lib/services/api";
   import ReusableButton from "../Reusable/Button.svelte";
   let name = "";
   let value = {
@@ -51,7 +51,7 @@
   <div>
     <ReusableButton
       label={"Create Attribute"}
-      on:click={onCreateNewAttribute}
+      on:click={() =>onCreateNewAttribute()}
     />
   </div>
 </div>
