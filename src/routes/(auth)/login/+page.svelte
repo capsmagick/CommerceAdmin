@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { UserStore } from "$lib/store/data";
+  import { UserStore } from "$lib/stores/data";
   import { get } from "svelte/store";
   import ReusableButton from "../../../components/Reusable/Button.svelte";
   import API from "$lib/services/api";
@@ -10,22 +10,30 @@
   };
 
   async function loginFn(params: any) {
-    try {
-      const res = await API.post("/account/session/user/login/", {
-        ...login,
-      });
-      // console.log( res.data)
-      const user = res.data.user;
-      if (user && user.name) {
-        UserStore.set(user);
-        setTimeout(async () => {
-          await goto("/products");
-        }, 0);
-      }
-    } catch (error) {
-      console.log("login:", error);
+  try {
+    const res = await API.post("/account/session/user/login/", {
+      ...login,
+    });
+
+    // Check if res and res.data are defined
+    if (!res || !res.data) {
+      console.error("Invalid response from the server");
+      return; // Exit the function if the response is not valid
     }
+
+    const user = res.data.user;
+
+    // Additional check for user object
+    if (user && user.username) {
+      UserStore.set(user);
+      await goto('/dashboard'); // Navigate to the dashboard
+    } else {
+      console.error("User data is missing in the response");
+    }
+  } catch (error) {
+    console.log("login:", error);
   }
+}
 </script>
 
 <div class="mx-auto h-full flex items-center justify-center" style="width: 26rem;">
