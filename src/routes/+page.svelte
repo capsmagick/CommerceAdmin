@@ -1,6 +1,6 @@
 <script>
     import {  onMount } from "svelte";
-    import API from "../services/api";
+    import API from "$lib/services/api";
 
     async function testFetch(){
         try {
