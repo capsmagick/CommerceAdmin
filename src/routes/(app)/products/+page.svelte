@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import API from "../../services/api";
+  import API from "$lib/services/api";
 
-  import ProductForm from "../../components/Products/ProductForm.svelte";
+  import ProductForm from "../../../components/Products/ProductForm.svelte";
   let a = [
     {
       name: "Product one",
@@ -18,13 +18,13 @@
     },
   ];
   let showForm = false;
-  let products: any[] = []
+  let products: any = []
 
   // 
   async function fetchProducts(){
     try {
       const res = await API.get("/products/product/")
-      products = res.results
+      products = res
     } catch (error) {
       console.log("fetch:products:", error)
     }
