@@ -1,323 +1,130 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import API from "../../services/api";
+  import ReusableButton from "../Reusable/Button.svelte";
   const dispatch = createEventDispatcher();
+
+  let productDetails = {
+    name:"",
+    description:"",
+    short_description:"",
+    sku:"",
+    price:0,
+    selling_price:0,  
+    condition:"",
+    brand: 3,
+    categories:[2]
+  }
+
+  async function createProduct() {
+    try {
+      await API.post("/products/product/create_record/", {
+        ...productDetails
+      });
+
+      dispatch("newProduct");
+    } catch (error) {
+      console.log("create:product:", error);
+    }
+  }
 </script>
 
-<div class="flex flex-col">
-  <!-- header -->
+<div class="flex flex-col gap-4">
   <div class="flex items-center justify-between">
+    <h4>New Product</h4>
     <button on:click={() => dispatch("close")}>
       <i class="fa-solid fa-xmark"></i>
     </button>
-    <div>
-      <button
-        class="text-xs flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-1.5 rounded"
-      >
-        <span>
-        </span>Publish Product</button
-      >
+  </div>
+
+  <!-- Text input -->
+  <div class="w-1/2 flex flex-col gap-2">
+    <!-- Text input -->
+    <div class="mb-4 w-full">
+      <label for="cdc81027-a20f-49e1-ba53-4d97478b3a71" class="text-sm text-gray-500">Name</label>
+      <input
+        placeholder="Product Name"
+        type="text"
+        id="cdc81027-a20f-49e1-ba53-4d97478b3a71"
+        class="w-full mt-1 block rounded-lg border dark:border-none dark:bg-neutral-600 py-[9px] px-3 pr-4 text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+        bind:value={productDetails.name}
+        />
+    </div>
+
+    <!-- Text input -->
+    <div class="mb-4 w-full">
+      <label for="f0b359c7-8321-48c0-b83a-335b62fc49c0"class="text-sm text-gray-500">Short Description</label>
+      <input
+        placeholder="Product short description"
+        type="text"
+        id="f0b359c7-8321-48c0-b83a-335b62fc49c0"
+        class="w-full block mt-1 rounded-lg border dark:border-none dark:bg-neutral-600 py-[9px] px-3 pr-4 text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+        bind:value={productDetails.short_description}
+        />
+    </div>
+
+    <!-- Textarea -->
+    <div class="mb-4 w-full">
+      <label for="42d95720-922b-4e9e-a791-6a82e48e7b37"class="text-sm text-gray-500">Description</label>
+      <textarea
+        placeholder="Product Description"
+        type="password"
+        id="42d95720-922b-4e9e-a791-6a82e48e7b37"
+        rows="4"
+        class="w-full block rounded-lg border dark:border-none dark:bg-neutral-600 py-[9px] px-3 pr-4 text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+        bind:value={productDetails.description}
+        ></textarea>
+    </div>
+
+    <!-- Text input -->
+    <div class="mb-4 w-full">
+      <label for="ad54549b-db62-483a-850d-2a4ae822dc89"class="text-sm text-gray-500">SKU</label>
+      <input
+        placeholder="product sku"
+        type="text"
+        id="ad54549b-db62-483a-850d-2a4ae822dc89"
+        class="w-full block rounded-lg border dark:border-none dark:bg-neutral-600 py-[9px] px-3 pr-4 text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+        bind:value={productDetails.sku}
+        />
+    </div>
+
+    <!-- Text input -->
+    <div class="mb-4 w-full">
+      <label for="7ed710a6-b0b5-4eff-91aa-ac233b917d24"class="text-sm text-gray-500">Price</label>
+      <input
+        placeholder="Product price"
+        type="number"
+        id="7ed710a6-b0b5-4eff-91aa-ac233b917d24"
+        class="w-full block rounded-lg border dark:border-none dark:bg-neutral-600 py-[9px] px-3 pr-4 text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+        bind:value={productDetails.price}
+        />
+    </div>
+
+    <!-- Text input -->
+    <div class="mb-4 w-full">
+      <label for="60cfa2c6-e658-498d-a52b-0574afdf9dc9"class="text-sm text-gray-500">Selling Price</label>
+      <input
+        placeholder="Product selling price"
+        type="text"
+        id="60cfa2c6-e658-498d-a52b-0574afdf9dc9"
+        class="w-full block rounded-lg border dark:border-none dark:bg-neutral-600 py-[9px] px-3 pr-4 text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+        bind:value={productDetails.selling_price}
+        />
+    </div>
+
+    <!-- Text input -->
+    <div class="mb-4 w-full">
+      <label for="bdbab9c3-5c6a-4aa4-9dab-fd144ed7c2af"class="text-sm text-gray-500">Condition</label>
+      <input
+        placeholder="Product condition"
+        type="text"
+        id="bdbab9c3-5c6a-4aa4-9dab-fd144ed7c2af"
+        class="w-full block rounded-lg border dark:border-none dark:bg-neutral-600 py-[9px] px-3 pr-4 text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+        bind:value={productDetails.condition}
+        />
     </div>
   </div>
-  <div class="divide-y divide-white/5">
-    <div
-      class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8"
-    >
-      <div>
-        <h2 class="text-base font-semibold leading-7 text-gray-500">
-          General information
-        </h2>
-        <p class="mt-1 text-sm leading-6 text-gray-400">
-          To start selling, all you need is a name and a price.
-        </p>
-      </div>
-
-      <form class="md:col-span-2">
-        <div
-          class="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-xl sm:grid-cols-6"
-        >
-          <div class="sm:col-span-3">
-            <label
-              for="first-name"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Title</label
-            >
-            <div class="mt-2">
-              <input
-                type="text"
-                name="first-name"
-                id="first-name"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-
-          <div class="sm:col-span-3">
-            <label
-              for="last-name"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Subtitle</label
-            >
-            <div class="mt-2">
-              <input
-                type="text"
-                name="first-name"
-                id="first-name"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-
-          <div class="sm:col-span-3">
-            <label
-              for="first-name"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Handle</label
-            >
-            <div class="mt-2">
-              <input
-                type="text"
-                name="first-name"
-                id="first-name"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-
-          <div class="sm:col-span-3">
-            <label
-              for="last-name"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Material</label
-            >
-            <div class="mt-2">
-              <input
-                type="text"
-                name="first-name"
-                id="first-name"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-
-          <div class="col-span-full">
-            <label
-              for="timezone"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Timezone</label
-            >
-            <div class="mt-2">
-              <textarea
-                name=""
-                id=""
-                cols="30"
-                rows="5"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              ></textarea>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
-    <!--  Organize-->
-    <div
-      class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8"
-    >
-      <div>
-        <h2 class="text-base font-semibold leading-7 text-gray-500">
-            Organize
-        </h2>
-        <p class="mt-1 text-sm leading-6 text-gray-400">
-            To start selling, all you need is a name and a price.
-        </p>
-      </div>
-
-      <form class="md:col-span-2">
-        <div
-          class="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-xl sm:grid-cols-6"
-        >
-          <div class="sm:col-span-3">
-            <label
-              for="first-name"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Title</label
-            >
-            <div class="mt-2">
-              <input
-                type="text"
-                name="first-name"
-                id="first-name"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-
-          <div class="sm:col-span-3">
-            <label
-              for="last-name"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Subtitle</label
-            >
-            <div class="mt-2">
-              <input
-                type="text"
-                name="first-name"
-                id="first-name"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-
-          <div class="sm:col-span-3">
-            <label
-              for="first-name"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Handle</label
-            >
-            <div class="mt-2">
-              <input
-                type="text"
-                name="first-name"
-                id="first-name"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-
-          <div class="sm:col-span-3">
-            <label
-              for="last-name"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Material</label
-            >
-            <div class="mt-2">
-              <input
-                type="text"
-                name="first-name"
-                id="first-name"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-
-          <div class="col-span-full">
-            <label
-              for="timezone"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Timezone</label
-            >
-            <div class="mt-2">
-              <textarea
-                name=""
-                id=""
-                cols="30"
-                rows="5"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              ></textarea>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
-    <!-- Variants -->
-    <div
-      class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8"
-    >
-      <div>
-        <h2 class="text-base font-semibold leading-7 text-gray-500">
-            Variants
-        </h2>
-        <p class="mt-1 text-sm leading-6 text-gray-400">
-            Add variations of this product.<br/>
-Offer your customers different options for color, format, size, shape, etc.
-        </p>
-      </div>
-
-      <form class="md:col-span-2">
-        <div
-          class="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-xl sm:grid-cols-6"
-        >
-          <div class="sm:col-span-3">
-            <label
-              for="first-name"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Title</label
-            >
-            <div class="mt-2">
-              <input
-                type="text"
-                name="first-name"
-                id="first-name"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-
-          <div class="sm:col-span-3">
-            <label
-              for="last-name"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Subtitle</label
-            >
-            <div class="mt-2">
-              <input
-                type="text"
-                name="first-name"
-                id="first-name"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-
-          <div class="sm:col-span-3">
-            <label
-              for="first-name"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Handle</label
-            >
-            <div class="mt-2">
-              <input
-                type="text"
-                name="first-name"
-                id="first-name"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-
-          <div class="sm:col-span-3">
-            <label
-              for="last-name"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Material</label
-            >
-            <div class="mt-2">
-              <input
-                type="text"
-                name="first-name"
-                id="first-name"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-
-          <div class="col-span-full">
-            <label
-              for="timezone"
-              class="block text-sm font-medium leading-6 text-gray-500"
-              >Timezone</label
-            >
-            <div class="mt-2">
-              <textarea
-                name=""
-                id=""
-                cols="30"
-                rows="5"
-                class="block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              ></textarea>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
+  <div>
+    <ReusableButton label={"Create Category"} on:click={createProduct} />
   </div>
 </div>

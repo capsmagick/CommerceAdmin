@@ -1,4 +1,7 @@
 <script>
+  import { onMount } from "svelte";
+  import API from "../../services/api";
+
   import ProductForm from "../../components/Products/ProductForm.svelte";
   let a = [
     {
@@ -15,6 +18,22 @@
     },
   ];
   let showForm = false;
+  let products = []
+
+  // 
+  async function fetchProducts(){
+    try {
+      const res = await API.get("/products/product/")
+      products = res.results
+    } catch (error) {
+      console.log("fetch:products:", error)
+    }
+  }
+
+  // Mount
+  onMount(async() => {
+    await fetchProducts()
+  })
 </script>
 
 <div class="m-3">
@@ -65,12 +84,12 @@
             <div>Actions</div>
           </div>
           <div class="flex flex-col pt-6 gap-1">
-            {#each a as product, i}
+            {#each products as product, i}
               <div
                 class="grid bg-slate-200 px-4 py-2 rounded-md text-xs text-gray-500"
                 style="grid-template-columns: 1fr 200px 200px 200px 200px 100px;"
               >
-                <div class="font-semibold">Product name</div>
+                <div class="font-semibold">{ product.name}</div>
                 <div>-</div>
                 <div>Published</div>
                 <div>Default Sales Channel</div>
