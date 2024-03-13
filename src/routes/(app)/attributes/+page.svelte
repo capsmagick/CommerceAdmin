@@ -17,7 +17,8 @@
   async function getAttributes() {
     try {
       const res = await Api.get("/masterdata/attribute/")
-      if(res && res.data && res.data.length) attributes = res.data
+      const data = res.data
+      if(data && data.results && data.results.length) attributes = data.results
     } catch (error) {}
   }
   // Edit Attribute
@@ -46,7 +47,7 @@
           <div class="flex items-center gap-2">
             <button
               class="text-xs flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-1.5 rounded"
-              on:click={() => toggleForm}
+              on:click={() => toggleForm()}
             >
               <span>
                 <i class="fa-solid fa-plus text-sm"></i>
