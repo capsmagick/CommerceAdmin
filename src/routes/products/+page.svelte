@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
   import API from "../../services/api";
 
@@ -18,7 +18,7 @@
     },
   ];
   let showForm = false;
-  let products = []
+  let products: any[] = []
 
   // 
   async function fetchProducts(){

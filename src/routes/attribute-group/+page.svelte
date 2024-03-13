@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
   import { onMount} from "svelte"
   import API from "../../services/api";
     import CreateAttributeGroup from '../../components/AttributeGroup/CreateAttributeGroup.svelte';
     export let data;
     let showForm = false
-    let attributesGroup = []
+    let attributesGroup: { id: number; name: string }[] = []
 
     async function fetchAttributeGroups(){
       try {
@@ -14,7 +14,7 @@
         console.log("fetch:attributegroup:", error)
       }
     }
-    async function deleteAttributeGroup(group){
+    async function deleteAttributeGroup(group: { id: number }): Promise<void> {
       try {
         await API.delete(`/masterdata/attributegroup/${group.id}/delete_record/`)
         await fetchAttributeGroups()
@@ -80,10 +80,10 @@
                       <td
                         class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 flex gap-2 items-center"
                       >
-                        <button class="text-gray-700" on>
+                        <button class="text-gray-700">
                           <i class="fa-solid fa-pencil"></i>
                         </button>
-                        <button class="text-red-500" on:click={deleteAttributeGroup(attribute)}>
+                        <button class="text-red-500" on:click={() => deleteAttributeGroup(attribute)}>
                           <i class="fa-solid fa-trash"></i>
                         </button>
                       </td>

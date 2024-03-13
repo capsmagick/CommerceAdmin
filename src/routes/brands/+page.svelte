@@ -1,12 +1,17 @@
-<script>
+<script lang="ts">
   /** @type {import('./$types').PageData} */
   import { onMount } from "svelte";
   import API from "../../services/api";
   import CreateBrand from "../../components/Brands/CreateBrand.svelte";
-
+  type Brand = {
+  id: string;
+  name: string;
+  logo: string;
+  description: string;
+};
   //
   export let data;
-  let brands = [];
+  let brands: Brand[] = [];
   let showForm = false;
   async function fetchBrands() {
     try {
@@ -16,7 +21,7 @@
       console.log("fetch:brands:", error);
     }
   }
-  async function onDeleteBrand(brand) {
+  async function onDeleteBrand(brand: { id: string }) {
     try {
       await API.delete(`/masterdata/brand/${brand.id}/delete_record/`);
       await fetchBrands();
@@ -101,12 +106,12 @@
                     <td
                       class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 flex gap-2 items-center"
                     >
-                      <button class="text-gray-700" on>
+                      <button class="text-gray-700">
                         <i class="fa-solid fa-pencil"></i>
                       </button>
                       <button
                         class="text-red-500"
-                        on:click={onDeleteBrand(brand)}
+                        on:click={() => onDeleteBrand(brand)}
                       >
                         <i class="fa-solid fa-trash"></i>
                       </button>

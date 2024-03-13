@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import CustomerTable from './customerTable.svelte';
     /** @type {import('./$types').PageData} */
     export let data;

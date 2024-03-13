@@ -1,9 +1,15 @@
-<script>
+<script lang="ts">
   /** @type {import('./$types').PageData} */
   import { onMount } from "svelte";
   import CreateAttribute from "../../components/attributes/CreateAttribute.svelte";
   import Api from "../../services/api";
-  let attributes = [];
+
+  type Attribute = {
+    id: number;
+    name: string;
+  };
+
+  let attributes: Attribute[] = [];
   let showForm = false;
   async function getAttributes() {
     try {
@@ -12,9 +18,9 @@
     } catch (error) {}
   }
   // Edit Attribute
-  async function onEditAttribute(attribute) {}
+  async function onEditAttribute(attribute: { id: number }) {}
   // Delete Attribute
-  async function onDeleteAttribute(attribute) {
+  async function onDeleteAttribute(attribute: { id: number }) {
     try {
       const res = await Api.delete(`/masterdata/attribute/${attribute.id}/delete_record/`)
       await getAttributes();
@@ -78,12 +84,12 @@
                     <td
                       class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 flex gap-2 items-center"
                     >
-                      <button class="text-gray-700" on>
+                      <button class="text-gray-700">
                         <i class="fa-solid fa-pencil"></i>
                       </button>
                       <button
                         class="text-red-500"
-                        on:click={onDeleteAttribute(attribute)}
+                        on:click={() => onDeleteAttribute(attribute)}
                       >
                         <i class="fa-solid fa-trash"></i>
                       </button>
