@@ -105,7 +105,7 @@
   }
 </script>
 
-<div class="md:flex hidden flex-col bg-gray-800 text-white h-full">
+<div class="md:flex hidden flex-col  bg-white text-black dark:bg-gray-900 h-full">
   <div class="flex flex-col p-4 gap-3">
     <div class="flex items-center align-middle gap-2">
       <i class="fa-solid fa-store py-4 w-12 h-12"></i>
