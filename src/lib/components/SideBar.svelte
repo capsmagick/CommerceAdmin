@@ -8,9 +8,9 @@
       name: "Dashboard",
       icon: "fa-house",
       route: "/dashboard",
-      items: [
-        { name: "Overview", page: "dashboard-overview" },
-      ]
+      // items: [
+      //   { name: "Overview", page: "dashboard-overview" },
+      // ]
     },
     {
       name: "Sales",
@@ -18,8 +18,8 @@
       //route: "/orders",
       items: [
         { name: "Order Management", page: "orders" },
-        { name: "Returns and Refunds", page: "orders-returns" },
-        { name: "Invoices", page: "orders-invoices" },
+        { name: "Returns and Refunds", page: "returns" },
+        { name: "Invoices", page: "invoices" },
       ]
     },
     {
@@ -123,14 +123,14 @@
           </button>
           {#if activeMenu === index}
             <div class="pl-4">
-              {#each menu.items as item}
-                <button 
-                  on:click={() => navigateTo(item.page)} 
-                  class="block py-1 cursor-pointer focus:outline-none hover:bg-gray-700 rounded-md px-2 text-sm w-full text-left"
-                >
-                  {item.name}
-                </button>
-              {/each}
+              {#each menu.items ?? [] as item}
+              <button 
+                on:click={() => navigateTo(item.page)} 
+                class="block py-1 cursor-pointer focus:outline-none hover:bg-gray-700 rounded-md px-2 text-sm w-full text-left"
+              >
+                {item.name}
+              </button>
+            {/each}
             </div>
           {/if}
         </div>

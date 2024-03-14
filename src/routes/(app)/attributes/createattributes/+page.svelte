@@ -67,9 +67,7 @@
         </div>
     </div>
     <div>
-        <Button class="text-xs flex items-center gap-2 border border-blue-500 bg-blue-500 text-white px-4 py-1.5 rounded"
-                label={"Create Attribute"}
-                on:click={() =>onCreateNewAttribute()}
+        <Button class="text-xs flex items-center gap-2 border border-blue-500 bg-blue-500 text-white px-4 py-1.5 rounded" on:click={() =>onCreateNewAttribute()}
         >Create Attribute</Button>
     </div>
 </div>

@@ -2,3 +2,4 @@
     /** @type {import('./$types').PageData} */
     export let data;
 </script>
+<h1>Collections</h1>
