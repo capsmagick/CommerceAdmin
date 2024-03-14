@@ -14,9 +14,10 @@
   async function fetchCategories() {
     try {
       const res = await API.get("/masterdata/category/");
-      categories = res.data.results;
+      categories = Array.isArray(res.data?.results) ? res.data.results : []
     } catch (error) {
       console.log("fetch:categories:", error);
+      categories = []
     }
   }
   async function onDeleteCategory(category: { id: string }) {
