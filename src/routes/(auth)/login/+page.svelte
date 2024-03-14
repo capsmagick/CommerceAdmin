@@ -6,8 +6,8 @@
   import API from "$lib/services/api";
   import { goto } from "$app/navigation";
   let login = {
-    username: "admin",
-    password: "1234",
+    username: "",
+    password: "",
   };
 
   async function loginFn(params: any) {
