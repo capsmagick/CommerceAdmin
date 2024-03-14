@@ -2,7 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { Input} from "$lib/components/ui/input"; 
   import {Textarea} from "$lib/components/ui/textarea";
-  import {Select} from "$lib/components/ui/select";
+  import * as Select from "$lib/components/ui/select";
   import {Button} from "$lib/components/ui/button";
   import API from "$lib/services/api";
 
@@ -25,6 +25,18 @@
     tags: [],
     dimension: '',
   };
+  interface Category {
+    id: number;
+    name: string;
+  }
+  let categories: Category[] = [
+    { id: 1, name: "Electronics" },
+    { id: 2, name: "Clothing" },
+    { id: 3, name: "Home & Kitchen" },
+    { id: 4, name: "Beauty & Personal Care" },
+    { id: 5, name: "Books" },
+    { id: 6, name: "Sports & Outdoors" },
+  ];
 
   async function createProduct() {
     try {
@@ -34,6 +46,10 @@
       console.error("create:product:", error);
     }
   }
+  // Function to handle category selection change
+function handleCategoryChange(selectedCategory: { value: number }) {
+  productDetails.categories = [selectedCategory.value] as any;
+}
 </script>
 
 <div class="container mx-auto max-w-4xl py-8 px-4">
@@ -42,6 +58,22 @@
     <Input bind:value={productDetails.name} placeholder="Name" class="input" />
     <Textarea bind:value={productDetails.shortDescription} placeholder="Short Description" class="textarea"  />
     <Textarea bind:value={productDetails.description} placeholder="Description" class="textarea"  />
+    <div class="container">
+      <!-- Your form and other inputs -->
+      <Select.Root>
+        <Select.Trigger class="input">Select a Category</Select.Trigger>
+        <Select.Content>
+          <Select.Group>
+            {#each categories as category}
+            <Select.Item value={category.id} label={category.name} on:click={() => handleCategoryChange({value: category.id})}>
+              {category.name}
+            </Select.Item>
+            {/each}
+          </Select.Group>
+        </Select.Content>
+      </Select.Root>
+      <!-- More form inputs and submit button -->
+    </div>
     <Input bind:value={productDetails.sku} placeholder="SKU" class="input" />
     <div class="grid grid-cols-2 gap-4">
       <Input type="number" bind:value={productDetails.price} placeholder="Price" class="input" />
@@ -49,10 +81,10 @@
     </div>
     <Input bind:value={productDetails.condition} placeholder="Condition" class="input" />
     <!-- Assuming Select component exists and can handle multiple selections -->
-    <Select bind:selected={productDetails.categories} multiple={true}  on:change="{(e) => productDetails.categories = e.detail}" />
+    
     <Input bind:value={productDetails.brand} placeholder="Brand" class="input" />
     <Input bind:value={productDetails.hsnCode} placeholder="HSN Code" class="input" />
-    <Select bind:selected={productDetails.tags}  multiple={true}  />
+    
     <Input bind:value={productDetails.dimension} placeholder="Dimension" class="input" />
     <Button type="submit" class="btn">Submit</Button>
   </form>
