@@ -15,7 +15,7 @@
   }
 </script>
 
-<div class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
+<div class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50" style="color: black">
   <div class="bg-white p-6 rounded-lg">
     <h2 class="text-lg font-semibold mb-4">Confirm Delete</h2>
     <p>Are you sure you want to delete <span style="color: red">{attribute}</span>?</p>

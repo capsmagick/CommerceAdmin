@@ -4,6 +4,7 @@
     import CreateAttribute from "./createattributes/+page.svelte";
     import API from "$lib/services/api";
     import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
+    import { toast } from "svelte-sonner";
 
     let showDeleteModal = false;
     let deletingAttribute;
@@ -56,6 +57,7 @@
 
     function closeDeleteModal() {
         showDeleteModal = false;
+        toast("Attribute Deleted Successfully!");
     }
 
     onMount(async () => {

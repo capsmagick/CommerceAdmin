@@ -38,10 +38,13 @@
 
             dispatch("newAttribute");
 
-            toast("Attribute created successfully!");
+            const action = editForm ? "Attribute Updated" : "Attribute Created";
+
+            toast(`${action} successfully!`);
         } catch (error) {
-            console.log("Attribute create:", error);
-            toast("Failed to create attribute.");
+            const action = editForm ? "Update Attribute" : "Create Attribute";
+            console.log(`${action}:`, error);
+            toast(`Failed to ${action}`);
         }
     }
 </script>
@@ -49,7 +52,7 @@
 <div class="fixed inset-0 flex bg-gray-500 bg-opacity-50 justify-end" style="z-index: 1">
     <div class="bg-white p-6 rounded-lg">
         <!--        <div class="flex items-center justify-between mb-2">-->
-        <header class="font-bold mb-5">
+        <header class="font-bold mb-5" style="color: black">
             {#if editForm === false}
                 <h1>New Attribute</h1>
             {:else}
