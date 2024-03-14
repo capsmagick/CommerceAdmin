@@ -1,6 +1,7 @@
 <script lang="ts">
     import CaretSort from "svelte-radix/CaretSort.svelte";
     import ChevronDown from "svelte-radix/ChevronDown.svelte";
+    import * as Avatar from "$lib/components/ui/avatar";
     import {
       createTable,
       Subscribe,
@@ -16,75 +17,84 @@
     } from "svelte-headless-table/plugins";
     import { readable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
-    import Actions from "./orderTableActions.svelte";
+    import Actions from "./categoriesTableActions.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
-    import DataTableCheckbox from "./orederTableCheckbox.svelte";
+    import DataTableCheckbox from "./categoriesTableCheckbox.svelte";
+
+      // Import statements and other script content...
+
+ 
    
-    type Payment = {
-      orderId: string;
-      customerName: string;
-      orderDate: string;
-      orderStatus: "Pending" | "Processing" | "Success" | "Failed";
-      amount: number;
-      paymentStatus: "Pending" | "Success" | "Failed";
-      paymentMethod: "Cash" | "Credit Card" | "Debit Card" | "Paypal" | "Other";
-      email: string;
-    };
+    
+    type Categories = {
+  categoryId: string;
+  name: string;
+  description: string;
+  tags: string[]; // Corrected type
+  Image: string;
+  status: string[];
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  updatedBy: string;
+};
    
-    const data: Payment[] = [
+  
+    const data:Categories[] = [
       {
-        orderId: "m5gr84i9",
-        customerName: "Manoj Kumar",
-        orderDate: "2021-08-10",
-        amount: 316,
-        orderStatus: "Success",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "ken99@yahoo.com"
+        categoryId: "cat123",
+        name: "Tech Gadgets",
+        description: "Latest technology gadgets",
+        tags: ["tech", "gadgets", "electronics"],
+        Image: "https://github.com/shadcn.png",
+        status: ["Active"],
+        createdAt: "2021-09-10T10:30:00",
+        updatedAt: "2021-09-15T14:20:00",
+        createdBy: "admin",
+        updatedBy: "admin"
       },
       {
-        orderId: "3u1reuv4",
-        customerName: "Kudumon Potty",
-        orderDate: "2021-08-10",
-        amount: 242,
-        orderStatus: "Success",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "Abe45@gmail.com"
+        categoryId: "cat456",
+        name: "Home Essentials",
+        description: "Essential goods for your home",
+        tags: ["home", "essentials", "decor"],
+        Image: "https://example.com/home-essentials.png",
+        status: ["Active", "Featured"],
+        createdAt: "2021-10-05T09:20:00",
+        updatedAt: "2021-10-10T16:45:00",
+        createdBy: "user1",
+        updatedBy: "user2"
       },
       {
-        orderId: "derv1ws0",
-        customerName: "Suresh Gopi",
-        orderDate: "2021-08-10",
-        amount: 837,
-        orderStatus: "Processing",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "Monserrat44@gmail.com"
+        categoryId: "cat789",
+        name: "Outdoor Adventure",
+        description: "Gear and gadgets for the great outdoors",
+        tags: ["outdoor", "adventure", "gear"],
+        Image: "https://example.com/outdoor-adventure.png",
+        status: ["Active"],
+        createdAt: "2021-11-15T11:00:00",
+        updatedAt: "2021-11-20T18:30:00",
+        createdBy: "admin",
+        updatedBy: "admin"
       },
       {
-        orderId: "5kma53ae",
-        customerName: "Vimala Rajedran",
-        orderDate: "2021-08-10",
-        amount: 874,
-        orderStatus: "Success",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "Silas22@gmail.com"
-      },
-      {
-        orderId: "bhqecj4p",
-        customerName: "Kunjilakshmi Ammal",
-        orderDate: "2021-08-10",
-        amount: 721,
-        orderStatus: "Failed",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "carmella@hotmail.com"
+        categoryId: "cat101",
+        name: "Fitness Freaks",
+        description: "Everything you need for your fitness journey",
+        tags: ["fitness", "gym", "health"],
+        Image: "https://example.com/fitness-freaks.png",
+        status: ["Active", "Featured"],
+        createdAt: "2022-01-20T13:50:00",
+        updatedAt: "2022-01-25T19:05:00",
+        createdBy: "user3",
+        updatedBy: "user4"
       }
+
+    
+     
     ];
    
     const table = createTable(readable(data), {
@@ -97,7 +107,7 @@
       hide: addHiddenColumns()
     });
    
-    const columns = table.createColumns([
+     const columns = table.createColumns([
       table.column({
         header: (_, { pluginStates }) => {
           const { allPageRowsSelected } = pluginStates.select;
@@ -105,7 +115,7 @@
             checked: allPageRowsSelected
           });
         },
-        accessor: "orderId",
+        accessor: "categoryId",
         cell: ({ row }, { pluginStates }) => {
           const { getRowState } = pluginStates.select;
           const { isSelected } = getRowState(row);
@@ -124,64 +134,70 @@
         }
       }),
       table.column({
-        header: "Order ID",
-        accessor: ({ orderId }) => orderId,
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
+        header: "Image",
+        accessor: "Image",
+        cell: ({ value }) => `<img src="${value}" alt="Featured Image" class="h-10 w-10 rounded-full">`,
+        plugins: { filter: { exclude: true } }
       }),
+    
       table.column({
-        header: "Customer Name",
-        accessor: "customerName",
-        cell: ({ value }) => value.toLowerCase(),
+        header: "Category",
+        accessor: "name",
+        cell: ({ value }) => value,
         plugins: {
           filter: {
             getFilterValue(value) {
-              return value.toLowerCase();
+              return value;
             }
           }
         }
       }),
       table.column({
-        header: "Order Date",
-        accessor: "orderDate",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
+        header: "Description",
+        accessor: "description",
+        cell: ({ value }) => value,
+        plugins: { filter: {} }
       }),
       table.column({
-        header: "Order Status",
-        accessor: "orderStatus",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
+        header: "Tags",
+        accessor: "tags",
+        cell: ({ value }) => value.join(", "),
+        plugins: { filter: {} }
       }),
       table.column({
-        header: "Payment Status",
-        accessor: "paymentStatus",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
+        header: "Status",
+        accessor: "status",
+        cell: ({ value }) => value.join(", "),
+        plugins: { filter: {} }
+      }),
+    
+      table.column({
+        header: "Created At",
+        accessor: "createdAt",
+        cell: ({ value }) => new Date(value).toLocaleDateString(),
+        plugins: { sort: {}, filter: { exclude: true } }
       }),
       table.column({
-        header: "Payment Method",
-        accessor: "paymentMethod",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
+        header: "Updated At",
+        accessor: "updatedAt",
+        cell: ({ value }) => new Date(value).toLocaleDateString(),
+        plugins: { sort: {}, filter: { exclude: true } }
       }),
       table.column({
-        header: "Total Amount",
-        accessor: "amount",
-        cell: ({ value }) => {
-          const formatted = new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "INR"
-          }).format(value);
-          return formatted;
-        },
-        plugins: {
-          sort: {
-            disable: true
-          },
-          filter: {
-            exclude: true
-          }
-        }
+        header: "Created By",
+        accessor: "createdBy",
+        cell: ({ value }) => value,
+        plugins: { filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Updated By",
+        accessor: "updatedBy",
+        cell: ({ value }) => value,
+        plugins: { filter: { exclude: true } }
       }),
       table.column({
         header: "",
-        accessor: ({ orderId }) => orderId,
+        accessor: ({ categoryId }) => categoryId,
         cell: (item) => {
           return createRender(Actions, { id: item.value });
         },
@@ -208,7 +224,11 @@
     const { hiddenColumnIds } = pluginStates.hide;
     const ids = flatColumns.map((c) => c.id);
     let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
-   
+    
+    let initialHiddenColumns = [ 'createdAt', 'updatedAt', 'attributes', 'createdBy', 'updatedBy'];
+
+    $: hideForId = Object.fromEntries(ids.map((id) => [id, !initialHiddenColumns.includes(id)]));
+
     $: $hiddenColumnIds = Object.entries(hideForId)
       .filter(([, hide]) => !hide)
       .map(([id]) => id);
@@ -218,10 +238,10 @@
    
     const { selectedDataIds } = pluginStates.select;
    
-    const hideableCols = ["orderStatus", "orderDate", "customerName", "amount", "paymentStatus", "paymentMethod"];
+    const hideableCols = [ "createdAt", "updatedAt",'description', 'tags', 'createdBy', 'updatedBy'];
   </script>
    
-  <div class="w-full p-4 bg-background text-foreground">
+  <div class="w-full">
     <div class="mb-4 flex items-center gap-4">
       <Input
         class="max-w-sm"

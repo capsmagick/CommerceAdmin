@@ -30,9 +30,8 @@
     };
   });
 </script>
-<div class="layer-one">
+
 <LoadingIndicator />
 <ModeWatcher />
 <Toaster />
 <slot />
-</div>

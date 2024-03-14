@@ -38,46 +38,17 @@
     await fetchProducts()
   })
 </script>
-
-<div class="m-3  bg-white text-black dark:bg-gray-900 dark:text-gray-200">
-  <div
-    class= " bg-white text-black dark:bg-gray-900 dark:text-gray-200 rounded-md p-4 px-6 border overflow-y-auto"
-    style="height: calc(100vh - 58px);"
-  >
-   
-      <div>
-        <div class="flex items-center justify-between">
-          <h4 class="text-lg font-medium text-gray-800">Products</h4>
-          <div class="flex items-center gap-2">
-            <button
-              class="text-xs flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-1.5 rounded"
-            >
-              <span>
-                <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
-              </span>Import Product</button
-            >
-            <div class="flex items-center justify-between">
-                
-              <Button>Export Orders</Button>
-          </div>
-            <Button
-              class="text-xs flex items-center gap-2 border  px-4 py-1.5 rounded"
-              
-            on:click={() => goto('products/createProduct')}
-            >
-            <i class="fa-solid fa-plus text-sm"></i>
-            New Product
-          </Button>
-            
-          </div>
-        </div>
-        <!-- Table -->
-        <div class="m-3">
-          <div class=" rounded-md p-4 px-6 border layer-three" style="height: calc(100vh - 80px);">
-              
-              <ProductTable />
-          </div>
-      </div>
-      </div>
+<div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border" style="height: calc(100vh - 80px);">
+  <div class="flex items-center ">
+      <h4 class="text-lg font-medium text-gray-800 dark:text-gray-200 flex-1">Products</h4>
+      <Button variant="outline" class=" mr-4 ">Export Products</Button>
+      <Button class="text-xs flex items-center gap-2 border  px-4 py-1.5 " on:click={() => goto('products/createProduct')}>
+        <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
+        Add Products</Button>
   </div>
+  <ProductTable />
 </div>
+
+
+   
+
