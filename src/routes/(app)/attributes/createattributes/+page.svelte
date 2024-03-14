@@ -1,5 +1,6 @@
 <script lang="ts">
     import {createEventDispatcher} from "svelte";
+    import { toast } from "svelte-sonner";
 
     const dispatch = createEventDispatcher();
     import API from "$lib/services/api";
@@ -36,13 +37,13 @@
             }
 
             dispatch("newAttribute");
+
+            toast("Attribute created successfully!");
         } catch (error) {
-            const action = editForm ? "Attribute Update" : "Attribute Create";
-            console.log(`${action}:`, error);
+            console.log("Attribute create:", error);
+            toast("Failed to create attribute.");
         }
     }
-
-
 </script>
 
 <div class="fixed inset-0 flex bg-gray-500 bg-opacity-50 justify-end" style="z-index: 1">
@@ -120,6 +121,5 @@
             </Button>
         </footer>
     </div>
+
 </div>
-
-

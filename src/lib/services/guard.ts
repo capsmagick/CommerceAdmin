@@ -5,17 +5,21 @@ import API from "$lib/services/api";
 
 export const isAuthenticated = writable(false);
 
+import { browser } from '$app/environment'; // Import the browser variable
+
 async function checkAuthentication() {
     try {
         const response = await API.get('/account/user/me/');
-        console.log('response:', response)
+       // console.log('response:', response)
         if (response.data.loggedIn === true) {
             const user = response.data.user
             UserStore.set(user);
             isAuthenticated.set(true);
         } else {
             isAuthenticated.set(false);
-            await goto('/login');
+            if (browser) { // Check if running in the browser
+                await goto('/login');
+            }
         }
     } catch (error) {
         console.error('Error checking authentication:', error);

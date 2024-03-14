@@ -107,9 +107,9 @@
 
 <div class="md:flex hidden flex-col bg-gray-800 text-white h-full">
   <div class="flex flex-col p-4 gap-3">
-    <div class="flex items-center gap-2">
-      <i class="fa-solid fa-store w-8 h-8"></i>
-      <div class="text-lg">Store</div>
+    <div class="flex items-center align-middle gap-2">
+      <i class="fa-solid fa-store py-4 w-12 h-12"></i>
+      <div class="text-lg">Signup Casuals</div>
     </div>
     <div class="flex flex-col gap-4 pl-2 mt-10">
       {#each menus as menu, index}
