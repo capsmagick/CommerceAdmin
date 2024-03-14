@@ -1,5 +1,6 @@
 <script lang="ts">
     import {createEventDispatcher} from "svelte";
+    import { toast } from "svelte-sonner";
 
     const dispatch = createEventDispatcher();
     import API from "$lib/services/api";
@@ -21,8 +22,11 @@
             });
 
             dispatch("newAttribute");
+            
+            toast("Attribute created successfully!");
         } catch (error) {
             console.log("Attribute create:", error);
+            toast("Failed to create attribute.");
         }
     }
 </script>
@@ -70,4 +74,5 @@
         <Button class="text-xs flex items-center gap-2 border border-blue-500 bg-blue-500 text-white px-4 py-1.5 rounded" on:click={() =>onCreateNewAttribute()}
         >Create Attribute</Button>
     </div>
+    
 </div>
