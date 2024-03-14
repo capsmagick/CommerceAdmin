@@ -48,11 +48,25 @@ axiosAPI.interceptors.response.use(
 );
 
 // Function to get CSRF token from cookies
-function getCookie(name: string): string | undefined {
+// function getCookie(name: string): string | undefined {
  
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-  if (match) return match[2];
-  console.log(`Cookie value for ${name}:`, match ? match[2] : 'Not Found');
+//   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+//   if (match) return match[2];
+//   console.log(`Cookie value for ${name}:`, match ? match[2] : 'Not Found');
+// }
+function getCookie(name: string): string | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    const possibleValue = parts.pop();
+    if (possibleValue) {
+      return possibleValue.split(';').shift() || null; // Fix applied here
+    }
+  }
+  return null;
 }
 
 export default axiosAPI;
