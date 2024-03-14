@@ -22,12 +22,8 @@
     <DropdownMenu.Content>
       <DropdownMenu.Group>
         <DropdownMenu.Label>Actions</DropdownMenu.Label>
-        <DropdownMenu.Item on:click={() => navigator.clipboard.writeText(id)}>
-          Copy product ID
-        </DropdownMenu.Item>
       </DropdownMenu.Group>
-      <DropdownMenu.Separator />
-      <DropdownMenu.Item>View/Add product</DropdownMenu.Item>
+      <DropdownMenu.Item>View/Edit Variant</DropdownMenu.Item>
       <DropdownMenu.Item>Add Variant</DropdownMenu.Item>
       <DropdownMenu.Item>change status</DropdownMenu.Item>
     </DropdownMenu.Content>
