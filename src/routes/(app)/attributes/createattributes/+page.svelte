@@ -4,7 +4,7 @@
 
     const dispatch = createEventDispatcher();
     import API from "$lib/services/api";
-    import Button from "$lib/components/ui/button/button.svelte"
+    import {Button }from "$lib/components/ui/button"
 
     export let editData;
     export let editForm;
@@ -102,7 +102,7 @@
 
         <footer class="flex mt-5">
             {#if editForm === false}
-                <Button class="text-xs flex items-center gap-2 border border-blue-500 bg-blue-500 text-white px-4 py-1.5 rounded"
+                <Button type=submit  class="text-xs flex items-center gap-2 border border-blue-500 bg-blue-500 text-white px-4 py-1.5 rounded"
                         on:click={() =>onCreateNewAttribute()}
                 >Create Attribute
                 </Button>

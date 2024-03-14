@@ -73,7 +73,7 @@
         </div>
         <!-- Table -->
         <div class="m-3">
-          <div class=" rounded-md p-4 px-6 border  bg-white text-black dark:bg-gray-900 dark:text-gray-200" style="height: calc(100vh - 80px);">
+          <div class=" rounded-md p-4 px-6 border layer-three" style="height: calc(100vh - 80px);">
               
               <ProductTable />
           </div>

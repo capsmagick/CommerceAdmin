@@ -5,7 +5,7 @@ import { goto } from '$app/navigation';
 import Sun from "svelte-radix/Sun.svelte";
   import Moon from "svelte-radix/Moon.svelte";
   import { Button } from "$lib/components/ui/button/index.js";
- 
+  import { Input } from "$lib/components/ui/input/index.js";
   import { toggleMode } from "mode-watcher";
 
 
@@ -44,7 +44,7 @@ async function logout() {
 
 </script>
 
-<div class="bg-white px-4 py-2 h-16 text-base border-b flex items-center  justify-between">
+<div class="bg-background text-foreground px-4 py-2 h-16 text-base border-b flex items-center  justify-between">
 
    <div class="order-last">
    <DropdownMenu.Root >
@@ -76,9 +76,9 @@ async function logout() {
        </Button>
       </div>
 <div class="flex items-center gap-4">
-  <input type="text" placeholder="Search..." class="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-  <button class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+  <Input type="text" placeholder="Search..." class="px-4 py-2 border rounded-md bg-background text-foreground" />
+  <Button class="px-4 py-2  text-white rounded-md ">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
+  </Button>
 </div>
 </div>

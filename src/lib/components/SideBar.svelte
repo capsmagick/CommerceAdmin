@@ -105,18 +105,18 @@
   }
 </script>
 
-<div class="md:flex hidden flex-col  bg-white text-black dark:bg-gray-900 h-full">
+<div class="md:flex hidden flex-col bg-background text-foreground h-full">
   <div class="flex flex-col p-4 gap-3">
     <div class="flex items-center align-middle gap-2">
       <i class="fa-solid fa-store py-4 w-12 h-12"></i>
-      <div class="text-lg">Signup Casuals</div>
+      <div class="text-xl font-bold text-neutral-800 dark:text-neutral-200">Signup Casuals</div>
     </div>
     <div class="flex flex-col gap-4 pl-2 mt-10">
       {#each menus as menu, index}
         <div>
           <button 
             on:click={() => toggleMenu(index)} 
-            class="flex items-center gap-2 py-2 cursor-pointer focus:outline-none hover:bg-gray-700 rounded-md px-2 w-full text-left"
+            class="flex items-center gap-2 py-2 cursor-pointer text-neutral-800 dark:text-neutral-200 font-semibold focus:outline-none hover:text-violet-800 dark:hover:text-violet-400 rounded-md px-2 w-full text-left"
           >
             <i class={`fa-solid ${menu.icon}`}></i>
             {menu.name}
@@ -126,7 +126,7 @@
               {#each menu.items ?? [] as item}
               <button 
                 on:click={() => navigateTo(item.page)} 
-                class="block py-1 cursor-pointer focus:outline-none hover:bg-gray-700 rounded-md px-2 text-sm w-full text-left"
+                class="block py-1 cursor-pointer focus:outline-none font-medium dark:text-neutral-200 hover:text-violet-800 dark:hover:text-violet-400 rounded-md px-2 text-sm w-full text-left"
               >
                 {item.name}
               </button>
