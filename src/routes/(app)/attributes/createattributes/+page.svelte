@@ -1,19 +1,27 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import API from "$lib/services/api";
-  import ReusableButton from "../Reusable/Button.svelte";
   const dispatch = createEventDispatcher();
+  import API from "$lib/services/api";
+  import {Button} from "$lib/components/ui/button";
   let name = "";
+  let value = {
+    propOne: "",
+  };
 
-  async function createAttributeGroup() {
+  async function onCreateNewAttribute() {
     try {
-      const res = await API.post("/masterdata/attributegroup/create_record/", {
+      const formData = {
         name,
+        value,
+      };
+
+      await API.post("/masterdata/attribute/create_record/", {
+        ...formData,
       });
 
-      dispatch("newAttributeGroup")
+      dispatch("newAttribute");
     } catch (error) {
-      console.log("create:attributegroup:", error);
+      console.log("Attribute create:", error);
     }
   }
 </script>
@@ -41,9 +49,8 @@
     </div>
   </div>
   <div>
-    <ReusableButton
-      label={"Create Attribute group"}
-      on:click={createAttributeGroup}
-    />
+    <Button
+      on:click={() =>onCreateNewAttribute()}
+    >Create Attribute</Button>
   </div>
 </div>

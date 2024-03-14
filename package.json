@@ -27,7 +27,7 @@
 	"type": "module",
 	"dependencies": {
 		"axios": "^1.6.7",
-		"bits-ui": "^0.19.6",
+		"bits-ui": "^0.19.7",
 		"clsx": "^2.1.0",
 		"lucide-svelte": "^0.356.0",
 		"svelte-radix": "^1.1.0",

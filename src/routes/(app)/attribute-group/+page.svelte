@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount} from "svelte"
   import API from "$lib/services/api";
-    import CreateAttributeGroup from '../../../components/attributes/CreateAttribute.svelte';
+    import CreateAttributeGroup from '../attributes/createattributes/+page.svelte';
     export let data;
     let showForm = false
     let attributesGroup: { id: number; name: string }[] = []

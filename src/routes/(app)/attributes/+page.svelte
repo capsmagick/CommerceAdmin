@@ -1,8 +1,8 @@
 <script lang="ts">
   /** @type {import('./$types').PageData} */
   import { onMount } from "svelte";
-  import CreateAttribute from "../../../components/attributes/CreateAttribute.svelte";
-  import Api from "$lib/services/api";
+  import CreateAttribute from "./createattributes/+page.svelte";
+  import API from "$lib/services/api";
 
 
 
@@ -21,7 +21,7 @@
 
 async function getAttributes() {
   try {
-    const res = await Api.get("/masterdata/attribute/");
+    const res = await API.get("/masterdata/attribute/");
     // Ensure attributes is always an array, even if res.data or res.data.results is undefined
     attributes = Array.isArray(res.data?.results) ? res.data.results : [];
   } catch (error) {
@@ -34,7 +34,7 @@ async function getAttributes() {
   // Delete Attribute
   async function onDeleteAttribute(attribute: { id: number }) {
     try {
-      const res = await Api.delete(`/masterdata/attribute/${attribute.id}/delete_record/`)
+      const res = await API.delete(`/masterdata/attribute/${attribute.id}/delete_record/`)
       await getAttributes();
     } catch (error) {}
   }
