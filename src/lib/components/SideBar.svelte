@@ -91,8 +91,14 @@
   let activeMenu: number | null = null;// intended to be `number | null`
 
   function toggleMenu(index: number) {
-    activeMenu = activeMenu === index ? null : index;
+  const menu = menus[index];
+  if (menu.route) {
+    navigateTo(menu.route); // Navigate if there's a route
+    activeMenu = index; // Ensure the submenu is opened
+  } else {
+    activeMenu = activeMenu === index ? null : index; // Toggle visibility of items
   }
+}
 
   function navigateTo(page: string) {
     goto(page);
