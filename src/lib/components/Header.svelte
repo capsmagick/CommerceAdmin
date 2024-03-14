@@ -7,6 +7,7 @@ import Sun from "svelte-radix/Sun.svelte";
   import { Button } from "$lib/components/ui/button/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { toggleMode } from "mode-watcher";
+  import * as Avatar from "$lib/components/ui/avatar/index.js";
 
 
 async function logout() {
@@ -44,41 +45,44 @@ async function logout() {
 
 </script>
 
-<div class="bg-background text-foreground px-4 py-2 h-16 text-base border-b flex items-center  justify-between">
+<div class="bg-background text-foreground px-4 py-2 h-16 text-base border-b flex items-center  ">
 
-   <div class="order-last">
-   <DropdownMenu.Root >
-      <DropdownMenu.Trigger class="flex items-center cursor-pointer">
-         <div>
-            <i class="fa-solid fa-gear text-gray-600 text-2xl"></i>
-         </div>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content>
-        <DropdownMenu.Group>
-          <DropdownMenu.Label>My Account</DropdownMenu.Label>
-          <DropdownMenu.Separator />
-          <DropdownMenu.Item>Profile</DropdownMenu.Item>
-          <DropdownMenu.Item on:click={logout}>Logout</DropdownMenu.Item>
-         
-        </DropdownMenu.Group>
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
-    </div>
-    <div class="flex items-center gap-4">
-      <Button on:click={toggleMode} variant="outline" size="icon">
-         <Sun
-           class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
-         />
-         <Moon
-           class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
-         />
-         <span class="sr-only">Toggle theme</span>
-       </Button>
-      </div>
-<div class="flex items-center gap-4">
-  <Input type="text" placeholder="Search..." class="px-4 py-2 border rounded-md bg-background text-foreground" />
+ 
+    
+<div class="flex items-center flex-1  gap-4">
+  <Input type="text" placeholder="Search..." class="px-4 w-72 py-2 border rounded-md bg-background text-foreground" />
   <Button class="px-4 py-2  text-white rounded-md bg-primary">
     <i class="fa-solid fa-magnifying-glass"></i>
   </Button>
 </div>
+<div class="flex items-center mr-4 gap-4">
+  <Button on:click={toggleMode} variant="outline" size="icon">
+     <Sun
+       class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+     />
+     <Moon
+       class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+     />
+     <span class="sr-only">Toggle theme</span>
+   </Button>
+  </div>
+  <div class="mr-4 ">
+    <DropdownMenu.Root >
+       <DropdownMenu.Trigger class="flex items-center cursor-pointer">
+         <Avatar.Root>
+           <Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
+           <Avatar.Fallback>CN</Avatar.Fallback>
+         </Avatar.Root>
+       </DropdownMenu.Trigger>
+       <DropdownMenu.Content>
+         <DropdownMenu.Group>
+           <DropdownMenu.Label>My Account</DropdownMenu.Label>
+           <DropdownMenu.Separator />
+           <DropdownMenu.Item>Profile</DropdownMenu.Item>
+           <DropdownMenu.Item on:click={logout}>Logout</DropdownMenu.Item>
+          
+         </DropdownMenu.Group>
+       </DropdownMenu.Content>
+     </DropdownMenu.Root>
+     </div>
 </div>

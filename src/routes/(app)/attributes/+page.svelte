@@ -5,9 +5,14 @@
     import API from "$lib/services/api";
     import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
     import { toast } from "svelte-sonner";
+    interface Attribute {
+    id: number;
+    name: string; 
+    // Add other properties of an attribute here if needed
+}
 
     let showDeleteModal = false;
-    let deletingAttribute;
+    let deletingAttribute:Attribute;
 
     let attributes: any[] = [];
     let editData: any = null;
@@ -40,10 +45,10 @@
         editForm = true;
     }
 
-    async function onDeleteAttribute(attribute: { id: number }) {
-        deletingAttribute = attribute;
-        showDeleteModal = true;
-    }
+    async function onDeleteAttribute(attribute: { id: number; name: string }) {
+deletingAttribute = attribute;
+showDeleteModal = true;
+}
 
     function confirmDelete() {
         API.delete(`/masterdata/attribute/${deletingAttribute.id}/delete_record/`).then(() => {
