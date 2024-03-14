@@ -10,7 +10,7 @@
 
     // Immediately invoked function expression (IIFE) to handle async logic
     (async () => {
-      const isAuthenticatedValue = await isAuthenticated();
+      const isAuthenticatedValue = await isAuthenticated;
       if (isAuthenticatedValue) {
         const lastVisitedRoute = localStorage.getItem("lastVisitedRoute");
         if (lastVisitedRoute) {

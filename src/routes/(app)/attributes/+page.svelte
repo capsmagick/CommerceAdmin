@@ -80,6 +80,11 @@ async function getAttributes() {
                   >
                   <th
                     scope="col"
+                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                    >Values</th
+                  >
+                  <th
+                    scope="col"
                     class="relative py-3.5 pl-3 pr-4 sm:pr-0 flex"
                   >
                     Actions
@@ -91,8 +96,10 @@ async function getAttributes() {
                   <tr>
                     <td
                       class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
-                      >{attribute.name}</td
-                    >
+                      >{attribute.name}</td>
+                    <td
+                      class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
+                      >{attribute.value}</td>
                     <td
                       class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 flex gap-2 items-center"
                     >
@@ -118,7 +125,7 @@ async function getAttributes() {
         on:close={() => (showForm = false)}
         on:newAttribute={() => {
           showForm = false;
-          getAttributes;
+          getAttributes();
         }}
       />
     {/if}
