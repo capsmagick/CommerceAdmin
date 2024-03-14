@@ -11,6 +11,7 @@
     async function onCreateNewAttribute() {
         try {
             const formData = {
+
                 name,
                 value: [value.replace(/\s/g, '')]
             };

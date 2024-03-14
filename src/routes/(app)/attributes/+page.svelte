@@ -4,8 +4,6 @@
   import CreateAttribute from "../../../components/attributes/CreateAttribute.svelte";
   import Api from "$lib/services/api";
 
-
-
   let attributes:any[] = [];
 
   let showForm = false;
