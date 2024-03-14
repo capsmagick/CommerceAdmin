@@ -1,19 +1,4 @@
 <script>
-    import {  onMount } from "svelte";
-    import API from "$lib/services/api";
-
-
-    async function testFetch(){
-        try {
-            await API.get("/inventory/batch/")
-        } catch (error) {
-            
-        }
-    }
-
-    onMount(async() =>{
-        await testFetch()
-    })
 </script>
 
 <h1 class="text-emerald-600">Welcome to SvelteKit</h1>

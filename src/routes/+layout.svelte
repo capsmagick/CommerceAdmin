@@ -1,25 +1,32 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { goto } from '$app/navigation';
-    import { UserStore } from '$lib/stores/data'; // Adjust the import path according to your project structure
-  
-    onMount(() => {
-        let unsubscribe: () => void; // Declare unsubscribe outside to ensure it's accessible for cleanup
+  import { onMount } from "svelte";
+  import { isAuthenticated } from "$lib/services/guard";
+  import { goto } from "$app/navigation";
+  import { UserStore } from "$lib/stores/data"; // Adjust the import path according to your project structure
 
-  // Immediately invoked function expression (IIFE) to handle async logic
-  (async () => {
-    unsubscribe = UserStore.subscribe(user => {
-      if (Object.keys(user).length !== 0) {
-        goto('/dashboard');
+  onMount(() => {
+    localStorage.setItem("lastVisitedRoute", window.location.pathname);
+    let unsubscribe: () => void; // Declare unsubscribe outside to ensure it's accessible for cleanup
+
+    // Immediately invoked function expression (IIFE) to handle async logic
+    (async () => {
+      const isAuthenticatedValue = await isAuthenticated();
+      if (isAuthenticatedValue) {
+        const lastVisitedRoute = localStorage.getItem("lastVisitedRoute");
+        if (lastVisitedRoute) {
+          goto(lastVisitedRoute);
+        } else {
+          goto("/dashboard");
+        }
       } else {
-        goto('/login');
+        goto("/login");
       }
-    });
-  })();
+    })();
 
-  return () => {
-    if (unsubscribe) unsubscribe(); // Ensure unsubscribe is called if it's defined
-  };
-});
-  </script>
-            <slot />
+    return () => {
+      if (unsubscribe) unsubscribe(); // Ensure unsubscribe is called if it's defined
+    };
+  });
+</script>
+
+<slot />
