@@ -6,9 +6,6 @@
     import ReusableButton from "../Reusable/Button.svelte";
 
     let name = "";
-    // let value = {
-    //   propOne: "",
-    // };
     let value = "";
 
     async function onCreateNewAttribute() {
