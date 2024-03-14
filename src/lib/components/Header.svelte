@@ -77,7 +77,7 @@ async function logout() {
       </div>
 <div class="flex items-center gap-4">
   <Input type="text" placeholder="Search..." class="px-4 py-2 border rounded-md bg-background text-foreground" />
-  <Button class="px-4 py-2  text-white rounded-md ">
+  <Button class="px-4 py-2  text-white rounded-md bg-primary">
     <i class="fa-solid fa-magnifying-glass"></i>
   </Button>
 </div>

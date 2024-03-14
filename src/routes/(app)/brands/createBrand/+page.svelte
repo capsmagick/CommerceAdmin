@@ -80,7 +80,7 @@
         <div class="container mx-auto max-w-4xl py-8 px-4">
             <h2 class="text-3xl font-bold mb-6 text-center">Add Brand</h2>
             <form
-                    on:submit|preventDefault={createBrand}
+                    
                     class="space-y-6 bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4"
             >
                 <Input

@@ -8,10 +8,10 @@
     import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
     import {toast} from "svelte-sonner";
     import BrandTable from "./brandTable.svelte";
-    import Oldcode from "./oldcode.svelte";
+    
 
     let showDeleteModal = false;
-    let deletingBrand;
+    let deletingBrand:any;
   
     let brands: any[] = [];
     let editData: any = null;
@@ -176,4 +176,5 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
