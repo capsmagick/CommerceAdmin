@@ -1,6 +1,7 @@
 <script lang="ts">
     import CaretSort from "svelte-radix/CaretSort.svelte";
     import ChevronDown from "svelte-radix/ChevronDown.svelte";
+    import * as Avatar from "$lib/components/ui/avatar";
     import {
       createTable,
       Subscribe,
@@ -16,62 +17,85 @@
     } from "svelte-headless-table/plugins";
     import { readable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
-    import Actions from "./customerTableActions.svelte";
+    import Actions from "./lookbookTableActions.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
-    import DataTableCheckbox from "./customerTableCheckbox.svelte";
+    import DataTableCheckbox from "./lookbookTableCheckbox.svelte";
+
+      // Import statements and other script content...
+
+ 
    
-    type Customers = {
-      id: string;
+    type Lookbook = {
+      productId: string;
       name: string;
-      status: "Pending" | "Processing" | "Success" | "Failed";
-      email: string;
-      phoneNumber: number;
-      shippingAddress: string;
+      description: string;
+      tags: string[];
+      images: string;
+      status: "active" | "inactive";
+      variant: string;
+      createdAt: string;
+      updatedAt: string;
+      createdBy: string;
+      updatedBy: string;
+      
     };
    
-    const data: Customers[] = [
+  
+    const data: Lookbook[] = [
       {
-        id: "m5gr84i9",
-        name: 'Arun',
-        status: "Success",
-        email: "arun@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
+        productId: "prod123",
+        name: "Wireless Mouse",
+        description: "Ergonomic wireless mouse",
+        tags: ["wireless", "mouse", "electronics", "ergonomic"],
+        images: "https://github.com/shadcn.png",
+        status: "active",
+        variant:"abc",
+        createdAt: "2021-07-16T03:24:00",
+        updatedAt: "2021-07-20T12:48:00",
+        createdBy: "admin",
+        updatedBy: "admin"
       },
       {
-        id: "3u1reuv4",
-        name: 'Amal',
-        status: "Success",
-        email: "amal@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
+        productId: "prod456",
+        name: "Gaming Keyboard",
+        description: "RGB backlit gaming keyboard",
+        tags: ["keyboard", "gaming", "RGB", "backlit"],
+        images: "https://github.com/shadcn.png",
+        status: "active",
+        variant:"abc",
+        createdAt: "2021-08-05T09:34:00",
+        updatedAt: "2021-08-10T14:22:00",
+        createdBy: "admin",
+        updatedBy: "admin"
+      },
+    {
+        productId: "prod789",
+        name: "Smart Watch",
+        description: "Water resistant smart watch with heart rate monitor",
+        tags: ["smart", "watch", "water resistant", "heart rate"],
+        images: "https://github.com/shadcn.png",
+        status: "active",
+        variant:"abc",
+        createdAt: "2021-09-15T11:20:00",
+        updatedAt: "2021-09-20T08:30:00",
+        createdBy: "admin",
+        updatedBy: "admin"
       },
       {
-        id: "derv1ws0",
-        name: 'Abhi',
-        status: "Success",
-        email: "abhi@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
-      },
-      {
-        id: "5kma53ae",
-        name: 'Babu',
-        status: "Success",
-        email: "babu@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
-      },
-      {
-        id: "bhqecj4p",
-        name: 'Kumar',
-        status: "Success",
-        email: "kumar@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
+        productId: "prod1011",
+        name: "Bluetooth Speakers",
+        description: "Portable Bluetooth speakers with surround sound",
+        tags: ["speakers", "Bluetooth", "portable", "surround sound"],
+        images:"https://github.com/shadcn.png",
+        status: "active",
+        variant:"abc",
+        createdAt: "2021-10-05T14:45:00",
+        updatedAt: "2021-10-10T09:50:00",
+        createdBy: "admin",
+        updatedBy: "admin"
       }
     ];
    
@@ -85,7 +109,7 @@
       hide: addHiddenColumns()
     });
    
-    const columns = table.createColumns([
+     const columns = table.createColumns([
       table.column({
         header: (_, { pluginStates }) => {
           const { allPageRowsSelected } = pluginStates.select;
@@ -93,7 +117,7 @@
             checked: allPageRowsSelected
           });
         },
-        accessor: "id",
+        accessor: "productId",
         cell: ({ row }, { pluginStates }) => {
           const { getRowState } = pluginStates.select;
           const { isSelected } = getRowState(row);
@@ -111,48 +135,76 @@
           }
         }
       }),
-        table.column({
+      table.column({
+        header: "Images",
+        accessor: "images",
+        cell: ({ value }) => value,
+        plugins: { filter: { exclude: true } }
+      }),
+    
+      table.column({
         header: "Name",
         accessor: "name",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
-      }),
-      table.column({
-        header: "Email",
-        accessor: "email",
-        cell: ({ value }) => value.toLowerCase(),
+        cell: ({ value }) => value,
         plugins: {
           filter: {
             getFilterValue(value) {
-              return value.toLowerCase();
+              return value;
             }
           }
         }
       }),
       table.column({
-        header: "Phone Number",
-        accessor: "phoneNumber",
-        plugins: {
-          sort: {
-            disable: true
-          },
-          filter: {
-            exclude: true
-          }
-        }
+        header: "Description",
+        accessor: "description",
+        cell: ({ value }) => value,
+        plugins: { filter: {} }
       }),
       table.column({
-        header: "Shipping Address",
-        accessor: "shippingAddress",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
+        header: "Tags",
+        accessor: "tags",
+        cell: ({ value }) => value.join(", "),
+        plugins: { filter: {} }
       }),
-        table.column({
+      table.column({
         header: "Status",
         accessor: "status",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
+        cell: ({ value }) => value,
+        plugins: { filter: {} }
+      }),
+        table.column({
+        header: "Variant",
+        accessor: "variant",
+        cell: ({ value }) => value,
+        plugins: { filter: {} }
+      }),
+      table.column({
+        header: "Created At",
+        accessor: "createdAt",
+        cell: ({ value }) => new Date(value).toLocaleDateString(),
+        plugins: { sort: {}, filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Updated At",
+        accessor: "updatedAt",
+        cell: ({ value }) => new Date(value).toLocaleDateString(),
+        plugins: { sort: {}, filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Created By",
+        accessor: "createdBy",
+        cell: ({ value }) => value,
+        plugins: { filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Updated By",
+        accessor: "updatedBy",
+        cell: ({ value }) => value,
+        plugins: { filter: { exclude: true } }
       }),
       table.column({
         header: "",
-        accessor: ({ id }) => id,
+        accessor: ({ productId }) => productId,
         cell: (item) => {
           return createRender(Actions, { id: item.value });
         },
@@ -179,7 +231,11 @@
     const { hiddenColumnIds } = pluginStates.hide;
     const ids = flatColumns.map((c) => c.id);
     let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
-   
+    
+    let initialHiddenColumns = [ 'createdAt', 'updatedAt', 'description', 'tags', 'updatedBy'];
+
+    $: hideForId = Object.fromEntries(ids.map((id) => [id, !initialHiddenColumns.includes(id)]));
+
     $: $hiddenColumnIds = Object.entries(hideForId)
       .filter(([, hide]) => !hide)
       .map(([id]) => id);
@@ -189,14 +245,14 @@
    
     const { selectedDataIds } = pluginStates.select;
    
-    const hideableCols = ["status", "email", "phoneNumber", "shippingAddress"];
+    const hideableCols = ["categories", "rating", "createdAt", "updatedAt",'description', 'tags', 'createdBy', 'updatedBy', 'variant'];
   </script>
    
   <div class="w-full">
     <div class="mb-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter emails..."
+        placeholder="Filter Customer..."
         type="text"
         bind:value={$filterValue}
       />
@@ -238,7 +294,7 @@
                         <div class="text-right">
                           <Render of={cell.render()} />
                         </div>
-                      {:else if cell.id === "email"}
+                      {:else if cell.id === "customerName"}
                         <Button variant="ghost" on:click={props.sort.toggle}>
                           <Render of={cell.render()} />
                           <CaretSort
