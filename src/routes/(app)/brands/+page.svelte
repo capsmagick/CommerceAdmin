@@ -7,10 +7,12 @@
     import CreditBrand from "./createBrand/+page.svelte";
     import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
     import {toast} from "svelte-sonner";
+    import BrandTable from "./brandTable.svelte";
+    import Oldcode from "./oldcode.svelte";
 
     let showDeleteModal = false;
     let deletingBrand;
-
+  
     let brands: any[] = [];
     let editData: any = null;
     let showForm: boolean = false;
@@ -175,4 +177,3 @@
             </div>
         </div>
     </div>
-</div>

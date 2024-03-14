@@ -39,9 +39,9 @@
   })
 </script>
 
-<div class="m-3">
+<div class="m-3  bg-white text-black dark:bg-gray-900 dark:text-gray-200">
   <div
-    class="bg-white rounded-md p-4 px-6 border overflow-y-auto"
+    class= " bg-white text-black dark:bg-gray-900 dark:text-gray-200 rounded-md p-4 px-6 border overflow-y-auto"
     style="height: calc(100vh - 58px);"
   >
    
@@ -73,7 +73,7 @@
         </div>
         <!-- Table -->
         <div class="m-3">
-          <div class="bg-white rounded-md p-4 px-6 border" style="height: calc(100vh - 80px);">
+          <div class=" rounded-md p-4 px-6 border  bg-white text-black dark:bg-gray-900 dark:text-gray-200" style="height: calc(100vh - 80px);">
               
               <ProductTable />
           </div>
