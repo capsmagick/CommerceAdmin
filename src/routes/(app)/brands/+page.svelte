@@ -1,8 +1,11 @@
 <script lang="ts">
   /** @type {import('./$types').PageData} */
   import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
   import API from "$lib/services/api";
-  import CreateBrand from "../../../components/Brands/CreateBrand.svelte";
+  import { Button } from "$lib/components/ui/button";
+
+
   type Brand = {
   id: string;
   name: string;
@@ -41,19 +44,17 @@
     class="bg-white rounded-md p-4 px-6 border overflow-y-auto"
     style="height: calc(100vh - 58px);"
   >
-    {#if !showForm}
       <div>
         <div class="flex items-center justify-between">
           <h4 class="text-lg font-medium text-gray-800">Brands</h4>
           <div class="flex items-center gap-2">
-            <button
-              class="text-xs flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-1.5 rounded"
-              on:click={() => (showForm = true)}
+            <Button class="text-xs flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-1.5 rounded"
+              
+            on:click={() => goto('brands/createBrand')}
             >
-              <span>
-                <i class="fa-solid fa-plus text-sm"></i>
-              </span>New Brand</button
-            >
+            <i class="fa-solid fa-plus text-sm"></i>
+            New Brand
+          </Button>
           </div>
         </div>
       </div>
@@ -123,14 +124,5 @@
           </div>
         </div>
       </div>
-    {:else}
-      <CreateBrand
-        on:close={() => (showForm = false)}
-        on:newBrand={() => {
-          showForm = false;
-          fetchBrands();
-        }}
-      />
-    {/if}
   </div>
 </div>
