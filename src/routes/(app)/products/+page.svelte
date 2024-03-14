@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import API from "$lib/services/api";
   import { Button } from "$lib/components/ui/button";
+  import ProductTable from "./productTable.svelte";
 
  
   let a = [
@@ -55,15 +56,12 @@
                 <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
               </span>Import Product</button
             >
-            <button
-              class="text-xs flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-1.5 rounded"
-            >
-              <span>
-                <i class="fa-solid fa-cloud-arrow-down text-sm"></i>
-              </span>Export Product</button
-            >
+            <div class="flex items-center justify-between">
+                
+              <Button>Export Orders</Button>
+          </div>
             <Button
-              class="text-xs flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-1.5 rounded"
+              class="text-xs flex items-center gap-2 border  px-4 py-1.5 rounded"
               
             on:click={() => goto('products/createProduct')}
             >
@@ -74,34 +72,12 @@
           </div>
         </div>
         <!-- Table -->
-        <div class="pt-8">
-          <div
-            class="grid bg-slate-200 px-4 py-2 rounded-md text-xs font-semibold text-gray-600"
-            style="grid-template-columns: 1fr 200px 200px 200px 200px 100px;"
-          >
-            <div>Name</div>
-            <div>Collection</div>
-            <div>Status</div>
-            <div>Availability</div>
-            <div>Inventory</div>
-            <div>Actions</div>
+        <div class="m-3">
+          <div class="bg-white rounded-md p-4 px-6 border" style="height: calc(100vh - 80px);">
+              
+              <ProductTable />
           </div>
-          <div class="flex flex-col pt-6 gap-1">
-            {#each products as product, i}
-              <div
-                class="grid bg-slate-200 px-4 py-2 rounded-md text-xs text-gray-500"
-                style="grid-template-columns: 1fr 200px 200px 200px 200px 100px;"
-              >
-                <div class="font-semibold">{ product.name}</div>
-                <div>-</div>
-                <div>Published</div>
-                <div>Default Sales Channel</div>
-                <div>10 in stock for 1 variant(s)</div>
-              </div>
-            {/each}
-          </div>
-        </div>
       </div>
-  
+      </div>
   </div>
 </div>
