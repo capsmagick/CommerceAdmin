@@ -8,8 +8,8 @@ export const isAuthenticated = writable(false);
 async function checkAuthentication() {
     try {
         const response = await API.get('/account/user/me/');
-
-        if (response.data.loggedIn) {
+        console.log('response:', response)
+        if (response.data.loggedIn === true) {
             const user = response.data.user
             UserStore.set(user);
             isAuthenticated.set(true);
