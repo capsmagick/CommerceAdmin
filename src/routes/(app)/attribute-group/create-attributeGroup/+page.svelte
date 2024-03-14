@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import API from "$lib/services/api";
-  import ReusableButton from "../Reusable/Button.svelte";
+  import ReusableButton from "../../../../components/Reusable/Button.svelte";
   const dispatch = createEventDispatcher();
   let name = "";
 

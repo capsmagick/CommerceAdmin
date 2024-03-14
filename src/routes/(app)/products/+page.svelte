@@ -1,8 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { goto } from '$app/navigation';
   import API from "$lib/services/api";
+  import { Button } from "$lib/components/ui/button";
 
-  import ProductForm from "../../../components/Products/ProductForm.svelte";
+ 
   let a = [
     {
       name: "Product one",
@@ -41,7 +43,7 @@
     class="bg-white rounded-md p-4 px-6 border overflow-y-auto"
     style="height: calc(100vh - 58px);"
   >
-    {#if !showForm}
+   
       <div>
         <div class="flex items-center justify-between">
           <h4 class="text-lg font-medium text-gray-800">Products</h4>
@@ -60,14 +62,15 @@
                 <i class="fa-solid fa-cloud-arrow-down text-sm"></i>
               </span>Export Product</button
             >
-            <button
+            <Button
               class="text-xs flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-1.5 rounded"
-              on:click={() => (showForm = true)}
+              
+            on:click={() => goto('products/createProduct')}
             >
-              <span>
-                <i class="fa-solid fa-plus text-sm"></i>
-              </span> New Product</button
-            >
+            <i class="fa-solid fa-plus text-sm"></i>
+            New Product
+          </Button>
+            
           </div>
         </div>
         <!-- Table -->
@@ -99,8 +102,6 @@
           </div>
         </div>
       </div>
-    {:else}
-      <ProductForm on:close={() => showForm = false}/>
-    {/if}
+  
   </div>
 </div>

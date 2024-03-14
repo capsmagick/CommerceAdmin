@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount} from "svelte"
   import API from "$lib/services/api";
-    import CreateAttributeGroup from '../../../components/attributes/CreateAttribute.svelte';
+    import CreateAttributeGroup from '../attributes/createattributes/+page.svelte';
     export let data;
     let showForm = false
     let attributesGroup: { id: number; name: string }[] = []
@@ -35,7 +35,7 @@
       {#if !showForm}
         <div>
           <div class="flex items-center justify-between">
-            <h4 class="text-lg font-medium text-gray-800">Attributes</h4>
+            <h4 class="text-lg font-medium text-gray-800">Attribute Group</h4>
             <div class="flex items-center gap-2">
               <button
                 class="text-xs flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-1.5 rounded"
