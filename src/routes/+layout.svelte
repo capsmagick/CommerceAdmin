@@ -30,8 +30,9 @@
     };
   });
 </script>
-
+<div class=" bg-white text-black dark:bg-gray-900 dark:text-gray-200">
 <LoadingIndicator />
 <ModeWatcher />
 <Toaster />
 <slot />
+</div>
