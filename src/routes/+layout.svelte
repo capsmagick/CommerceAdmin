@@ -2,7 +2,6 @@
   import { onMount } from "svelte";
   import { isAuthenticated } from "$lib/services/guard";
   import { goto } from "$app/navigation";
-  import { UserStore } from "$lib/stores/data"; // Adjust the import path according to your project structure
 
   onMount(() => {
     localStorage.setItem("lastVisitedRoute", window.location.pathname);
