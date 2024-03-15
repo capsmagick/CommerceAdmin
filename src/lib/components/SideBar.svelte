@@ -108,8 +108,8 @@
 <div class="md:flex hidden flex-col bg-background text-foreground h-full">
   <div class="flex flex-col p-4 gap-3">
     <div class="flex items-center align-middle gap-2">
-      <i class="fa-solid fa-store py-4 w-12 h-12"></i>
-      <div class="text-xl font-bold text-neutral-800 dark:text-neutral-200">Signup Casuals</div>
+      <img src="/SIGNUP_LOGO.png" alt="Signup Casuals Logo" class="py-4 w-40 ml-12 h-auto dark:invert">
+      
     </div>
     <div class="flex flex-col gap-4 pl-2 mt-10">
       {#each menus as menu, index}
