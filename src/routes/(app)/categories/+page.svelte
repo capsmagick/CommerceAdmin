@@ -33,11 +33,10 @@
     await fetchCategories();
   });
 </script>
-
-<div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border" style="height: calc(100vh - 80px);">
-  <div class="flex items-center justify-between">
-      <h4 class="text-lg font-medium text-gray-800 dark:text-gray-200">Category</h4>
-      <Button variant="outline" class=" mr-4  ">Export Category</Button>
+<div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
+  <div class="flex items-center ">
+      <h4 class="text-lg font-medium text-gray-800 dark:text-gray-200 flex-1">Category</h4>
+      <Button variant="outline" class=" mr-4 ">Export Category</Button>
   </div>
-  <CategoriesTable/>
+  <CategoriesTable />
 </div>
