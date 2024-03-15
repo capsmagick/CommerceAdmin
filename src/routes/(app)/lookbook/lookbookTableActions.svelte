@@ -5,6 +5,9 @@
     import { Button } from "$lib/components/ui/button";
    
     export let id: string;
+
+
+
   </script>
    
   <DropdownMenu.Root>
@@ -20,11 +23,13 @@
       </Button>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content>
-      <DropdownMenu.Group>
-        <DropdownMenu.Label>Actions</DropdownMenu.Label>
-      </DropdownMenu.Group>
-      <DropdownMenu.Item>View/Edit Variant</DropdownMenu.Item>
-      <DropdownMenu.Item>Add Variant</DropdownMenu.Item>
-      <DropdownMenu.Item>change status</DropdownMenu.Item>
+      <DropdownMenu.Item
+        class="text-gray-700">
+          <i class="fa-solid fa-pencil"></i>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item
+        class="text-red-500">
+          <i class="fa-solid fa-trash"></i>
+      </DropdownMenu.Item>
     </DropdownMenu.Content>
   </DropdownMenu.Root>

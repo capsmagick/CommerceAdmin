@@ -23,83 +23,36 @@
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
     import DataTableCheckbox from "./lookbookTableCheckbox.svelte";
-
-      // Import statements and other script content...
-
- 
+    import API from "$lib/services/api";
    
     type Lookbook = {
-      productId: string;
+      id: string;
       name: string;
-      description: string;
-      tags: string[];
-      images: string;
-      status: "active" | "inactive";
-      variant: string;
-      createdAt: string;
-      updatedAt: string;
-      createdBy: string;
-      updatedBy: string;
+      created_at: string;
+      updated_at: string;
+      created_by: string;
+      updated_by: string;
       
     };
+
+    const lookbook = readable<Lookbook[]>([], (set) => {
+        getLookbook().then((data) => {
+            console.log(data);
+            set(data);
+        });
+    });
    
-  
-    const data: Lookbook[] = [
-      {
-        productId: "prod123",
-        name: "Wireless Mouse",
-        description: "Ergonomic wireless mouse",
-        tags: ["wireless", "mouse", "electronics", "ergonomic"],
-        images: "https://github.com/shadcn.png",
-        status: "active",
-        variant:"abc",
-        createdAt: "2021-07-16T03:24:00",
-        updatedAt: "2021-07-20T12:48:00",
-        createdBy: "admin",
-        updatedBy: "admin"
-      },
-      {
-        productId: "prod456",
-        name: "Gaming Keyboard",
-        description: "RGB backlit gaming keyboard",
-        tags: ["keyboard", "gaming", "RGB", "backlit"],
-        images: "https://github.com/shadcn.png",
-        status: "active",
-        variant:"abc",
-        createdAt: "2021-08-05T09:34:00",
-        updatedAt: "2021-08-10T14:22:00",
-        createdBy: "admin",
-        updatedBy: "admin"
-      },
-    {
-        productId: "prod789",
-        name: "Smart Watch",
-        description: "Water resistant smart watch with heart rate monitor",
-        tags: ["smart", "watch", "water resistant", "heart rate"],
-        images: "https://github.com/shadcn.png",
-        status: "active",
-        variant:"abc",
-        createdAt: "2021-09-15T11:20:00",
-        updatedAt: "2021-09-20T08:30:00",
-        createdBy: "admin",
-        updatedBy: "admin"
-      },
-      {
-        productId: "prod1011",
-        name: "Bluetooth Speakers",
-        description: "Portable Bluetooth speakers with surround sound",
-        tags: ["speakers", "Bluetooth", "portable", "surround sound"],
-        images:"https://github.com/shadcn.png",
-        status: "active",
-        variant:"abc",
-        createdAt: "2021-10-05T14:45:00",
-        updatedAt: "2021-10-10T09:50:00",
-        createdBy: "admin",
-        updatedBy: "admin"
-      }
-    ];
+    async function getLookbook() {
+        try {
+        const res = await API.get("/products/look-book/");  
+        return res.data.results;
+        } catch (error) {
+        console.error("fetch:brands:", error);
+        return [];
+        }
+    }
    
-    const table = createTable(readable(data), {
+    const table = createTable(lookbook, {
       sort: addSortBy({ disableMultiSort: true }),
       page: addPagination(),
       filter: addTableFilter({
@@ -117,7 +70,7 @@
             checked: allPageRowsSelected
           });
         },
-        accessor: "productId",
+        accessor: "id",
         cell: ({ row }, { pluginStates }) => {
           const { getRowState } = pluginStates.select;
           const { isSelected } = getRowState(row);
@@ -134,14 +87,7 @@
             exclude: true
           }
         }
-      }),
-      table.column({
-        header: "Images",
-        accessor: "images",
-        cell: ({ value }) => value,
-        plugins: { filter: { exclude: true } }
-      }),
-    
+      }),   
       table.column({
         header: "Name",
         accessor: "name",
@@ -155,56 +101,32 @@
         }
       }),
       table.column({
-        header: "Description",
-        accessor: "description",
-        cell: ({ value }) => value,
-        plugins: { filter: {} }
-      }),
-      table.column({
-        header: "Tags",
-        accessor: "tags",
-        cell: ({ value }) => value.join(", "),
-        plugins: { filter: {} }
-      }),
-      table.column({
-        header: "Status",
-        accessor: "status",
-        cell: ({ value }) => value,
-        plugins: { filter: {} }
-      }),
-        table.column({
-        header: "Variant",
-        accessor: "variant",
-        cell: ({ value }) => value,
-        plugins: { filter: {} }
-      }),
-      table.column({
         header: "Created At",
-        accessor: "createdAt",
+        accessor: "created_at",
         cell: ({ value }) => new Date(value).toLocaleDateString(),
         plugins: { sort: {}, filter: { exclude: true } }
       }),
       table.column({
         header: "Updated At",
-        accessor: "updatedAt",
+        accessor: "updated_at",
         cell: ({ value }) => new Date(value).toLocaleDateString(),
         plugins: { sort: {}, filter: { exclude: true } }
       }),
       table.column({
         header: "Created By",
-        accessor: "createdBy",
+        accessor: "created_by",
         cell: ({ value }) => value,
         plugins: { filter: { exclude: true } }
       }),
       table.column({
         header: "Updated By",
-        accessor: "updatedBy",
+        accessor: "updated_by",
         cell: ({ value }) => value,
         plugins: { filter: { exclude: true } }
       }),
       table.column({
-        header: "",
-        accessor: ({ productId }) => productId,
+        header: "Action",
+        accessor: ({ id }) => id,
         cell: (item) => {
           return createRender(Actions, { id: item.value });
         },
@@ -232,7 +154,7 @@
     const ids = flatColumns.map((c) => c.id);
     let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
     
-    let initialHiddenColumns = [ 'createdAt', 'updatedAt', 'description', 'tags', 'updatedBy'];
+    let initialHiddenColumns = ['updated_ay', 'created_by', 'updated_by'];
 
     $: hideForId = Object.fromEntries(ids.map((id) => [id, !initialHiddenColumns.includes(id)]));
 
@@ -245,7 +167,7 @@
    
     const { selectedDataIds } = pluginStates.select;
    
-    const hideableCols = ["categories", "rating", "createdAt", "updatedAt",'description', 'tags', 'createdBy', 'updatedBy', 'variant'];
+    const hideableCols = [ 'created_at', 'updated_at',  'updated_ay', 'created_by', 'updated_by' ];
   </script>
    
   <div class="w-full">

@@ -6,12 +6,6 @@
     import { Button } from "$lib/components/ui/button";
     import AttributeTable from "./attributeTable.svelte";
 
-    interface Attribute {
-    id: number;
-    name: string; 
-    // Add other properties of an attribute here if needed
-    }
-
 
     let attributes: any[] = [];
     let editData: any = null;
