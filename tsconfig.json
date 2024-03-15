@@ -5,6 +5,7 @@
     //     "paths": {
     //         "$lib/*": ["src/lib/*"]
     //     },
+    "allowSyntheticDefaultImports": true,
     "allowJs": true,
     "checkJs": true,
     "esModuleInterop": true,
@@ -13,7 +14,8 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "types": ["topojson-client"]
   },
   "include": ["src/**/*"]
   // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias

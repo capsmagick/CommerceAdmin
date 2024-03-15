@@ -1,55 +1,116 @@
-<script>
-    /** @type {import('./$types').PageData} */
-    export let data;
+<script lang="ts">
+	import Activity from "lucide-svelte/icons/activity";
+	import CreditCard from "lucide-svelte/icons/credit-card";
+	import DollarSign from "lucide-svelte/icons/dollar-sign";
+	import Download from "lucide-svelte/icons/download";
+	import Users from "lucide-svelte/icons/users";
+	import { Button } from "$lib/components/ui/button";
+	import * as Card from "$lib/components/ui/card";
+	import * as Tabs from "$lib/components/ui/tabs";
+	import {
+		DashboardMainNav,
+		Overview,
+		RecentSales,
+		Search,
+		UserNav
+		
+	} from "$lib/components/dashboardui/index";
+	import DatePickerWithRange from "$lib/components/ui/date-picker-with-range.svelte";
+	// import DashboardLight from "$lib/img/examples/dashboard-light.png";
+	// import DashboardDark from "$lib/img/examples/dashboard-dark.png";
 </script>
-<div class="p-4">
-    <h1 class="text-2xl font-bold mb-4">Dashboard Overview</h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-blue-500 text-white p-4 rounded-lg shadow-lg">
-            <h2 class="text-xl font-semibold">Total Sales</h2>
-            <p class="text-lg">$24,000</p>
-        </div>
-        <div class="bg-green-500 text-white p-4 rounded-lg shadow-lg">
-            <h2 class="text-xl font-semibold">Orders</h2>
-            <p class="text-lg">120</p>
-        </div>
-        <div class="bg-yellow-500 text-white p-4 rounded-lg shadow-lg">
-            <h2 class="text-xl font-semibold">New Customers</h2>
-            <p class="text-lg">35</p>
-        </div>
-        <div class="bg-red-500 text-white p-4 rounded-lg shadow-lg">
-            <h2 class="text-xl font-semibold">Pending Returns</h2>
-            <p class="text-lg">5</p>
-        </div>
-    </div>
-    <div class="mt-8">
-        <h2 class="text-2xl font-bold mb-4">Recent Orders</h2>
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-gray-800 text-white">
-                    <tr>
-                        <th class="p-2">Order ID</th>
-                        <th class="p-2">Date</th>
-                        <th class="p-2">Status</th>
-                        <th class="p-2">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="bg-white border-b">
-                        <td class="p-2">001</td>
-                        <td class="p-2">2023-01-01</td>
-                        <td class="p-2">Completed</td>
-                        <td class="p-2">$300</td>
-                    </tr>
-                    <tr class="bg-gray-100 border-b">
-                        <td class="p-2">002</td>
-                        <td class="p-2">2023-01-02</td>
-                        <td class="p-2">Processing</td>
-                        <td class="p-2">$450</td>
-                    </tr>
-                    <!-- Add more rows as needed -->
-                </tbody>
-            </table>
-        </div>
-    </div>
+
+
+<div class="hidden flex-col md:flex">
+	<div class="flex-1 space-y-4 p-8 pt-6">
+		<div class="flex items-center justify-between space-y-2">
+			<h2 class="text-3xl font-bold tracking-tight">Dashboard</h2>
+			<div class="flex items-center space-x-2">
+				<DatePickerWithRange />
+				<Button size="sm">
+					<Download class="mr-2 h-4 w-4" />
+					Download
+				</Button>
+			</div>
+		</div>
+		<Tabs.Root value="overview" class="space-y-4">
+			<Tabs.List>
+				<Tabs.Trigger value="overview">Overview</Tabs.Trigger>
+				<Tabs.Trigger value="analytics" disabled>Analytics</Tabs.Trigger>
+				<Tabs.Trigger value="reports" disabled>Reports</Tabs.Trigger>
+				<Tabs.Trigger value="notifications" disabled>Notifications</Tabs.Trigger>
+			</Tabs.List>
+			<Tabs.Content value="overview" class="space-y-4">
+				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+					<Card.Root>
+						<Card.Header
+							class="flex flex-row items-center justify-between space-y-0 pb-2"
+						>
+							<Card.Title class="text-sm font-medium">Total Revenue</Card.Title>
+							<DollarSign class="h-4 w-4 text-muted-foreground" />
+						</Card.Header>
+						<Card.Content>
+							<div class="text-2xl font-bold">$45,231.89</div>
+							<p class="text-xs text-muted-foreground">+20.1% from last month</p>
+						</Card.Content>
+					</Card.Root>
+					<Card.Root>
+						<Card.Header
+							class="flex flex-row items-center justify-between space-y-0 pb-2"
+						>
+							<Card.Title class="text-sm font-medium">Subscriptions</Card.Title>
+							<Users class="h-4 w-4 text-muted-foreground" />
+						</Card.Header>
+						<Card.Content>
+							<div class="text-2xl font-bold">+2350</div>
+							<p class="text-xs text-muted-foreground">+180.1% from last month</p>
+						</Card.Content>
+					</Card.Root>
+					<Card.Root>
+						<Card.Header
+							class="flex flex-row items-center justify-between space-y-0 pb-2"
+						>
+							<Card.Title class="text-sm font-medium">Sales</Card.Title>
+							<CreditCard class="h-4 w-4 text-muted-foreground" />
+						</Card.Header>
+						<Card.Content>
+							<div class="text-2xl font-bold">+12,234</div>
+							<p class="text-xs text-muted-foreground">+19% from last month</p>
+						</Card.Content>
+					</Card.Root>
+					<Card.Root>
+						<Card.Header
+							class="flex flex-row items-center justify-between space-y-0 pb-2"
+						>
+							<Card.Title class="text-sm font-medium">Active Now</Card.Title>
+							<Activity class="h-4 w-4 text-muted-foreground" />
+						</Card.Header>
+						<Card.Content>
+							<div class="text-2xl font-bold">+573</div>
+							<p class="text-xs text-muted-foreground">+201 since last hour</p>
+						</Card.Content>
+					</Card.Root>
+				</div>
+				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+					<Card.Root class="col-span-4">
+						<Card.Header>
+							<Card.Title>Overview</Card.Title>
+						</Card.Header>
+						<Card.Content>
+							<Overview />
+						</Card.Content>
+					</Card.Root>
+					<Card.Root class="col-span-3">
+						<Card.Header>
+							<Card.Title>Recent Sales</Card.Title>
+							<Card.Description>You made 265 sales this month.</Card.Description>
+						</Card.Header>
+						<Card.Content>
+							<RecentSales />
+						</Card.Content>
+					</Card.Root>
+				</div>
+			</Tabs.Content>
+		</Tabs.Root>
+	</div>
 </div>

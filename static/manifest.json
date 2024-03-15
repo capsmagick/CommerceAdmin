@@ -1,0 +1,20 @@
+{
+    "name": "Signup Casuals",
+    "short_name": "Signup Admin",
+    "start_url": "/login",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "description": "A description of your app.",
+    "icons": [
+      {
+        "src": "./SIGNUP_LOGO.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "./SIGNUP_LOGO.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
