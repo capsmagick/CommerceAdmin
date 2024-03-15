@@ -3,13 +3,12 @@
     import {onMount} from "svelte";
     import CreateAttribute from "./createattributes/+page.svelte";
     import API from "$lib/services/api";
-    import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
-    import { toast } from "svelte-sonner";
+    import AttributeTable from "./attributeTable.svelte";
     interface Attribute {
     id: number;
     name: string; 
     // Add other properties of an attribute here if needed
-}
+    }
 
     let showDeleteModal = false;
     let deletingAttribute:Attribute;
@@ -38,43 +37,12 @@
         }
     }
 
-    // Edit Attribute
-    async function onEditAttribute(attribute: any) {
-        editData = attribute;
-        showForm = true;
-        editForm = true;
-    }
-
-    async function onDeleteAttribute(attribute: { id: number; name: string }) {
-deletingAttribute = attribute;
-showDeleteModal = true;
-}
-
-    function confirmDelete() {
-        API.delete(`/masterdata/attribute/${deletingAttribute.id}/delete_record/`).then(() => {
-            getAttributes();
-            closeDeleteModal();
-        }).catch((error) => {
-            console.error("Error deleting attribute:", error);
-            closeDeleteModal();
-        });
-    }
-
-    function closeDeleteModal() {
-        showDeleteModal = false;
-        toast("Attribute Deleted Successfully!");
-    }
-
     onMount(async () => {
         await getAttributes();
     });
 </script>
 
 <div class="m-3">
-    {#if showDeleteModal}
-        <ConfirmDeleteModal attribute={deletingAttribute.name} on:confirm={confirmDelete} on:cancel={closeDeleteModal}/>
-    {/if}
-
     {#if showForm}
         <CreateAttribute
                 on:close={() => {
@@ -93,8 +61,7 @@ showDeleteModal = true;
         />
     {/if}
 
-    <div class="bg-white rounded-md p-4 px-6 border overflow-y-auto"
-         style="height: calc(100vh - 58px);">
+    <div class="bg-white rounded-md p-4 px-6 border overflow-y-auto">
         <div>
             <div class="flex items-center justify-between">
                 <h4 class="text-lg font-medium text-gray-800">Attributes</h4>
@@ -111,65 +78,7 @@ showDeleteModal = true;
                 </div>
             </div>
         </div>
-        <!-- table -->
-        <div class="mt-8 flow-root">
-            <div class=" overflow-x-auto">
-                <div
-                        class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"
-                >
-                    <table class="min-w-full divide-y divide-gray-300">
-                        <thead>
-                        <tr>
-                            <th
-                                    scope="col"
-                                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-                            >Name
-                            </th
-                            >
-                            <th
-                                    scope="col"
-                                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-                            >Values
-                            </th
-                            >
-                            <th
-                                    scope="col"
-                                    class="relative py-3.5 pl-3 pr-4 sm:pr-0 flex"
-                            >
-                                Actions
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                        {#each attributes as attribute, i}
-                            <tr>
-                                <td
-                                        class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
-                                >{attribute.name}</td>
-                                <td
-                                        class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
-                                >{attribute.value}</td>
-                                <td
-                                        class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 flex gap-2 items-center"
-                                >
-                                    <button class="text-gray-700"
-                                            on:click={() => onEditAttribute(attribute)}
-                                    >
-                                        <i class="fa-solid fa-pencil"></i>
-                                    </button>
-                                    <button
-                                            class="text-red-500"
-                                            on:click={() => onDeleteAttribute(attribute)}
-                                    >
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        {/each}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        <div class="mt-8 flow-root" > <AttributeTable /></div>
     </div>
+   
 </div>
