@@ -5,36 +5,14 @@
     
     // export let data: PageData;
 </script>
-<div class="m-3">
-  <div
-    class="bg-white rounded-md p-4 px-6 border overflow-y-auto"
-    style="height: calc(100vh - 58px);"
-  >
-   
-      <div>
-        <div class="flex items-center justify-between">
-          <h4 class="text-lg font-medium text-gray-800">Lookbook</h4>
-          <div class="flex items-center gap-2">
-            <div class="flex items-center justify-between">
-                
-              <Button>Export</Button>
-          </div>
-            <Button
-              class="text-xs flex items-center gap-2 border  px-4 py-1.5 rounded">
-            <i class="fa-solid fa-plus text-sm"></i>
-            New Variant
-          </Button>
-            
-          </div>
-        </div>
-        <!-- Table -->
-        <div class="m-3">
-          <div class="bg-white rounded-md p-4 px-6 border">
-              
-              <LookbookTable />
-          </div>
-      </div>
-      </div>
+<div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
+  <div class="flex items-center ">
+      <h4 class="text-lg font-medium text-gray-800 dark:text-gray-200 flex-1">Lookboook</h4>
+      <Button variant="outline" class=" mr-4 ">Export</Button>
+      <Button class="text-xs flex items-center gap-2 border  px-4 py-1.5 ">
+        <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
+        Add Lookbook</Button>
   </div>
+  <LookbookTable />
 </div>
 

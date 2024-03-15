@@ -3,15 +3,15 @@
     import {onMount} from "svelte";
     import CreateAttribute from "./createattributes/+page.svelte";
     import API from "$lib/services/api";
+    import { Button } from "$lib/components/ui/button";
     import AttributeTable from "./attributeTable.svelte";
+
     interface Attribute {
     id: number;
     name: string; 
     // Add other properties of an attribute here if needed
     }
 
-    let showDeleteModal = false;
-    let deletingAttribute:Attribute;
 
     let attributes: any[] = [];
     let editData: any = null;
@@ -60,25 +60,16 @@
                 {editForm}
         />
     {/if}
+</div>
 
-    <div class="bg-white rounded-md p-4 px-6 border overflow-y-auto">
-        <div>
-            <div class="flex items-center justify-between">
-                <h4 class="text-lg font-medium text-gray-800">Attributes</h4>
-                <div class="flex items-center gap-2">
-                    <button
-                            class="text-xs flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-1.5 rounded"
-                            on:click={() => toggleForm()}
-                    >
-              <span>
+<div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
+  <div class="flex items-center ">
+      <h4 class="text-lg font-medium text-gray-800 dark:text-gray-200 flex-1">Attributes</h4>
+        <Button class="text-xs flex items-center gap-2 border  px-4 py-1.5" on:click={() => toggleForm()}>
+            <span>
                 <i class="fa-solid fa-plus text-sm"></i>
-              </span>New Attribute
-                    </button
-                    >
-                </div>
-            </div>
-        </div>
-        <div class="mt-8 flow-root" > <AttributeTable /></div>
-    </div>
-   
+            </span>New Attribute
+        </Button>
+  </div>
+  <AttributeTable />
 </div>
