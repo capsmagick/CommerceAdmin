@@ -1,9 +1,7 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
   import LookbookTable from "./lookbookTable.svelte";
-    // import type { PageData } from './$types';
-    
-    // export let data: PageData;
+
 </script>
 <div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
   <div class="flex items-center ">
