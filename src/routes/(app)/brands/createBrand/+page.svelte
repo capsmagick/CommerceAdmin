@@ -12,57 +12,55 @@
     export let editData;
     export let editForm;
 
-
-
-    //
     let brandDetails = {
         name: "",
         logo: "",
         description: "",
     };
     let id = "";
-    if(editForm){
-        brandDetails.name= editData.name,
-        brandDetails.logo= editData.logo,
-        brandDetails.description= editData.description,
-        id = editData.id
+
+    if (editForm) {
+        brandDetails = {
+            name: editData.name,
+            logo: editData.logo,
+            description: editData.description,
+        };
+        id = editData.id;
     }
 
-    let imageUpload: any;
-    let logo: any;
+    let imageUpload: HTMLInputElement;
 
-    //
-    //   Logo upload
     function pickAvatar() {
         imageUpload.click();
     }
 
     async function uploadAvatar() {
-        logo = imageUpload.files[0];
-        const img: any = document.getElementById("selected-logo");
-        img.src = window.URL.createObjectURL(logo);
+        if (imageUpload.files && imageUpload.files.length > 0) {
+            brandDetails.logo = imageUpload.files[0];
+            const img: HTMLImageElement | null = document.getElementById("selected-logo") as HTMLImageElement;
+            if (img) {
+                img.src = window.URL.createObjectURL(brandDetails.logo);
+            }
+        }
     }
 
     async function createBrand() {
         try {
             const form = new FormData();
-            form.append("logo", logo);
+            form.append("logo", brandDetails.logo);
             form.append("name", brandDetails.name);
             form.append("description", brandDetails.description);
-            console.log(form);
 
-            const url = editForm
-                ? `/masterdata/brand/${id}/update_record/`
-                : "/masterdata/brand/create_record/";
+            const url = editForm ? `/masterdata/brand/${id}/update_record/` : "/masterdata/brand/create_record/";
 
             if (editForm) {
                 await API.put(url, form);
             } else {
                 await API.post(url, form);
             }
+
             dispatch("newBrand");
             const action = editForm ? "Brand Updated" : "Brand Created";
-
             toast(`${action} successfully!`);
         } catch (error) {
             const action = editForm ? "Update Brand" : "Create Brand";
@@ -72,75 +70,46 @@
     }
 </script>
 
-<div class="m-3">
-    <div
-            class="bg-white rounded-md p-4 px-6 border overflow-y-auto"
-            style="height: calc(100vh - 58px);"
-    >
-        <div class="container mx-auto max-w-4xl py-8 px-4">
-            <h2 class="text-3xl font-bold mb-6 text-center">Add Brand</h2>
-            <form
-                    
-                    class="space-y-6 bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4"
-            >
-                <Input
-                        bind:value={brandDetails.name}
-                        placeholder="Name"
-                        class="input"
-                />
-                <Textarea
-                        bind:value={brandDetails.description}
-                        placeholder="Description"
-                        class="textarea"
-                />
+<div class="fixed inset-0 flex bg-gray-500 bg-opacity-50 justify-end" style="z-index: 1">
+    <div class="bg-white p-6 rounded-lg">
+        <header class="font-bold mb-5" style="color: black">
+            <h1>{editForm ? 'Update Brand' : 'New Brand'}</h1>
+        </header>
+        <main>
+            <form class="space-y-6">
+                <Input bind:value={brandDetails.name} placeholder="Name" class="input"/>
+                <Textarea bind:value={brandDetails.description} placeholder="Description" class="textarea"/>
                 <div class="flex items-center gap-2">
-                    <Button
-                            type="button"
-                            class="btn flex gap-2 items-center bg-indigo-500 text-white text-xs"
-                            on:click={pickAvatar}
-                    ><i class="fa-solid fa-image text-sm"></i>Upload Logo
-                    </Button
-                    >
-                    <img
-                            id="selected-logo"
-                            alt=""
-                            class={ logo ? 'showImg':'hideImg'}
-                    />
-                </div>
-                <input
-                        type="file"
-                        id="file-input"
-                        bind:this={imageUpload}
-                        hidden
-                        accept="image/png, image/jpeg"
-                        on:input={uploadAvatar}
-                />
-                <div class="flex">
-                    <Button type="submit" class="btn" on:click={() =>createBrand()}
-                    >Submit
+                    <Button type="button" class="btn flex gap-2 items-center bg-indigo-500 text-white text-xs"
+                            on:click={pickAvatar}>
+                        <i class="fa-solid fa-image text-sm"></i>Upload Logo
                     </Button>
-                    <Button class="text-xs
-                                ml-2
-                               flex items-center gap-2
-                               border border-red-500 bg-red-500 text-white px-4 py-1.5 rounded"
-                            on:click={() => dispatch("close")}
-                    >Cancel
-                    </Button>
+
+                    <img id="selected-logo" alt="" class:showImg={brandDetails.logo} class:hideImg={!brandDetails.logo} src=""/>
+
+                    <input type="file" id="file-input" bind:this={imageUpload} hidden accept="image/png, image/jpeg"
+                           on:change={uploadAvatar}/>
                 </div>
             </form>
-        </div>
+        </main>
+        <footer class="mt-5 flex">
+            <Button type="button" class="btn mr-2" on:click={createBrand}>Submit</Button>
+            <Button class="text-xs flex items-center gap-2 border border-red-500 bg-red-500 text-white px-4 py-1.5 rounded"
+                    on:click={() => dispatch("close")}>Cancel
+            </Button>
+        </footer>
     </div>
 </div>
+
 <style>
     .hideImg {
-        visibility: hidden;
+        display: none;
     }
 
     .showImg {
         display: block;
         height: 6rem;
         width: 6rem;
-        flex: none;
         border-radius: 20px;
         object-fit: cover;
     }
