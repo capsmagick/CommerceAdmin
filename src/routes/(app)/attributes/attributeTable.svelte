@@ -138,7 +138,7 @@
   </script>
    
   <div class="w-full">
-    <div class="mb-4 flex items-center gap-4">
+    <div class="mb-4 p-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
         placeholder="Filter Attributes..."
