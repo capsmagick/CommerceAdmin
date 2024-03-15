@@ -50,14 +50,14 @@ async function logout() {
 }
 
 </script>
-<div class="border-b">
+<div class="border-b shadow-sm bg-background text-foreground">
   <div class="flex h-16 items-center px-4">
     
     <!-- <div class="flex items-center justify-center w-full absolute left-1/2 transform -translate-x-1/2">
       <strong>SIGNUP CASUALS</strong>
     </div> -->
-     <div class="mr-auto flex items-center space-x-4">
-      <DashboardMainNav/>
+     <div class="mr-auto flex items-center space-x-4 ">
+      <DashboardMainNav />
      </div> 
     
       <div class="ml-auto flex items-center space-x-4">
