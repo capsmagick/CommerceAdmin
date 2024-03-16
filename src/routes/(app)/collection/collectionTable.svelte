@@ -23,81 +23,52 @@
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
     import DataTableCheckbox from "./collectionTableCheckbox.svelte";
+    import API from "$lib/services/api";
+    import {createEventDispatcher} from "svelte";
 
-      // Import statements and other script content...
-
- 
-   
+    const dispatch = createEventDispatcher();
+    import type {ActionsEvents} from './Actions.svelte';
     
-    type Collection = {
-  collectionId: string;
+  type Collection = {
+  id: string;
   name: string;
   description: string;
   tags: string[]; // Corrected type
   featuredImage: string;
   variants: string[];
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  updatedBy: string;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  updated_by: string;
 };
    
-  
-    const data:Collection[] = [
-      {
-        collectionId: "col123",
-        name: "Tech Gadgets",
-        description: "Latest technology gadgets",
-        tags: ["tech", "gadgets", "electronics"],
-        variants: ["shirt","pants","wallet"],
-        featuredImage: "https://github.com/shadcn.png",
-        createdAt: "2021-09-10T10:30:00",
-        updatedAt: "2021-09-15T14:20:00",
-        createdBy: "admin",
-        updatedBy: "admin"
-      },
-      {
-        collectionId: "col456",
-        name: "Home Essentials",
-        description: "Essential goods for your home",
-        tags: ["home", "essentials", "decor"],
-        variants: ["lamp","cushion","clock"],
-        featuredImage: "https://example.com/home-essentials.png",
-        createdAt: "2021-10-05T09:20:00",
-        updatedAt: "2021-10-10T16:45:00",
-        createdBy: "user1",
-        updatedBy: "user2"
-      },
-      {
-        collectionId: "col789",
-        name: "Outdoor Adventure",
-        description: "Gear and gadgets for the great outdoors",
-        tags: ["outdoor", "adventure", "gear"],
-        variants: ["tent","backpack","binoculars"],
-        featuredImage: "https://example.com/outdoor-adventure.png",
-        createdAt: "2021-11-15T11:00:00",
-        updatedAt: "2021-11-20T18:30:00",
-        createdBy: "admin",
-        updatedBy: "admin"
-      },
-      {
-        collectionId: "col101",
-        name: "Fitness Freaks",
-        description: "Everything you need for your fitness journey",
-        tags: ["fitness", "gym", "health"],
-        variants: ["dumbbells","yoga mat","kettlebell"],
-        featuredImage: "https://example.com/fitness-freaks.png",
-        createdAt: "2022-01-20T13:50:00",
-        updatedAt: "2022-01-25T19:05:00",
-        createdBy: "user3",
-        updatedBy: "user4"
-      }
+// Create a readable store for the data
+    const data = readable<Collection[]>([], (set) => {
+        getCollections().then((data) => {
+            console.log(data);
+            set(data);
+        });
+    });
 
-    
-     
-    ];
+    function createFunction() {
+      dispatch('newAttribute')
+    }
+
+    export async function refreshTable() {
+        location.reload();
+    }
+
+    async function getCollections() {
+        try {
+        const res = await API.get("/products/collection/");
+        return res.data.results;
+        } catch (error) {
+        console.error("fetch:brands:", error);
+        return [];
+        }
+    }
    
-    const table = createTable(readable(data), {
+    const table = createTable(data, {
       sort: addSortBy({ disableMultiSort: true }),
       page: addPagination(),
       filter: addTableFilter({
@@ -115,7 +86,7 @@
             checked: allPageRowsSelected
           });
         },
-        accessor: "collectionId",
+        accessor: "id",
         cell: ({ row }, { pluginStates }) => {
           const { getRowState } = pluginStates.select;
           const { isSelected } = getRowState(row);
@@ -164,40 +135,40 @@
         cell: ({ value }) => value.join(", "),
         plugins: { filter: {} }
       }),
-      table.column({
-        header: "Variants",
-        accessor: "variants",
-        cell: ({ value }) => value.join(", "),
-        plugins: { filter: {} }
-      }),
+      // table.column({
+      //   header: "Variants",
+      //   accessor: "variants",
+      //   cell: ({ value }) => value.join(", "),
+      //   plugins: { filter: {} }
+      // }),
     
       table.column({
         header: "Created At",
-        accessor: "createdAt",
+        accessor: "created_at",
         cell: ({ value }) => new Date(value).toLocaleDateString(),
         plugins: { sort: {}, filter: { exclude: true } }
       }),
       table.column({
         header: "Updated At",
-        accessor: "updatedAt",
+        accessor: "updated_at",
         cell: ({ value }) => new Date(value).toLocaleDateString(),
         plugins: { sort: {}, filter: { exclude: true } }
       }),
       table.column({
         header: "Created By",
-        accessor: "createdBy",
+        accessor: "created_by",
         cell: ({ value }) => value,
         plugins: { filter: { exclude: true } }
       }),
       table.column({
         header: "Updated By",
-        accessor: "updatedBy",
+        accessor: "updated_by",
         cell: ({ value }) => value,
         plugins: { filter: { exclude: true } }
       }),
       table.column({
-        header: "",
-        accessor: ({ collectionId }) => collectionId,
+        header: "Actions",
+        accessor: ({ id }) => id,
         cell: (item) => {
           return createRender(Actions, { id: item.value });
         },

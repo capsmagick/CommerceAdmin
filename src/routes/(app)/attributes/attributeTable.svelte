@@ -23,6 +23,10 @@
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import API from "$lib/services/api";
+    import {createEventDispatcher} from "svelte";
+
+    const dispatch = createEventDispatcher();
+    import type {ActionsEvents} from './Actions.svelte';
    
     type Attribute = {
         id: string;
@@ -37,6 +41,14 @@
             set(data);
         });
     });
+
+    function createFunction() {
+      dispatch('newAttribute')
+    }
+
+    export async function refreshTable() {
+        location.reload();
+    }
 
     async function getAttributes() {
         try {
@@ -104,7 +116,13 @@
         header: "Actions  ",
         accessor: ({ id }) =>  id,
         cell: (item) => {
-          return createRender(Actions, { id: item.id });
+                return createRender(Actions, {item: item})
+                    .on('edit', (event: ActionsEvents['edit']) => {
+                        dispatch('edit', {item})
+                    })
+                    .on('delete', (event: ActionsEvents['delete']) => {
+                        dispatch('delete', {item})
+                    });
         },
         plugins: {
           sort: {

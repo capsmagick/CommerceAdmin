@@ -23,13 +23,14 @@
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
     import DataTableCheckbox from "./productTableCheckbox.svelte";
+    import API from "$lib/services/api";
+    import {createEventDispatcher} from "svelte";
 
-      // Import statements and other script content...
-
+    const dispatch = createEventDispatcher();
+    import type {ActionsEvents} from './Actions.svelte';
  
-   
     type Product = {
-      productId: string;
+      id: string;
       name: string;
       description: string;
       price: number;
@@ -48,88 +49,34 @@
       updatedBy: string;
       
     };
+
+    // Create a readable store for the data
+    const data = readable<Product[]>([], (set) => {
+        getProducts().then((data) => {
+            console.log(data);
+            set(data);
+        });
+    });
    
-  
-    const data: Product[] = [
-      {
-        productId: "prod123",
-        name: "Wireless Mouse",
-        description: "Ergonomic wireless mouse",
-        price: 29.99,
-        stock: 150,
-        categories: "Electronics",
-        hsn_code: "84716072",
-        tags: ["wireless", "mouse", "electronics", "ergonomic"],
-        attributes: ["color: black", "connectivity: wireless", "warranty: 1 year"],
-        images: "https://github.com/shadcn.png",
-        rating: 4.5,
-        no_of_reviews: 134,
-        status: "active",
-        createdAt: "2021-07-16T03:24:00",
-        updatedAt: "2021-07-20T12:48:00",
-        createdBy: "admin",
-        updatedBy: "admin"
-      },
-      {
-        productId: "prod456",
-        name: "Gaming Keyboard",
-        description: "RGB backlit gaming keyboard",
-        price: 59.99,
-        stock: 75,
-        categories: "Gaming",
-        hsn_code: "84716071",
-        tags: ["keyboard", "gaming", "RGB", "backlit"],
-        attributes: ["color: black", "connectivity: wired", "warranty: 2 years"],
-        images: "https://github.com/shadcn.png",
-        rating: 4.8,
-        no_of_reviews: 89,
-        status: "active",
-        createdAt: "2021-08-05T09:34:00",
-        updatedAt: "2021-08-10T14:22:00",
-        createdBy: "admin",
-        updatedBy: "admin"
-      },
-    {
-        productId: "prod789",
-        name: "Smart Watch",
-        description: "Water resistant smart watch with heart rate monitor",
-        price: 199.99,
-        stock: 85,
-        categories: "Wearables",
-        hsn_code: "91021200",
-        tags: ["smart", "watch", "water resistant", "heart rate"],
-        attributes: ["color: black", "connectivity: Bluetooth", "warranty: 2 years"],
-        images: "https://github.com/shadcn.png",
-        rating: 4.7,
-        no_of_reviews: 210,
-        status: "active",
-        createdAt: "2021-09-15T11:20:00",
-        updatedAt: "2021-09-20T08:30:00",
-        createdBy: "admin",
-        updatedBy: "admin"
-      },
-      {
-        productId: "prod1011",
-        name: "Bluetooth Speakers",
-        description: "Portable Bluetooth speakers with surround sound",
-        price: 89.99,
-        stock: 120,
-        categories: "Audio",
-        hsn_code: "85182100",
-        tags: ["speakers", "Bluetooth", "portable", "surround sound"],
-        attributes: ["color: blue", "connectivity: Bluetooth", "warranty: 1 year"],
-        images:"https://github.com/shadcn.png",
-        rating: 4.3,
-        no_of_reviews: 95,
-        status: "active",
-        createdAt: "2021-10-05T14:45:00",
-        updatedAt: "2021-10-10T09:50:00",
-        createdBy: "admin",
-        updatedBy: "admin"
-      }
-    ];
+    function createFunction() {
+      dispatch('newAttribute')
+    }
+
+    export async function refreshTable() {
+        location.reload();
+    }
+
+    async function getProducts() {
+        try {
+        const res = await API.get("/products/product/");
+        return res.data.results;
+        } catch (error) {
+        console.error("fetch:brands:", error);
+        return [];
+        }
+    }
    
-    const table = createTable(readable(data), {
+    const table = createTable(data, {
       sort: addSortBy({ disableMultiSort: true }),
       page: addPagination(),
       filter: addTableFilter({
@@ -147,7 +94,7 @@
             checked: allPageRowsSelected
           });
         },
-        accessor: "productId",
+        accessor: "id",
         cell: ({ row }, { pluginStates }) => {
           const { getRowState } = pluginStates.select;
           const { isSelected } = getRowState(row);
@@ -274,10 +221,16 @@
         plugins: { sort: {}, filter: { exclude: true } }
       }),
       table.column({
-        header: "",
-        accessor: ({ productId }) => productId,
+        header: "Actions",
+        accessor: ({ id }) => id,
         cell: (item) => {
-          return createRender(Actions, { id: item.value });
+              return createRender(Actions, {item: item})
+                  .on('edit', (event: ActionsEvents['edit']) => {
+                      dispatch('edit', {item})
+                  })
+                  .on('delete', (event: ActionsEvents['delete']) => {
+                      dispatch('delete', {item})
+                  });
         },
         plugins: {
           sort: {
