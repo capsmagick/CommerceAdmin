@@ -23,13 +23,13 @@
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
     import DataTableCheckbox from "./categoriesTableCheckbox.svelte";
+    import API from "$lib/services/api";
+    import {createEventDispatcher} from "svelte";
 
-      // Import statements and other script content...
-
- 
-   
+    const dispatch = createEventDispatcher();
+    import type {ActionsEvents} from './Actions.svelte';
     
-    type Categories = {
+  type Categories = {
   categoryId: string;
   name: string;
   description: string;
@@ -41,63 +41,35 @@
   createdBy: string;
   updatedBy: string;
 };
-   
-  
-    const data:Categories[] = [
-      {
-        categoryId: "cat123",
-        name: "Tech Gadgets",
-        description: "Latest technology gadgets",
-        tags: ["tech", "gadgets", "electronics"],
-        Image: "https://github.com/shadcn.png",
-        status: ["Active"],
-        createdAt: "2021-09-10T10:30:00",
-        updatedAt: "2021-09-15T14:20:00",
-        createdBy: "admin",
-        updatedBy: "admin"
-      },
-      {
-        categoryId: "cat456",
-        name: "Home Essentials",
-        description: "Essential goods for your home",
-        tags: ["home", "essentials", "decor"],
-        Image: "https://example.com/home-essentials.png",
-        status: ["Active", "Featured"],
-        createdAt: "2021-10-05T09:20:00",
-        updatedAt: "2021-10-10T16:45:00",
-        createdBy: "user1",
-        updatedBy: "user2"
-      },
-      {
-        categoryId: "cat789",
-        name: "Outdoor Adventure",
-        description: "Gear and gadgets for the great outdoors",
-        tags: ["outdoor", "adventure", "gear"],
-        Image: "https://example.com/outdoor-adventure.png",
-        status: ["Active"],
-        createdAt: "2021-11-15T11:00:00",
-        updatedAt: "2021-11-20T18:30:00",
-        createdBy: "admin",
-        updatedBy: "admin"
-      },
-      {
-        categoryId: "cat101",
-        name: "Fitness Freaks",
-        description: "Everything you need for your fitness journey",
-        tags: ["fitness", "gym", "health"],
-        Image: "https://example.com/fitness-freaks.png",
-        status: ["Active", "Featured"],
-        createdAt: "2022-01-20T13:50:00",
-        updatedAt: "2022-01-25T19:05:00",
-        createdBy: "user3",
-        updatedBy: "user4"
-      }
 
-    
-     
-    ];
+    // Create a readable store for the data
+    const data = readable<Categories[]>([], (set) => {
+        getCategory().then((data) => {
+            console.log(data);
+            set(data);
+        });
+    });
+
+    function createFunction() {
+      dispatch('newAttribute')
+    }
+
+    export async function refreshTable() {
+        location.reload();
+    }
+
+    async function getCategory() {
+        try {
+        const res = await API.get("/masterdata/category/");
+        return res.data.results;
+        } catch (error) {
+        console.error("fetch:brands:", error);
+        return [];
+        }
+    }
    
-    const table = createTable(readable(data), {
+   
+    const table = createTable(data, {
       sort: addSortBy({ disableMultiSort: true }),
       page: addPagination(),
       filter: addTableFilter({
@@ -196,10 +168,16 @@
         plugins: { filter: { exclude: true } }
       }),
       table.column({
-        header: "",
+        header: "Actions",
         accessor: ({ categoryId }) => categoryId,
         cell: (item) => {
-          return createRender(Actions, { id: item.value });
+          return createRender(Actions, {item: item})
+            .on('edit', (event: ActionsEvents['edit']) => {
+                dispatch('edit', {item})
+            })
+            .on('delete', (event: ActionsEvents['delete']) => {
+                dispatch('delete', {item})
+            });
         },
         plugins: {
           sort: {
