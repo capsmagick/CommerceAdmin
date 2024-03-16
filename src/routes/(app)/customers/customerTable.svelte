@@ -16,12 +16,17 @@
     } from "svelte-headless-table/plugins";
     import { readable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
-    import Actions from "./customerTableActions.svelte";
+    // import Actions from "./customerTableActions.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
     import DataTableCheckbox from "./customerTableCheckbox.svelte";
+     import API from "$lib/services/api";
+    import {createEventDispatcher} from "svelte";
+
+    const dispatch = createEventDispatcher();
+    // import type {ActionsEvents} from './Actions.svelte';
    
     type Customers = {
       id: string;
@@ -31,8 +36,34 @@
       phoneNumber: number;
       shippingAddress: string;
     };
-   
-    const data: Customers[] = [
+
+    // // Create a readable store for the data
+    // const data = readable<Customers[]>([], (set) => {
+    //     getCustomers().then((data) => {
+    //         console.log(data);
+    //         set(data);
+    //     });
+    // });
+
+    // function createFunction() {
+    //   dispatch('newAttribute')
+    // }
+
+    // export async function refreshTable() {
+    //     location.reload();
+    // }
+
+    // async function getCustomers() {
+    //     try {
+    //     const res = await API.get("/masterdata/attribute/");
+    //     return res.data.results;
+    //     } catch (error) {
+    //     console.error("fetch:brands:", error);
+    //     return [];
+    //     }
+    // }
+
+    const data1: Customers[] = [
       {
         id: "m5gr84i9",
         name: 'Arun',
@@ -75,7 +106,7 @@
       }
     ];
    
-    const table = createTable(readable(data), {
+    const table = createTable(readable(data1), {
       sort: addSortBy({ disableMultiSort: true }),
       page: addPagination(),
       filter: addTableFilter({
@@ -150,18 +181,18 @@
         accessor: "status",
         plugins: { sort: { disable: true }, filter: { exclude: true } }
       }),
-      table.column({
-        header: "",
-        accessor: ({ id }) => id,
-        cell: (item) => {
-          return createRender(Actions, { id: item.value });
-        },
-        plugins: {
-          sort: {
-            disable: true
-          }
-        }
-      })
+      // table.column({
+      //   header: "",
+      //   accessor: ({ id }) => id,
+      //   cell: (item) => {
+      //     return createRender(Actions, { id: item.value });
+      //   },
+      //   plugins: {
+      //     sort: {
+      //       disable: true
+      //     }
+      //   }
+      // })
     ]);
    
     const {

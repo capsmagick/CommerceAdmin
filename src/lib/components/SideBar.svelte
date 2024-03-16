@@ -40,7 +40,7 @@
       icon: "fa-user",
       route: "/customers",
       items: [
-        { name: "Customer Groups", page: "customer-groups" },
+        { name: "Customer Group", page: "customer-group" },
         { name: "Review and Rating", page: "reviews" }
       ]
     },
