@@ -181,17 +181,7 @@
 </script>
 
 <div class="w-full">
-    <div class="mb-4 flex items-center justify-between">
-        <h4 class="text-lg font-medium text-gray-800">Brands</h4>
-        <div>
-            <Button class="text-xs flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-1.5 rounded"
-                    on:click={() => createFunction()}>
-                <i class="fa-solid fa-plus text-sm"></i>
-                New Brand
-            </Button>
-        </div>
-    </div>
-    <div class="mb-4 flex items-center gap-4">
+    <div class="mb-4 flex p-4 items-center gap-4">
         <Input
                 class="max-w-sm"
                 placeholder="Filter Customer..."
