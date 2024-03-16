@@ -36,10 +36,10 @@
   tags: string[]; // Corrected type
   featuredImage: string;
   variants: string[];
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  updatedBy: string;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  updated_by: string;
 };
    
 // Create a readable store for the data
@@ -135,34 +135,34 @@
         cell: ({ value }) => value.join(", "),
         plugins: { filter: {} }
       }),
-      table.column({
-        header: "Variants",
-        accessor: "variants",
-        cell: ({ value }) => value.join(", "),
-        plugins: { filter: {} }
-      }),
+      // table.column({
+      //   header: "Variants",
+      //   accessor: "variants",
+      //   cell: ({ value }) => value.join(", "),
+      //   plugins: { filter: {} }
+      // }),
     
       table.column({
         header: "Created At",
-        accessor: "createdAt",
+        accessor: "created_at",
         cell: ({ value }) => new Date(value).toLocaleDateString(),
         plugins: { sort: {}, filter: { exclude: true } }
       }),
       table.column({
         header: "Updated At",
-        accessor: "updatedAt",
+        accessor: "updated_at",
         cell: ({ value }) => new Date(value).toLocaleDateString(),
         plugins: { sort: {}, filter: { exclude: true } }
       }),
       table.column({
         header: "Created By",
-        accessor: "createdBy",
+        accessor: "created_by",
         cell: ({ value }) => value,
         plugins: { filter: { exclude: true } }
       }),
       table.column({
         header: "Updated By",
-        accessor: "updatedBy",
+        accessor: "updated_by",
         cell: ({ value }) => value,
         plugins: { filter: { exclude: true } }
       }),
@@ -170,13 +170,7 @@
         header: "Actions",
         accessor: ({ id }) => id,
         cell: (item) => {
-          return createRender(Actions, {item: item})
-            .on('edit', (event: ActionsEvents['edit']) => {
-                dispatch('edit', {item})
-            })
-            .on('delete', (event: ActionsEvents['delete']) => {
-                dispatch('delete', {item})
-            });
+          return createRender(Actions, { id: item.value });
         },
         plugins: {
           sort: {
