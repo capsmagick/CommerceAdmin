@@ -30,7 +30,7 @@
     import type {ActionsEvents} from './Actions.svelte';
     
   type Categories = {
-  categoryId: string;
+  id: string;
   name: string;
   description: string;
   tags: string[]; // Corrected type
@@ -87,7 +87,7 @@
             checked: allPageRowsSelected
           });
         },
-        accessor: "categoryId",
+        accessor: "id",
         cell: ({ row }, { pluginStates }) => {
           const { getRowState } = pluginStates.select;
           const { isSelected } = getRowState(row);
@@ -169,7 +169,7 @@
       }),
       table.column({
         header: "Actions",
-        accessor: ({ categoryId }) => categoryId,
+        accessor: ({ id }) => id,
         cell: (item) => {
           return createRender(Actions, {item: item})
             .on('edit', (event: ActionsEvents['edit']) => {
