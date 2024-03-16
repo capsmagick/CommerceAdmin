@@ -1,7 +1,8 @@
 <script lang="ts">
     /** @type {import('./$types').PageData} */
-    import {onMount} from "svelte";
+
     import CreateAttribute from "./createattributes/+page.svelte";
+    import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
     import API from "$lib/services/api";
     import { Button } from "$lib/components/ui/button";
     import AttributeTable from "./attributeTable.svelte";
@@ -9,10 +10,14 @@
   import * as Sheet from "$lib/components/ui/sheet/index";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
+  import { toast } from "svelte-sonner";
 
 
-    let attributes: any[] = [];
+    let showDeleteModal = false;
+    let deletingAttribute: any;
+
     let editData: any = null;
+    let refreshTable;
     let showForm: boolean = false;
     let editForm: boolean = false;
 
@@ -21,39 +26,54 @@
         showForm = !showForm
     }
 
-
-    // Ensure this is initialized as an array
-
-    async function getAttributes() {
-        try {
-            const res = await API.get("/masterdata/attribute/");
-            // Ensure attributes is always an array, even if res.data or res.data.results is undefined
-            attributes = Array.isArray(res.data?.results) ? res.data.results : [];
-        } catch (error) {
-            console.error("Error fetching attributes:", error);
-            attributes = []; // Ensure attributes is reset to an empty array in case of an error
-        }
+     // Edit Attribute
+    async function onEditAttribute(eventData) {
+        editData = eventData.original;
+        showForm = true;
+        editForm = true;        
     }
 
-    onMount(async () => {
-        await getAttributes();
-    });
+    // Delete Attribute
+    async function onDeleteAttribute(eventData) {
+    deletingAttribute = eventData.original;
+    showDeleteModal = true;
+    }
+
+        function confirmDelete() {
+        API.delete(`/masterdata/attribute/${deletingAttribute.id}/delete_record/`).then(() => {
+            closeDeleteModal();
+        }).catch((error) => {
+            console.error("Error deleting attribute:", error);
+            closeDeleteModal();
+        });
+    }
+
+    function closeDeleteModal() {
+        showDeleteModal = false;
+        refreshTable.refreshTable();
+        toast("Attribute Deleted Successfully!");
+    }
+
+        function handleNewAttribute() {
+        editData = null;
+        editForm = false;
+        showForm = false;
+        refreshTable.refreshTable();
+    }
+
 </script>
+
+<div>
+      {#if showDeleteModal}
+        <ConfirmDeleteModal attribute={deletingAttribute.name} on:confirm={confirmDelete} on:cancel={closeDeleteModal}/>
+    {/if}
+</div>
 
 <div class="m-3">
     {#if showForm}
         <CreateAttribute
-                on:close={() => {
-                editData = null;
-                editForm = false;
-                showForm = false;
-                }}
-                on:newAttribute={() => {
-                editData = null;
-                editForm = false;
-                showForm = false;
-                getAttributes();
-            }}
+                on:close={() => { editData = null; editForm = false; showForm = false;}}
+                on:newAttribute={() => { handleNewAttribute();}}
                 {editData}
                 {editForm}
         />
@@ -97,6 +117,10 @@
             </Sheet.Content>
           </Sheet.Root>
   </div>
-  <AttributeTable />
-  
+  <AttributeTable 
+    on:newAttribute={() => toggleForm()}
+                on:edit={(event) => onEditAttribute(event.detail.item.row)}
+                on:delete={(event) => onDeleteAttribute(event.detail.item.row)}
+                bind:this={refreshTable}/>
+
 </div>
