@@ -1,4 +1,6 @@
 <script lang="ts">
+  import ReturnTable from "./returnTable.svelte";
+
 
 
 </script>
@@ -6,4 +8,5 @@
   <div class="flex items-center justify-between">
       <h4 class="text-lg font-medium text-gray-800 dark:text-gray-200">Return and Refund</h4>
   </div>
+  <ReturnTable />
 </div>

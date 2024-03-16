@@ -5,6 +5,7 @@
     import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
     import {toast} from "svelte-sonner";
     import BrandTable from "./brandTable.svelte";
+    import { Button } from "$lib/components/ui/button";
 
     let showDeleteModal = false;
     let deletingBrand: any;
@@ -53,27 +54,35 @@
     }
 
 </script>
-<div class="m-3">
+
     <div>
         {#if showDeleteModal}
-            <ConfirmDeleteModal attribute={deletingBrand.name} on:confirm={confirmDelete}
-                                on:cancel={closeDeleteModal}/>
+        <ConfirmDeleteModal attribute={deletingBrand.name} on:confirm={confirmDelete}
+            on:cancel={closeDeleteModal}/>
         {/if}
     </div>
 
     <div class="abc">
         {#if showForm}
-            <CreditBrand
-                    {editData}
-                    {editForm}
-                    on:close={() => {editData = null;editForm = false;showForm = false;}}
-                    on:newBrand={() => handleNewBrand()}/>
+        <CreditBrand
+            {editData}
+            {editForm}
+            on:close={() => {editData = null;editForm = false;showForm = false;}}
+            on:newBrand={() => handleNewBrand()}/>
         {/if}
     </div>
 
-
+    <div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
+        <div class="flex items-center ">
+            <h4 class="text-lg font-medium text-gray-800 dark:text-gray-200 flex-1">Brands</h4>
+        <Button class="text-xs flex items-center gap-2 border  px-4 py-1.5" on:click={() => toggleForm()}>
+            <span>
+                <i class="fa-solid fa-plus text-sm"></i>
+            </span>New Brand
+        </Button>
+        </div>
     <BrandTable on:newBrand={() => toggleForm()}
-                on:edit={(event) => onEditBrand(event.detail.item.row)}
-                on:delete={(event) => onDeleteBrand(event.detail.item.row)}
-                bind:this={refreshTable}/>
-</div>
+        on:edit={(event) => onEditBrand(event.detail.item.row)}
+        on:delete={(event) => onDeleteBrand(event.detail.item.row)}
+        bind:this={refreshTable}/>
+    </div>
