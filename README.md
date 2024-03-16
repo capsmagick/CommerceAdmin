@@ -1,38 +1,26 @@
-# create-svelte
+# Project Overview
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+This project is a Svelte application powered by SvelteKit on the frontend and Django Rest on the backend. It utilizes TypeScript, Tailwind CSS, and various Svelte libraries for UI components and charts.
 
-## Creating a project
+## Frontend
+- **Framework**: SvelteKit
+- **Styling**: Tailwind CSS
+- **Languages**: TypeScript
+- **Key Libraries**: Svelte Radix, Lucide Svelte, Bits-UI,shadcn-svelte
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Backend
+- **Framework**: Django Rest
+- **Languages**: Python
+- **Key Libraries**: Django Rest Framework, Django ORM, Django Channels
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## Development
+- To start the development server: `npm run dev`
+- To build the project: `npm run build`
+- Preview the production build: `npm run preview`
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+## Additional Notes
+- The project uses various UI components like cards, dropdown menus, and avatars.
+- It includes features for creating products, categories, and handling reviews.
+- Routing is structured with pages for dashboard, product reports, system status, and more.
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+For detailed setup and deployment instructions, refer to the project's specific documentation.

@@ -50,21 +50,22 @@ async function logout() {
 }
 
 </script>
-<div class="border-b shadow-sm bg-background text-foreground">
+<div class="border-b  shadow-sm bg-background text-foreground">
   <div class="flex h-16 items-center px-4">
     
     <!-- <div class="flex items-center justify-center w-full absolute left-1/2 transform -translate-x-1/2">
       <strong>SIGNUP CASUALS</strong>
     </div> -->
-     <div class="mr-auto flex items-center space-x-4 ">
+     <div class="mr-auto flex items-center glow-border space-x-4 ">
       <DashboardMainNav />
      </div> 
     
-      <div class="ml-auto flex items-center space-x-4">
+      <div class="ml-auto flex  items-center space-x-4">
         
           <Search />
           <UserNav />
-          <Button on:click={toggleMode} variant="outline" size="icon">
+          <div class="glow-border">
+          <Button on:click={toggleMode}  variant="outline" size="icon">
             <Sun
               class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
             />
@@ -73,6 +74,7 @@ async function logout() {
             />
             <span class="sr-only">Toggle theme</span>
           </Button>
+        </div>
       </div>
   </div>
 </div>

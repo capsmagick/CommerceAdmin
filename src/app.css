@@ -49,7 +49,7 @@
     --ring: 263.4 70% 50.4%;
   }
 }
-/* @layer components {
+ @layer components {
   .layer-one {
     @apply bg-slate-100 text-slate-950 dark:bg-neutral-950 dark:text-slate-100;
   }
@@ -59,7 +59,14 @@
   .layer-three{
     @apply bg-slate-200 text-slate-700 dark:bg-neutral-700 dark:text-neutral-300 ;
   }
-} */
+  .glow-border {
+    @apply  rounded-2xl p-px bg-gradient-to-b from-blue-300 to-pink-300 dark:from-blue-800 dark:to-purple-800;
+  }
+  .glow-border-content {
+    @apply rounded-2xl ;
+  }
+ 
+} 
 @layer base {
   * {
     @apply border-border;

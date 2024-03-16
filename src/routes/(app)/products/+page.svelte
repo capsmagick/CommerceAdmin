@@ -38,16 +38,22 @@
     await fetchProducts()
   })
 </script>
-<div class="m-3 bg-background text-foreground shadow-md rounded-md p-4 px-6 border">
+<div class="m-3  shadow-md glow-border">
+  <div class=" bg-background text-foreground p-4 px-6 glow-border-content">
   <div class="flex items-center ">
       <h2 class="text-3xl font-bold tracking-tight  text-gray-800 dark:text-gray-200 flex-1">Products</h2>
-      <Button variant="outline" class=" mr-4 ">Export Products</Button>
-      <Button class="text-xs flex items-center gap-2 border  px-4 py-1.5" on:click={() => goto('products/createProduct')}>
-        <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
+      <div class="glow-border mr-4">
+        <Button variant="outline" class="glow-border-content">Export Products</Button>
+      </div>
+      <div class="glow-border mr-4">
+      <Button variant="outline"  class="text-xs flex items-center gap-2  px-4 py-1.5" on:click={() => goto('products/createProduct')}>
+        <i class="fa-solid  fa-cloud-arrow-up text-sm"></i>
         Add Products</Button>
+      </div>
   </div>
   <ProductTable />
-</div>
+  </div>
+  </div>
 
 
    

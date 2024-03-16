@@ -14,7 +14,7 @@
 	export let transitionConfig: $$Props["transitionConfig"] = undefined;
 	export { className as class };
 </script>
-
+<div class="glow-border">
 <MenubarPrimitive.Content
 	{transition}
 	{transitionConfig}
@@ -23,11 +23,13 @@
 	{alignOffset}
 	{side}
 	class={cn(
-		"z-50 min-w-[12rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md focus:outline-none",
+		"z-50 min-w-[12rem] glow-border ",
 		className
 	)}
 	{...$$restProps}
 	on:keydown
->
+><div class="bg-popover glow-border-content p-1 text-popover-foreground shadow-md focus:outline-none">
 	<slot />
-</MenubarPrimitive.Content>
+</div>
+	</MenubarPrimitive.Content>
+</div>
