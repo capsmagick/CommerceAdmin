@@ -46,7 +46,7 @@
       
       items: [
 		{ name: "Customers", page: "customers" },
-        { name: "Customer Groups", page: "customer-groups" },
+        { name: "Customer Group", page: "customer-group" },
         { name: "Review and Rating", page: "reviews" }
       ]
     },

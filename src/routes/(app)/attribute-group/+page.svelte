@@ -3,6 +3,7 @@
   import API from "$lib/services/api";
   import CreateAttributeGroup from '../attributes/createattributes/+page.svelte';
   import { Button } from "$lib/components/ui/button";
+  import AttributeGroupTable from "./attributeGroupTable.svelte";
 
     export let data;
     let showForm = false
@@ -51,7 +52,7 @@
           </div>
         </div>
         <!-- table -->
-        <div class="mt-8 flow-root">
+        <!-- <div class="mt-8 flow-root">
           <div class=" overflow-x-auto">
             <div
               class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"
@@ -95,7 +96,8 @@
               </table>
             </div>
           </div>
-        </div>
+        </div> -->
+        <AttributeGroupTable />
       {:else}
         <CreateAttributeGroup
           on:close={() => (showForm = false)}

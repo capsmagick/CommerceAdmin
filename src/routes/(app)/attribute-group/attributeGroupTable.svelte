@@ -1,6 +1,5 @@
 <script lang="ts">
     import CaretSort from "svelte-radix/CaretSort.svelte";
-    import ChevronDown from "svelte-radix/ChevronDown.svelte";
     import {
       createTable,
       Subscribe,
@@ -12,108 +11,61 @@
       addPagination,
       addTableFilter,
       addSelectedRows,
-      addHiddenColumns
     } from "svelte-headless-table/plugins";
     import { readable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
-    // import Actions from "./customerTableActions.svelte";
+    import Actions from "./attributeGroupTableActions.svelte"
     import { Button } from "$lib/components/ui/button/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
-    import DataTableCheckbox from "./customerTableCheckbox.svelte";
-     import API from "$lib/services/api";
+    import DataTableCheckbox from "./attributeGroupTableCheckbox.svelte"
+    import { onMount } from "svelte";
+    import { goto } from "$app/navigation";
+    import API from "$lib/services/api";
     import {createEventDispatcher} from "svelte";
 
     const dispatch = createEventDispatcher();
-    // import type {ActionsEvents} from './Actions.svelte';
+    import type {ActionsEvents} from './Actions.svelte';
    
-    type Customers = {
-      id: string;
-      name: string;
-      status: "Pending" | "Processing" | "Success" | "Failed";
-      email: string;
-      phoneNumber: number;
-      shippingAddress: string;
+    type AttributeGroup = {
+        id: string;
+        name: string;
     };
 
-    // // Create a readable store for the data
-    // const data = readable<Customers[]>([], (set) => {
-    //     getCustomers().then((data) => {
-    //         console.log(data);
-    //         set(data);
-    //     });
-    // });
+    // Create a readable store for the data
+    const data = readable<AttributeGroup[]>([], (set) => {
+        getAttributes().then((data) => {
+            console.log(data);
+            set(data);
+        });
+    });
 
-    // function createFunction() {
-    //   dispatch('newAttribute')
-    // }
+    function createFunction() {
+      dispatch('newAttribute')
+    }
 
-    // export async function refreshTable() {
-    //     location.reload();
-    // }
+    export async function refreshTable() {
+        location.reload();
+    }
 
-    // async function getCustomers() {
-    //     try {
-    //     const res = await API.get("/masterdata/attribute/");
-    //     return res.data.results;
-    //     } catch (error) {
-    //     console.error("fetch:brands:", error);
-    //     return [];
-    //     }
-    // }
-
-    const data1: Customers[] = [
-      {
-        id: "m5gr84i9",
-        name: 'Arun',
-        status: "Success",
-        email: "arun@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
-      },
-      {
-        id: "3u1reuv4",
-        name: 'Amal',
-        status: "Success",
-        email: "amal@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
-      },
-      {
-        id: "derv1ws0",
-        name: 'Abhi',
-        status: "Success",
-        email: "abhi@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
-      },
-      {
-        id: "5kma53ae",
-        name: 'Babu',
-        status: "Success",
-        email: "babu@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
-      },
-      {
-        id: "bhqecj4p",
-        name: 'Kumar',
-        status: "Success",
-        email: "kumar@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
-      }
-    ];
+    async function getAttributes() {
+        try {
+        const res = await API.get("/masterdata/attributegroup/");
+        return res.data.results;
+        } catch (error) {
+        console.error("fetch:brands:", error);
+        return [];
+        }
+    }
    
-    const table = createTable(readable(data1), {
+    const table = createTable(data, {
       sort: addSortBy({ disableMultiSort: true }),
       page: addPagination(),
       filter: addTableFilter({
         fn: ({ filterValue, value }) => value.includes(filterValue)
       }),
       select: addSelectedRows(),
-      hide: addHiddenColumns()
     });
    
     const columns = table.createColumns([
@@ -142,14 +94,9 @@
           }
         }
       }),
-        table.column({
+      table.column({
         header: "Name",
         accessor: "name",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
-      }),
-      table.column({
-        header: "Email",
-        accessor: "email",
         cell: ({ value }) => value.toLowerCase(),
         plugins: {
           filter: {
@@ -160,39 +107,23 @@
         }
       }),
       table.column({
-        header: "Phone Number",
-        accessor: "phoneNumber",
+        header: "Actions  ",
+        accessor: ({ id }) =>  id,
+        cell: (item) => {
+                return createRender(Actions, {item: item})
+                    .on('edit', (event: ActionsEvents['edit']) => {
+                        dispatch('edit', {item})
+                    })
+                    .on('delete', (event: ActionsEvents['delete']) => {
+                        dispatch('delete', {item})
+                    });
+        },
         plugins: {
           sort: {
             disable: true
-          },
-          filter: {
-            exclude: true
           }
         }
-      }),
-      table.column({
-        header: "Shipping Address",
-        accessor: "shippingAddress",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
-      }),
-        table.column({
-        header: "Status",
-        accessor: "status",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
-      }),
-      // table.column({
-      //   header: "",
-      //   accessor: ({ id }) => id,
-      //   cell: (item) => {
-      //     return createRender(Actions, { id: item.value });
-      //   },
-      //   plugins: {
-      //     sort: {
-      //       disable: true
-      //     }
-      //   }
-      // })
+      })
     ]);
    
     const {
@@ -207,36 +138,25 @@
    
     const { sortKeys } = pluginStates.sort;
    
-    const { hiddenColumnIds } = pluginStates.hide;
     const ids = flatColumns.map((c) => c.id);
     let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
-   
-    $: $hiddenColumnIds = Object.entries(hideForId)
-      .filter(([, hide]) => !hide)
-      .map(([id]) => id);
    
     const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
     const { filterValue } = pluginStates.filter;
    
     const { selectedDataIds } = pluginStates.select;
    
-    const hideableCols = ["status", "email", "phoneNumber", "shippingAddress"];
+    const hideableCols = ["name"];
   </script>
    
   <div class="w-full">
     <div class="mb-4 p-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter emails..."
+        placeholder="Filter Attributes..."
         type="text"
-        bind:value={$filterValue}
-      />
+        bind:value={$filterValue}/>
       <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild let:builder>
-          <Button variant="outline" class="ml-auto" builders={[builder]}>
-            Columns <ChevronDown class="ml-2 h-4 w-4" />
-          </Button>
-        </DropdownMenu.Trigger>
         <DropdownMenu.Content>
           {#each flatColumns as col}
             {#if hideableCols.includes(col.id)}
@@ -259,25 +179,18 @@
                     attrs={cell.attrs()}
                     let:attrs
                     props={cell.props()}
-                    let:props
-                  >
+                    let:props>
                     <Table.Head
                       {...attrs}
-                      class={cn("[&:has([role=checkbox])]:pl-3")}
-                    >
-                      {#if cell.id === "amount"}
-                        <div class="text-right">
-                          <Render of={cell.render()} />
-                        </div>
-                      {:else if cell.id === "email"}
+                      class={cn("[&:has([role=checkbox])]:pl-3")}>
+                      {#if cell.id === "name"}
                         <Button variant="ghost" on:click={props.sort.toggle}>
                           <Render of={cell.render()} />
                           <CaretSort
                             class={cn(
                               $sortKeys[0]?.id === cell.id && "text-foreground",
                               "ml-2 h-4 w-4"
-                            )}
-                          />
+                            )}/>
                         </Button>
                       {:else}
                         <Render of={cell.render()} />
@@ -299,13 +212,13 @@
                 {#each row.cells as cell (cell.id)}
                   <Subscribe attrs={cell.attrs()} let:attrs>
                     <Table.Cell class="[&:has([role=checkbox])]:pl-3" {...attrs}>
-                      {#if cell.id === "amount"}
-                        <div class="text-right font-medium">
-                          <Render of={cell.render()} />
-                        </div>
-                      {:else}
-                        <Render of={cell.render()} />
-                      {/if}
+                      
+                        {#if typeof cell.render() === 'string'}
+                            {@html cell.render()}
+                        {:else}
+                            <Render of={cell.render()}/> 
+                        {/if}
+
                     </Table.Cell>
                   </Subscribe>
                 {/each}
