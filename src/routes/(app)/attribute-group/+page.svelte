@@ -1,111 +1,87 @@
 <script lang="ts">
-  import { onMount} from "svelte"
   import API from "$lib/services/api";
-  import CreateAttributeGroup from '../attributes/createattributes/+page.svelte';
+  import CreateAttributeGroup from './create-attributeGroup/+page.svelte';
   import { Button } from "$lib/components/ui/button";
   import AttributeGroupTable from "./attributeGroupTable.svelte";
+  import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
+  import {toast} from "svelte-sonner";
 
-    export let data;
-    let showForm = false
-    let attributesGroup: { id: number; name: string }[] = []
+    let showDeleteModal = false;
+    let deletingAttributeGroup: any;
+    let refreshTable;
+    let editData;
+    let showForm: boolean = false;
+    let editForm: boolean = false;
 
-    async function fetchAttributeGroups(){
-      try {
-        const res = await API.get("/masterdata/attributegroup/")
-        attributesGroup = res.data.results || []
-      } catch (error) {
-        console.log("fetch:attributegroup:", error)
-      }
+    function toggleForm() {
+        console.log(showForm)
+        showForm = !showForm
     }
-    async function deleteAttributeGroup(group: { id: number }): Promise<void> {
-      try {
-        await API.delete(`/masterdata/attributegroup/${group.id}/delete_record/`)
-        await fetchAttributeGroups()
-      } catch (error) {
-        console.log("delete:attributegroup:", error)
-      }
+
+    // Edit Attribute
+    async function onEditAttributeGroup(eventData) {
+        editData = eventData.original;
+        showForm = true;
+        editForm = true;
     }
-    // Mount
-    onMount(async () => {
-      await fetchAttributeGroups()
-    } )
+
+    async function onDeleteAttributeGroup(eventData) {
+        deletingAttributeGroup = eventData.original;
+        showDeleteModal = true;
+    }
+
+    function confirmDelete() {
+        API.delete(`/masterdata/attributegroup/${deletingAttributeGroup.id}/delete_record/`).then(() => {
+            closeDeleteModal();
+        }).catch((error) => {
+            console.error("Error deleting AttributeGroup:", error);
+            closeDeleteModal();
+        });
+    }
+
+    function closeDeleteModal() {
+        showDeleteModal = false;
+        refreshTable.refreshTable();
+        toast("Attribute Group Deleted Successfully!");
+    }
+
+    function handleNewAttributeGroup() {
+        editData = null;
+        editForm = false;
+        showForm = false;
+        refreshTable.refreshTable();
+    }
+
 </script>
-<div class="m-3">
-    <div
-      class="bg-white rounded-md p-4 px-6 border overflow-y-auto"
-      style="height: calc(100vh - 58px);"
-    >
-      {#if !showForm}
-        <div>
-          <div class="flex items-center justify-between">
-            <h4 class="text-lg font-medium text-gray-800">Attribute Group</h4>
-            <div class="flex items-center gap-2">
-              <Button
-                class="text-xs flex items-center gap-2 border  px-4 py-1.5"
-                on:click={() => (showForm = true)}
-              >
-                <span>
-                  <i class="fa-solid fa-plus text-sm"></i>
-                </span>New Attribute</Button
-              >
-            </div>
-          </div>
-        </div>
-        <!-- table -->
-        <!-- <div class="mt-8 flow-root">
-          <div class=" overflow-x-auto">
-            <div
-              class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"
-            >
-              <table class="min-w-full divide-y divide-gray-300">
-                <thead>
-                  <tr>
-                    <th
-                      scope="col"
-                      class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-                      >Name</th
-                    >
-                    <th
-                      scope="col"
-                      class="relative py-3.5 pl-3 pr-4 sm:pr-0 flex"
-                    >
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                  {#each attributesGroup as attribute, i}
-                    <tr>
-                      <td
-                        class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
-                        >{attribute.name}</td
-                      >
-                      <td
-                        class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 flex gap-2 items-center"
-                      >
-                        <button class="text-gray-700">
-                          <i class="fa-solid fa-pencil"></i>
-                        </button>
-                        <button class="text-red-500" on:click={() => deleteAttributeGroup(attribute)}>
-                          <i class="fa-solid fa-trash"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  {/each}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div> -->
-        <AttributeGroupTable />
-      {:else}
+
+<div>
+    {#if showDeleteModal}
+        <ConfirmDeleteModal attribute={deletingAttributeGroup.name} on:confirm={confirmDelete}
+                            on:cancel={closeDeleteModal}/>
+    {/if}
+</div>
+
+<div class="abc">
+    {#if showForm}
         <CreateAttributeGroup
-          on:close={() => (showForm = false)}
-          on:newAttributeGroup={() => {
-            showForm = false;
-            fetchAttributeGroups
-          }}
-        />
-      {/if}
+                {editData}
+                {editForm}
+                on:close={() => {editData = null;editForm = false;showForm = false;}}
+                on:newAttributeGroup={() => handleNewAttributeGroup()}/>
+    {/if}
+</div>
+
+<div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
+    <div class="flex items-center ">
+        <h4 class="text-lg font-medium text-gray-800 dark:text-gray-200 flex-1">Attribute Group</h4>
+        <Button class="text-xs flex items-center gap-2 border  px-4 py-1.5" on:click={() => toggleForm()}>
+            <span>
+                <i class="fa-solid fa-plus text-sm"></i>
+            </span>New Attribute Group
+        </Button>
     </div>
-  </div>
+    <AttributeGroupTable on:newAttributeGroup={() => toggleForm()}
+                on:edit={(event) => onEditAttributeGroup(event.detail.item.row)}
+                on:delete={(event) => onDeleteAttributeGroup(event.detail.item.row)}
+                bind:this={refreshTable}/>
+</div>

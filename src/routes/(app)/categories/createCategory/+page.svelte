@@ -19,7 +19,7 @@
         image: "",
         parent_category: 0,
         second_parent_category: 0,
-        attribute_group: "",
+        attribute_group: 0,
         tags: "",
     };
 
