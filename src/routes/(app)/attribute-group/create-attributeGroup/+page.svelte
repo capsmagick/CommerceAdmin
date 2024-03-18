@@ -24,10 +24,13 @@
         name = editData.name
         attributes = editData.attributes;
         selectedAttributes = attributes;
+        updateSelectedAttributeNames()
     }
 
-    function updateSelectedAttributeNames() {
+    async function updateSelectedAttributeNames() {
+        if(!attribute.length) await fetchAttribute()
         selectedAttributeNames = attribute.filter(attr => selectedAttributes.includes(attr.id)).map(attr => attr.name);
+        console.log("att", selectedAttributeNames, attribute, selectedAttributes)
     }
 
     async function fetchAttribute() {
@@ -124,8 +127,8 @@
                 <div class="mt-2">
                     <Select.Root>
                         <Select.Trigger class="input capitalize"
-                        >{selectedAttributes
-                            ? selectedAttributes
+                        >{selectedAttributeNames
+                            ? selectedAttributeNames
                             : "Select a Attributes"}</Select.Trigger
                         >
                         <Select.Content>
