@@ -55,6 +55,8 @@
       icon: "fa-warehouse",
       route: "/inventory",
       items: [
+        { name: "Inventory", page: "inventory" },
+        { name: "Batch", page: "batch" },
         { name: "purchase orders", page: "purchase-orders" },
         { name: "stock levels", page: "stock" },
         { name: "stock adjustments", page: "stock-adjustment" },
