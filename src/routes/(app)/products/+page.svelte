@@ -41,7 +41,7 @@
     };
 
     type Condition = {
-        id: string;
+        id: number;
         name: string;
        
     };
