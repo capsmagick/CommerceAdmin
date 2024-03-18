@@ -38,6 +38,8 @@
         { name: "Lookbook", page: "lookbook" },
         { name: "Attributes", page: "attributes" },
         { name: "Attribute Group", page: "attribute-group" },
+        { name: "Tag", page: "tag" },
+        { name: "Variant", page: "variant" },
       ]
     },
     {
@@ -55,10 +57,13 @@
       icon: "fa-warehouse",
       route: "/inventory",
       items: [
+        { name: "inventory", page: "inventory" },
+        { name: "batch", page: "batch" },
         { name: "purchase orders", page: "purchase-orders" },
         { name: "stock levels", page: "stock" },
         { name: "stock adjustments", page: "stock-adjustment" },
         { name: "stock transfers", page: "stock-transfer" },
+        { name: "warehouse", page: "warehouse" },
       ]
     },
     {

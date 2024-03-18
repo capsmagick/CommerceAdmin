@@ -1,6 +1,7 @@
 <script lang="ts">
     import CaretSort from "svelte-radix/CaretSort.svelte";
     import ChevronDown from "svelte-radix/ChevronDown.svelte";
+    import * as Avatar from "$lib/components/ui/avatar";
     import {
       createTable,
       Subscribe,
@@ -16,30 +17,40 @@
     } from "svelte-headless-table/plugins";
     import { readable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
-    // import Actions from "./customerTableActions.svelte";
+    import Actions from "./batchTableActions.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
-    import DataTableCheckbox from "./customerTableCheckbox.svelte";
-     import API from "$lib/services/api";
+    import DataTableCheckbox from "./batchTableCheckbox.svelte";
+    import API from "$lib/services/api";
     import {createEventDispatcher} from "svelte";
 
     const dispatch = createEventDispatcher();
-    // import type {ActionsEvents} from './Actions.svelte';
-   
-    type Customers = {
-      id: string;
-      name: string;
-      status: "Pending" | "Processing" | "Success" | "Failed";
-      email: string;
-      phoneNumber: number;
-      shippingAddress: string;
-    };
+    import type {ActionsEvents} from './Actions.svelte';
+    
+  type Batch = {
+  id: string;
+  warehouse: string;
+  batch_number: string;
+  rack: string;
+  row: string;
+  expiry_date: string;
+  purchase_amount: string;
+  mrp: string;
+  selling_price: string;
+  purchase_quantity: string;
+  stock: string;
+  is_perishable: string;
+  is_disabled: string;
+  tax_inclusive: string;
+  purchase_amount_tax_inclusive: string;
+  tax: string;
+};
 
     // Create a readable store for the data
-    const data = readable<Customers[]>([], (set) => {
-        getCustomers().then((data) => {
+    const data = readable<Batch[]>([], (set) => {
+        getBatch().then((data) => {
             console.log(data);
             set(data);
         });
@@ -53,15 +64,16 @@
         location.reload();
     }
 
-    async function getCustomers() {
+    async function getBatch() {
         try {
-        const res = await API.get("/account/customers/");
+        const res = await API.get("/inventory/batch/");
         return res.data.results;
         } catch (error) {
         console.error("fetch:brands:", error);
         return [];
         }
     }
+   
    
     const table = createTable(data, {
       sort: addSortBy({ disableMultiSort: true }),
@@ -73,7 +85,7 @@
       hide: addHiddenColumns()
     });
    
-    const columns = table.createColumns([
+     const columns = table.createColumns([
       table.column({
         header: (_, { pluginStates }) => {
           const { allPageRowsSelected } = pluginStates.select;
@@ -99,57 +111,74 @@
           }
         }
       }),
-        table.column({
-        header: "Name",
-        accessor: "name",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
-      }),
       table.column({
-        header: "Email",
-        accessor: "email",
-        cell: ({ value }) => value.toLowerCase(),
+        header: "Warehouse",
+        accessor: "warehouse",
+        cell: ({ value }) => `<img src="${value}" alt="Featured Image" class="h-10 w-10 rounded-full">`,
+        plugins: { filter: { exclude: true } }
+      }),
+    
+      table.column({
+        header: "Batch Number",
+        accessor: "batch_number",
+        cell: ({ value }) => value,
         plugins: {
           filter: {
             getFilterValue(value) {
-              return value.toLowerCase();
+              return value;
             }
           }
         }
       }),
       table.column({
-        header: "Phone Number",
-        accessor: "phoneNumber",
+        header: "Expiry Date",
+        accessor: "expiry_date",
+        cell: ({ value }) => value,
+        plugins: { filter: {} }
+      }),
+      table.column({
+        header: "Purchase Amount",
+        accessor: "purchase_amount",
+        cell: ({ value }) => value,
+        plugins: { filter: {} }
+      }),
+      table.column({
+        header: "MRP",
+        accessor: "mrp",
+        cell: ({ value }) => value,
+        plugins: { filter: {} }
+      }),
+    
+      table.column({
+        header: "Selling Price",
+        accessor: "selling_price",
+        cell: ({ value }) => new Date(value).toLocaleDateString(),
+        plugins: { sort: {}, filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Stock",
+        accessor: "stock",
+        cell: ({ value }) => new Date(value).toLocaleDateString(),
+        plugins: { sort: {}, filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Actions",
+        accessor: ({ id }) => id,
+        cell: (item) => {
+          return createRender(Actions, {item: item})
+            .on('edit', (event: ActionsEvents['edit']) => {
+                dispatch('edit', {item})
+            })
+            .on('delete', (event: ActionsEvents['delete']) => {
+                dispatch('delete', {item})
+            });
+        },
         plugins: {
           sort: {
             disable: true
-          },
-          filter: {
-            exclude: true
           }
         }
-      }),
-      table.column({
-        header: "Shipping Address",
-        accessor: "shippingAddress",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
-      }),
-        table.column({
-        header: "Status",
-        accessor: "status",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
-      }),
-      // table.column({
-      //   header: "",
-      //   accessor: ({ id }) => id,
-      //   cell: (item) => {
-      //     return createRender(Actions, { id: item.value });
-      //   },
-      //   plugins: {
-      //     sort: {
-      //       disable: true
-      //     }
-      //   }
-      // })
+      })
     ]);
    
     const {
@@ -167,7 +196,11 @@
     const { hiddenColumnIds } = pluginStates.hide;
     const ids = flatColumns.map((c) => c.id);
     let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
-   
+    
+    let initialHiddenColumns = [ 'batch_number'];
+
+    $: hideForId = Object.fromEntries(ids.map((id) => [id, !initialHiddenColumns.includes(id)]));
+
     $: $hiddenColumnIds = Object.entries(hideForId)
       .filter(([, hide]) => !hide)
       .map(([id]) => id);
@@ -177,14 +210,14 @@
    
     const { selectedDataIds } = pluginStates.select;
    
-    const hideableCols = ["status", "email", "phoneNumber", "shippingAddress"];
+    const hideableCols = [ 'batch_number','rack','row','expiry_date','purchase_amount','mrp','selling_price','purchase_quantity','stock','is_perishable','is_disabled','tax_inclusive','purchase_amount_tax_inclusive','tax'];
   </script>
    
   <div class="w-full">
     <div class="mb-4 p-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter emails..."
+        placeholder="Filter Customer..."
         type="text"
         bind:value={$filterValue}
       />
@@ -226,7 +259,7 @@
                         <div class="text-right">
                           <Render of={cell.render()} />
                         </div>
-                      {:else if cell.id === "email"}
+                      {:else if cell.id === "customerName"}
                         <Button variant="ghost" on:click={props.sort.toggle}>
                           <Render of={cell.render()} />
                           <CaretSort

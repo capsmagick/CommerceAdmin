@@ -1,6 +1,7 @@
 <script lang="ts">
     import CaretSort from "svelte-radix/CaretSort.svelte";
     import ChevronDown from "svelte-radix/ChevronDown.svelte";
+    import * as Avatar from "$lib/components/ui/avatar";
     import {
       createTable,
       Subscribe,
@@ -12,34 +13,31 @@
       addPagination,
       addTableFilter,
       addSelectedRows,
-      addHiddenColumns
     } from "svelte-headless-table/plugins";
     import { readable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
-    // import Actions from "./customerTableActions.svelte";
+    import Actions from "./inventoryTableActions.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
-    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
-    import DataTableCheckbox from "./customerTableCheckbox.svelte";
-     import API from "$lib/services/api";
+    import DataTableCheckbox from "./inventoryTableCheckbox.svelte";
+    import API from "$lib/services/api";
     import {createEventDispatcher} from "svelte";
 
     const dispatch = createEventDispatcher();
-    // import type {ActionsEvents} from './Actions.svelte';
-   
-    type Customers = {
-      id: string;
-      name: string;
-      status: "Pending" | "Processing" | "Success" | "Failed";
-      email: string;
-      phoneNumber: number;
-      shippingAddress: string;
-    };
+    import type {ActionsEvents} from './Actions.svelte';
+    
+  type Inventories = {
+  id: string;
+  variants: string;
+  stock: string;
+  batch: string;
+  low_stock_notification: string;
+};
 
     // Create a readable store for the data
-    const data = readable<Customers[]>([], (set) => {
-        getCustomers().then((data) => {
+    const data = readable<Inventories[]>([], (set) => {
+        getInventory().then((data) => {
             console.log(data);
             set(data);
         });
@@ -53,15 +51,16 @@
         location.reload();
     }
 
-    async function getCustomers() {
+    async function getInventory() {
         try {
-        const res = await API.get("/account/customers/");
+        const res = await API.get("/inventory/inventory/");
         return res.data.results;
         } catch (error) {
         console.error("fetch:brands:", error);
         return [];
         }
     }
+   
    
     const table = createTable(data, {
       sort: addSortBy({ disableMultiSort: true }),
@@ -70,10 +69,9 @@
         fn: ({ filterValue, value }) => value.includes(filterValue)
       }),
       select: addSelectedRows(),
-      hide: addHiddenColumns()
     });
    
-    const columns = table.createColumns([
+     const columns = table.createColumns([
       table.column({
         header: (_, { pluginStates }) => {
           const { allPageRowsSelected } = pluginStates.select;
@@ -99,57 +97,42 @@
           }
         }
       }),
-        table.column({
-        header: "Name",
-        accessor: "name",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
+      table.column({
+        header: "Variants",
+        accessor: "variants",
+        cell: ({ value }) => new Date(value).toLocaleDateString(),
+        plugins: { sort: {}, filter: { exclude: true } }
       }),
       table.column({
-        header: "Email",
-        accessor: "email",
-        cell: ({ value }) => value.toLowerCase(),
-        plugins: {
-          filter: {
-            getFilterValue(value) {
-              return value.toLowerCase();
-            }
-          }
-        }
+        header: "Stock",
+        accessor: "stock",
+        cell: ({ value }) => new Date(value).toLocaleDateString(),
+        plugins: { sort: {}, filter: { exclude: true } }
       }),
       table.column({
-        header: "Phone Number",
-        accessor: "phoneNumber",
+        header: "Batch",
+        accessor: "batch",
+        cell: ({ value }) => value,
+        plugins: { filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Actions",
+        accessor: ({ id }) => id,
+        cell: (item) => {
+          return createRender(Actions, {item: item})
+            .on('edit', (event: ActionsEvents['edit']) => {
+                dispatch('edit', {item})
+            })
+            .on('delete', (event: ActionsEvents['delete']) => {
+                dispatch('delete', {item})
+            });
+        },
         plugins: {
           sort: {
             disable: true
-          },
-          filter: {
-            exclude: true
           }
         }
-      }),
-      table.column({
-        header: "Shipping Address",
-        accessor: "shippingAddress",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
-      }),
-        table.column({
-        header: "Status",
-        accessor: "status",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
-      }),
-      // table.column({
-      //   header: "",
-      //   accessor: ({ id }) => id,
-      //   cell: (item) => {
-      //     return createRender(Actions, { id: item.value });
-      //   },
-      //   plugins: {
-      //     sort: {
-      //       disable: true
-      //     }
-      //   }
-      // })
+      })
     ]);
    
     const {
@@ -163,47 +146,22 @@
     } = table.createViewModel(columns);
    
     const { sortKeys } = pluginStates.sort;
-   
-    const { hiddenColumnIds } = pluginStates.hide;
-    const ids = flatColumns.map((c) => c.id);
-    let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
-   
-    $: $hiddenColumnIds = Object.entries(hideForId)
-      .filter(([, hide]) => !hide)
-      .map(([id]) => id);
-   
+  
     const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
     const { filterValue } = pluginStates.filter;
    
     const { selectedDataIds } = pluginStates.select;
    
-    const hideableCols = ["status", "email", "phoneNumber", "shippingAddress"];
   </script>
    
   <div class="w-full">
     <div class="mb-4 p-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter emails..."
+        placeholder="Filter Inventory..."
         type="text"
         bind:value={$filterValue}
       />
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild let:builder>
-          <Button variant="outline" class="ml-auto" builders={[builder]}>
-            Columns <ChevronDown class="ml-2 h-4 w-4" />
-          </Button>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Content>
-          {#each flatColumns as col}
-            {#if hideableCols.includes(col.id)}
-              <DropdownMenu.CheckboxItem bind:checked={hideForId[col.id]}>
-                {col.header}
-              </DropdownMenu.CheckboxItem>
-            {/if}
-          {/each}
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
     </div>
     <div class="rounded-md border">
       <Table.Root {...$tableAttrs}>
@@ -226,7 +184,7 @@
                         <div class="text-right">
                           <Render of={cell.render()} />
                         </div>
-                      {:else if cell.id === "email"}
+                      {:else if cell.id === "customerName"}
                         <Button variant="ghost" on:click={props.sort.toggle}>
                           <Render of={cell.render()} />
                           <CaretSort
