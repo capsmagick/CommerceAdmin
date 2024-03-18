@@ -17,11 +17,13 @@
 	{transitionConfig}
 	{sideOffset}
 	class={cn(
-		"z-50 min-w-[8rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md focus:outline-none",
+		"z-50 min-w-[8rem] mt-1 glow-border",
 		className
 	)}
 	{...$$restProps}
 	on:keydown
 >
+<div class="glow-border-content bg-popover p-1 text-popover-foreground shadow-md focus:outline-none">
 	<slot />
+</div>
 </DropdownMenuPrimitive.Content>

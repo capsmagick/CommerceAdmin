@@ -56,7 +56,7 @@ async function logout() {
     <!-- <div class="flex items-center justify-center w-full absolute left-1/2 transform -translate-x-1/2">
       <strong>SIGNUP CASUALS</strong>
     </div> -->
-     <div class="mr-auto flex items-center glow-border space-x-4 ">
+     <div class="mr-auto flex items-center glow-border shadow-md space-x-4 ">
       <DashboardMainNav />
      </div> 
     
