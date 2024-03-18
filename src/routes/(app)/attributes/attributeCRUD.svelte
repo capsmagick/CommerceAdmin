@@ -93,11 +93,11 @@
         <div class="grid gap-4 py-4">
             <div class="grid grid-cols-4 items-center gap-4">
                 <Label for="name" class="text-right">Name</Label>
-                <Input id="name" bind:value={name} placeholder="Attribute Name" class="col-span-3"/>
+                <Input id="name" bind:value={editData.name} placeholder="Attribute Name" class="col-span-3"/>
             </div>
             <div class="grid grid-cols-4 items-center gap-4">
                 <Label for="values" class="text-right">Values</Label>
-                <Input id="values" bind:value={value} placeholder="Value1, Value2, Value3" class="col-span-3"/>
+                <Input id="values" bind:value={editData.value} placeholder="Value1, Value2, Value3" class="col-span-3"/>
             </div>
         </div>
         <Sheet.Footer>

@@ -5,7 +5,7 @@
     import API from "$lib/services/api";
     import {Button} from "$lib/components/ui/button";
     import AttributeTable from "./attributeTable.svelte";
-    import AttributeCRUD from "./AttributeCRUD.svelte";
+    import AttributeCRUD from "./attributeCrud.svelte";
     import * as Sheet from "$lib/components/ui/sheet/index";
     import {refreshtable} from '$lib/Functions/CRUD';
 
