@@ -38,6 +38,7 @@
         { name: "Lookbook", page: "lookbook" },
         { name: "Attributes", page: "attributes" },
         { name: "Attribute Group", page: "attribute-group" },
+        { name: "Tag", page: "tag" },
       ]
     },
     {

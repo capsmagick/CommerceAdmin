@@ -16,25 +16,25 @@
     } from "svelte-headless-table/plugins";
     import { readable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
-    import Actions from "./warehouseTableActions.svelte";
+    import Actions from "./tagTableActions.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
-    import DataTableCheckbox from "./warehouseTableCheckbox.svelte";
+    import DataTableCheckbox from "./tagTableCheckbox.svelte";
     import API from "$lib/services/api";
     import {createEventDispatcher} from "svelte";
 
     const dispatch = createEventDispatcher();
     import type {ActionsEvents} from './Actions.svelte';
     
-  type Warehouse = {
+  type Tag = {
   id: string;
   name: string;
 };
 
     // Create a readable store for the data
-    const data = readable<Warehouse[]>([], (set) => {
-        getWarehouse().then((data) => {
+    const data = readable<Tag[]>([], (set) => {
+        getTags().then((data) => {
             console.log(data);
             set(data);
         });
@@ -48,9 +48,9 @@
         location.reload();
     }
 
-    async function getWarehouse() {
+    async function getTags() {
         try {
-        const res = await API.get("/inventory/warehouse/");
+        const res = await API.get("/masterdata/tag/");
         return res.data.results;
         } catch (error) {
         console.error("fetch:brands:", error);
@@ -143,7 +143,7 @@
     <div class="mb-4 p-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter Warehouse..."
+        placeholder="Filter Tags..."
         type="text"
         bind:value={$filterValue}
       />
