@@ -16,19 +16,20 @@
     } from "svelte-headless-table/plugins";
     import { readable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
-    import Actions from "./inventoryTableActions.svelte";
+    import Actions from "./warehouseTableActions.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
-    import DataTableCheckbox from "./inventoryTableCheckbox.svelte";
+    import DataTableCheckbox from "./warehouseTableCheckbox.svelte";
     import API from "$lib/services/api";
     import {createEventDispatcher} from "svelte";
 
     const dispatch = createEventDispatcher();
     import type {ActionsEvents} from './Actions.svelte';
     
-  type Inventories = {
+  type Warehouse = {
   id: string;
+  name: string;
   variants: string;
   stock: string;
   batch: string;
@@ -36,8 +37,8 @@
 };
 
     // Create a readable store for the data
-    const data = readable<Inventories[]>([], (set) => {
-        getInventory().then((data) => {
+    const data = readable<Warehouse[]>([], (set) => {
+        getWarehouse().then((data) => {
             console.log(data);
             set(data);
         });
@@ -51,9 +52,9 @@
         location.reload();
     }
 
-    async function getInventory() {
+    async function getWarehouse() {
         try {
-        const res = await API.get("/inventory/inventory/");
+        const res = await API.get("/inventory/warehouse/");
         return res.data.results;
         } catch (error) {
         console.error("fetch:brands:", error);
@@ -98,22 +99,10 @@
         }
       }),
       table.column({
-        header: "Variants",
-        accessor: "variants",
+        header: "Name",
+        accessor: "name",
         cell: ({ value }) => new Date(value).toLocaleDateString(),
         plugins: { sort: {}, filter: { exclude: true } }
-      }),
-      table.column({
-        header: "Stock",
-        accessor: "stock",
-        cell: ({ value }) => new Date(value).toLocaleDateString(),
-        plugins: { sort: {}, filter: { exclude: true } }
-      }),
-      table.column({
-        header: "Batch",
-        accessor: "batch",
-        cell: ({ value }) => value,
-        plugins: { filter: { exclude: true } }
       }),
       table.column({
         header: "Actions",
@@ -158,7 +147,7 @@
     <div class="mb-4 p-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter Inventory..."
+        placeholder="Filter Warehouse..."
         type="text"
         bind:value={$filterValue}
       />
