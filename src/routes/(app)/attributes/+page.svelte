@@ -6,6 +6,7 @@
     import API from "$lib/services/api";
     import { Button } from "$lib/components/ui/button";
     import AttributeTable from "./attributeTable.svelte";
+    import AttributeCRUD from "./AttributeCRUD.svelte";
 
   import * as Sheet from "$lib/components/ui/sheet/index";
   import { Input } from "$lib/components/ui/input";
@@ -15,7 +16,7 @@
 
     let showDeleteModal = false;
     let deletingAttribute: any;
-
+    
     let editData: any = null;
     let refreshTable;
     let showForm: boolean = false;
@@ -88,34 +89,7 @@
                 <i class="fa-solid fa-plus text-sm"></i>
             </span>New Attribute
         </Button>
-        <Sheet.Root>
-            <Sheet.Trigger asChild let:builder>
-              <Button builders={[builder]} variant="outline">Add New</Button>
-            </Sheet.Trigger>
-            <Sheet.Content side="right">
-              <Sheet.Header>
-                <Sheet.Title>Add Attribute</Sheet.Title>
-                <Sheet.Description>
-                  create new attributes here. Add multiple value seprated by comma.Click save when you're done.
-                </Sheet.Description>
-              </Sheet.Header>
-              <div class="grid gap-4 py-4">
-                <div class="grid grid-cols-4 items-center gap-4">
-                  <Label for="name" class="text-right">Name</Label>
-                  <Input id="name" value="Pedro Duarte" class="col-span-3" />
-                </div>
-                <div class="grid grid-cols-4 items-center gap-4">
-                  <Label for="values" class="text-right">Values</Label>
-                  <Input id="values" value="@peduarte" class="col-span-3" />
-                </div>
-              </div>
-              <Sheet.Footer>
-                <Sheet.Close asChild let:builder>
-                  <Button builders={[builder]} type="submit">Save changes</Button>
-                </Sheet.Close>
-              </Sheet.Footer>
-            </Sheet.Content>
-          </Sheet.Root>
+        <AttributeCRUD {editData}/>
   </div>
   <AttributeTable 
     on:newAttribute={() => toggleForm()}

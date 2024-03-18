@@ -12,6 +12,7 @@
       addTableFilter,
       addSelectedRows,
     } from "svelte-headless-table/plugins";
+    import { writable } from 'svelte/store';
     import { readable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
     import Actions from "./attributeTableActions.svelte"
@@ -24,6 +25,8 @@
     import { goto } from "$app/navigation";
     import API from "$lib/services/api";
     import {createEventDispatcher} from "svelte";
+    import {refreshtable} from "$lib/Functions/CRUD";
+    import {attributeDataStore} from "$lib/stores/data";
 
     const dispatch = createEventDispatcher();
     import type {ActionsEvents} from './Actions.svelte';
@@ -33,34 +36,22 @@
         name: string;
         value: string [];
     };
+    
+  
+
+  
+   
+  onMount(async () => {
+    refreshtable();
+  });
+
+   
 
     // Create a readable store for the data
-    const data = readable<Attribute[]>([], (set) => {
-        getAttributes().then((data) => {
-            console.log(data);
-            set(data);
-        });
-    });
 
-    function createFunction() {
-      dispatch('newAttribute')
-    }
-
-    export async function refreshTable() {
-        location.reload();
-    }
-
-    async function getAttributes() {
-        try {
-        const res = await API.get("/masterdata/attribute/");
-        return res.data.results;
-        } catch (error) {
-        console.error("fetch:brands:", error);
-        return [];
-        }
-    }
+  
    
-    const table = createTable(data, {
+    const table = createTable(attributeDataStore, {
       sort: addSortBy({ disableMultiSort: true }),
       page: addPagination(),
       filter: addTableFilter({
