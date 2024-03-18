@@ -37,76 +37,33 @@
       shippingAddress: string;
     };
 
-    // // Create a readable store for the data
-    // const data = readable<Customers[]>([], (set) => {
-    //     getCustomers().then((data) => {
-    //         console.log(data);
-    //         set(data);
-    //     });
-    // });
+    // Create a readable store for the data
+    const data = readable<Customers[]>([], (set) => {
+        getCustomers().then((data) => {
+            console.log(data);
+            set(data);
+        });
+    });
 
-    // function createFunction() {
-    //   dispatch('newAttribute')
-    // }
+    function createFunction() {
+      dispatch('newAttribute')
+    }
 
-    // export async function refreshTable() {
-    //     location.reload();
-    // }
+    export async function refreshTable() {
+        location.reload();
+    }
 
-    // async function getCustomers() {
-    //     try {
-    //     const res = await API.get("/masterdata/attribute/");
-    //     return res.data.results;
-    //     } catch (error) {
-    //     console.error("fetch:brands:", error);
-    //     return [];
-    //     }
-    // }
-
-    const data1: Customers[] = [
-      {
-        id: "m5gr84i9",
-        name: 'Arun',
-        status: "Success",
-        email: "arun@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
-      },
-      {
-        id: "3u1reuv4",
-        name: 'Amal',
-        status: "Success",
-        email: "amal@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
-      },
-      {
-        id: "derv1ws0",
-        name: 'Abhi',
-        status: "Success",
-        email: "abhi@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
-      },
-      {
-        id: "5kma53ae",
-        name: 'Babu',
-        status: "Success",
-        email: "babu@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
-      },
-      {
-        id: "bhqecj4p",
-        name: 'Kumar',
-        status: "Success",
-        email: "kumar@yahoo.com",
-        phoneNumber: 9876543210,
-        shippingAddress: '123, ABC Street, New York, USA'
-      }
-    ];
+    async function getCustomers() {
+        try {
+        const res = await API.get("/account/customers/");
+        return res.data.results;
+        } catch (error) {
+        console.error("fetch:brands:", error);
+        return [];
+        }
+    }
    
-    const table = createTable(readable(data1), {
+    const table = createTable(data, {
       sort: addSortBy({ disableMultiSort: true }),
       page: addPagination(),
       filter: addTableFilter({
