@@ -1,42 +1,90 @@
 <script lang="ts">
-  /** @type {import('./$types').PageData} */
-  import { onMount } from "svelte";
-  import { goto } from "$app/navigation"
-  import API from "$lib/services/api";
-  import { Button } from "$lib/components/ui/button";
-  import CategoriesTable from "./categoriesTable.svelte";
-  //
-  export let data;
-  let categories: { id: string; name: string; handle: string; description: string }[] = [];
-  let showForm = false;
+    /** @type {import('./$types').PageData} */
 
-  //
-  async function fetchCategories() {
-    try {
-      const res = await API.get("/masterdata/category/");
-      categories = Array.isArray(res.data?.results) ? res.data.results : []
-    } catch (error) {
-      console.log("fetch:categories:", error);
-      categories = []
-    }
-  }
-  async function onDeleteCategory(category: { id: string }) {
-    try {
-      await API.delete(`/masterdata/category/${category.id}/delete_record/`);
-    } catch (error) {
-      console.log("delete:category:", error);
-    }
-  }
+    import API from "$lib/services/api";
+    import {Button} from "$lib/components/ui/button";
+    import CategoriesTable from "./categoriesTable.svelte";
+    import CreditCategory from "./createCategory/+page.svelte"
+    import {toast} from "svelte-sonner";
+    import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
 
-  //   Mount
-  onMount(async () => {
-    await fetchCategories();
-  });
+
+    let showDeleteModal = false;
+    let deletingCategory: any;
+    let refreshTable;
+    let editData;
+    let showForm: boolean = false;
+    let editForm: boolean = false;
+
+    function toggleForm() {
+        console.log(showForm)
+        showForm = !showForm
+    }
+
+    // Edit Attribute
+    async function onEditCategory(eventData) {
+        editData = eventData.original;
+        showForm = true;
+        editForm = true;
+    }
+
+    async function onDeleteCategory(eventData) {
+        deletingCategory = eventData.original;
+        showDeleteModal = true;
+    }
+
+    function confirmDelete() {
+        API.delete(`/masterdata/category/${deletingCategory.id}/delete_record/`).then(() => {
+            closeDeleteModal();
+        }).catch((error) => {
+            console.error("Error deleting Category:", error);
+            closeDeleteModal();
+        });
+    }
+
+    function closeDeleteModal() {
+        showDeleteModal = false;
+        refreshTable.refreshTable();
+        toast("Category Deleted Successfully!");
+    }
+
+    function handleNewCategory() {
+        editData = null;
+        editForm = false;
+        showForm = false;
+        refreshTable.refreshTable();
+    }
+
 </script>
+
+<div>
+    {#if showDeleteModal}
+        <ConfirmDeleteModal attribute={deletingCategory.name} on:confirm={confirmDelete}
+                            on:cancel={closeDeleteModal}/>
+    {/if}
+</div>
+
+<div class="abc">
+    {#if showForm}
+        <CreditCategory
+                {editData}
+                {editForm}
+                on:close={() => {editData = null;editForm = false;showForm = false;}}
+                on:newCategory={() => handleNewCategory()}/>
+    {/if}
+</div>
+
 <div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
-  <div class="flex items-center ">
-      <h4 class="text-lg font-medium text-gray-800 dark:text-gray-200 flex-1">Category</h4>
-      <Button variant="outline" class=" mr-4 ">Export Category</Button>
-  </div>
-  <CategoriesTable />
+    <div class="flex items-center ">
+        <h4 class="text-lg font-medium text-gray-800 dark:text-gray-200 flex-1">Category</h4>
+        <Button class="text-xs flex items-center gap-2 border  px-4 py-1.5" on:click={() => toggleForm()}>
+            <span>
+                <i class="fa-solid fa-plus text-sm"></i>
+            </span>New Category
+        </Button>
+    </div>
+    <CategoriesTable on:newCategory={() => toggleForm()}
+                     on:edit={(event) => onEditCategory(event.detail.item.row)}
+                     on:delete={(event) => onDeleteCategory(event.detail.item.row)}
+                     bind:this={refreshTable}/>
 </div>

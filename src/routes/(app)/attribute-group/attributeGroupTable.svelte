@@ -31,6 +31,7 @@
     type AttributeGroup = {
         id: string;
         name: string;
+        attributes: string;
     };
 
     // Create a readable store for the data
@@ -42,7 +43,7 @@
     });
 
     function createFunction() {
-      dispatch('newAttribute')
+      dispatch('newAttributeGroup')
     }
 
     export async function refreshTable() {
@@ -95,6 +96,11 @@
         }
       }),
       table.column({
+            header: "ID",
+            accessor: ({id}) => id,
+            plugins: {sort: {disable: true}, filter: {exclude: true}}
+        }),
+      table.column({
         header: "Name",
         accessor: "name",
         cell: ({ value }) => value.toLowerCase(),
@@ -106,6 +112,11 @@
           }
         }
       }),
+       table.column({
+            header: "Attributes",
+            accessor: "attributes",
+            plugins: {sort: {disable: true}, filter: {exclude: true}}
+        }),
       table.column({
         header: "Actions  ",
         accessor: ({ id }) =>  id,

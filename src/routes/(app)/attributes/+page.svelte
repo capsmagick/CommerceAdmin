@@ -5,27 +5,30 @@
     import API from "$lib/services/api";
     import {Button} from "$lib/components/ui/button";
     import AttributeTable from "./attributeTable.svelte";
+
+    import CreditAttribute from "./createattributes/+page.svelte";
     import AttributeCRUD from "./attributeCrud.svelte";
     import * as Sheet from "$lib/components/ui/sheet/index";
     import {refreshtable} from '$lib/Functions/CRUD';
-
     import {toast} from "svelte-sonner";
 
-
-    let showDeleteModal = false;
+   let showDeleteModal = false;
     let deletingAttribute: any;
-
-    let editData: any = null;
+    let refreshTable;
+    let editData;
+    let showForm: boolean = false;
     let editForm: boolean = false;
 
+    function toggleForm() {
+        console.log(showForm)
+        showForm = !showForm
+    }
+
+    // Edit Attribute
     async function onEditAttribute(eventData) {
         editData = eventData.original;
-        console.log('edit, ', editData)
-        editForm = true
-        setTimeout(() => {
-            const addButton = document.querySelector('.add-new-button');
-            if (addButton) addButton.click();
-        }, 0);
+        showForm = true;
+        editForm = true;
     }
 
     async function onDeleteAttribute(eventData) {
@@ -34,48 +37,56 @@
     }
 
     function confirmDelete() {
-        API.delete(`/masterdata/attribute/${deletingAttribute.id}/delete_record/`).then(() => {
+        API.delete(`/masterdata/brand/${deletingAttribute.id}/delete_record/`).then(() => {
             closeDeleteModal();
         }).catch((error) => {
-            console.error("Error deleting attribute:", error);
+            console.error("Error deleting Brand:", error);
             closeDeleteModal();
         });
     }
 
     function closeDeleteModal() {
         showDeleteModal = false;
-        refreshtable();
-        toast("Attribute Deleted Successfully!");
+        refreshTable.refreshTable();
+        toast("Brand Deleted Successfully!");
     }
 
-    function clearData(){
-        editForm = false
+    function handleNewAttribute() {
+        editData = null;
+        editForm = false;
+        showForm = false;
+        refreshTable.refreshTable();
     }
 
 </script>
-
 <div>
     {#if showDeleteModal}
-        <ConfirmDeleteModal attribute={deletingAttribute.name} on:confirm={confirmDelete} on:cancel={closeDeleteModal}/>
+        <ConfirmDeleteModal attribute={deletingAttribute.name} on:confirm={confirmDelete}
+                            on:cancel={closeDeleteModal}/>
+    {/if}
+</div>
+
+<div class="abc">
+    {#if showForm}
+        <CreditAttribute
+                {editData}
+                {editForm}
+                on:close={() => {editData = null;editForm = false;showForm = false;}}
+                on:newAttribute={() => handleNewAttribute()}/>
     {/if}
 </div>
 
 <div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
     <div class="flex items-center ">
-        <h4 class="text-lg font-medium text-gray-800 dark:text-gray-200 flex-1">Attributes</h4>
-        <AttributeCRUD
-                on:editSuccess={() => clearData()}
-                {editData}
-                {editForm}>
-            <div slot="additionalButton">
-                <Sheet.Trigger asChild let:builder>
-                    <Button class="add-new-button" builders={[builder]} variant="outline">Add New</Button>
-                </Sheet.Trigger>
-            </div>
-        </AttributeCRUD>
+        <h4 class="text-lg font-medium text-gray-800 dark:text-gray-200 flex-1">Attribute</h4>
+        <Button class="text-xs flex items-center gap-2 border  px-4 py-1.5" on:click={() => toggleForm()}>
+            <span>
+                <i class="fa-solid fa-plus text-sm"></i>
+            </span>New Attribute
+        </Button>
     </div>
-    <AttributeTable
-            on:edit={(event) => onEditAttribute(event.detail.item.row)}
-            on:delete={(event) => onDeleteAttribute(event.detail.item.row)}/>
-
+    <AttributeTable on:newAttribute={() => toggleForm()}
+                    on:edit={(event) => onEditAttribute(event.detail.item.row)}
+                    on:delete={(event) => onDeleteAttribute(event.detail.item.row)}
+                    bind:this={refreshTable}/>
 </div>
