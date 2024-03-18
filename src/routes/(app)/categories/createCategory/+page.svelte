@@ -16,25 +16,31 @@
         name: "",
         description: "",
         handle: "",
+        image: "",
         parent_category: 0,
         second_parent_category: 0,
-        attribute_group: 0,
+        attribute_group: "",
+        tags: "",
     };
 
     let id = "";
 
     if (editForm) {
         categoryDetails = {
-            name : editData.name,
-            description : editData.description,
-            handle : editData.handle,
-            parent_category : editData.parent_category,
-            second_parent_category : editData.second_parent_category,
-            attribute_group : editData.attribute_group,
+            name: editData.name,
+            description: editData.description,
+            handle: editData.handle,
+            parent_category: editData.parent_category,
+            second_parent_category: editData.second_parent_category,
+            image: editData.image,
+            attribute_group: editData.attribute_group,
+            tags: editData.tags
         };
         id = editData.id;
     }
 
+    let tags: any = [];
+    let selectedTags: string;
     let attributeGroups: any = [];
     let selectedAttributeGroup: string;
     let parent_category: string;
@@ -62,16 +68,36 @@
         }
     }
 
+    async function fetchTags() {
+        try {
+            const res = await API.get("/masterdata/tag/");
+            tags = res.data.results;
+        } catch (error) {
+            console.log("category:fetch-tags:", error);
+        }
+    }
+
     async function createCategory() {
         try {
-            const form = new FormData();
+            const formData = {
+
+                name: categoryDetails.name,
+                description: categoryDetails.description,
+                handle: categoryDetails.handle,
+                parent_category: categoryDetails.parent_category,
+                second_parent_category: categoryDetails.second_parent_category,
+                image: categoryDetails.image,
+                attribute_group: categoryDetails.attribute_group,
+                tags: categoryDetails.tags
+
+            }
 
             const url = editForm ? `/masterdata/category/${id}/update_record/` : "/masterdata/category/create_record/";
 
             if (editForm) {
-                await API.put(url, form);
+                await API.put(url, formData);
             } else {
-                await API.post(url, form);
+                await API.post(url, formData);
             }
 
             dispatch("newCategory");
@@ -88,6 +114,12 @@
         categoryDetails.attribute_group = selectedGroup.value;
         selectedAttributeGroup = attributeGroups.find(
             (g: any) => g.id == selectedGroup.value
+        ).name;
+    }
+    function handleTagChange(selectedTags: { value: number }) {
+        categoryDetails.tags = selectedTags.value;
+        selectedTags = tags.find(
+            (g: any) => g.id == selectedTags.value
         ).name;
     }
 
@@ -120,6 +152,7 @@
     onMount(async () => {
         await fetchCategories();
         await fetchAttributeGroups();
+        await fetchTags();
     });
 </script>
 
@@ -129,8 +162,8 @@
             <h1>{editForm ? 'Update Category' : 'New Category'}</h1>
         </header>
         <main>
-            <form on:submit|preventDefault={createCategory}
-                  class="space-y-6 bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4">
+            <form
+                    class="space-y-6 rounded pt-6 pb-8 mb-4">
                 <Input bind:value={categoryDetails.name}
                        placeholder="Name"
                        class="input"/>
@@ -215,6 +248,29 @@
                         </Select.Content>
                     </Select.Root>
                 </div>
+                <div class="items-center gap-2">
+                    <Select.Root>
+                        <Select.Trigger class="input capitalize"
+                        >{selectedTags
+                            ? selectedTags
+                            : "Select a Tag"}</Select.Trigger
+                        >
+                        <Select.Content>
+                            <Select.Group>
+                                {#each tags as tag}
+                                    <Select.Item
+                                            value={tag.id}
+                                            label={tag.name}
+                                            class="capitalize"
+                                            on:click={() => handleTagChange({ value: tag.id })}
+                                    >
+                                        {tag.name}
+                                    </Select.Item>
+                                {/each}
+                            </Select.Group>
+                        </Select.Content>
+                    </Select.Root>
+                </div>
                 <div class="flex items-center gap-2">
                     <Button
                             type="button"
@@ -232,13 +288,12 @@
                             on:input={uploadAvatar}
                     />
                 </div>
+
                 <!-- Assuming Select component exists and can handle multiple selections -->
-                <div class="grid grid-cols-2 gap-4"></div>
-                <Button type="submit" class="btn">Submit</Button>
             </form>
         </main>
         <footer class="mt-5 flex">
-            <Button type="button" class="btn mr-2" on:click={createCategory}>Submit</Button>
+            <Button type="button" class="btn mr-2 rounded" on:click={createCategory}>Submit</Button>
             <Button class="text-xs flex items-center gap-2 border border-red-500 bg-red-500 text-white px-4 py-1.5 rounded"
                     on:click={() => dispatch("close")}>Cancel
             </Button>

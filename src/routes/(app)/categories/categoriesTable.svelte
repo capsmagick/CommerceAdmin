@@ -106,12 +106,10 @@
             }
         }),
         table.column({
-            header: "Image",
-            accessor: "Image",
-            cell: ({value}) => `<img src="${value}" alt="Featured Image" class="h-10 w-10 rounded-full">`,
-            plugins: {filter: {exclude: true}}
+            header: "ID",
+            accessor: ({id}) => id,
+            plugins: {sort: {disable: true}, filter: {exclude: true}}
         }),
-
         table.column({
             header: "Category",
             accessor: "name",
@@ -124,6 +122,15 @@
                 }
             }
         }),
+
+        table.column({
+            header: "Image",
+            accessor: "image",
+            cell: ({value}) => `<img src="${value}" alt="Featured Image" class="h-10 w-10 rounded-full">`,
+            plugins: {filter: {exclude: true}}
+        }),
+
+
         table.column({
             header: "Description",
             accessor: "description",
@@ -136,34 +143,34 @@
             cell: ({value}) => value.join(", "),
             plugins: {filter: {}}
         }),
-        table.column({
-            header: "Status",
-            accessor: "status",
-            cell: ({value}) => value.join(", "),
-            plugins: {filter: {}}
-        }),
+        // table.column({
+        //     header: "Status",
+        //     accessor: "status",
+        //     cell: ({value}) => value.join(", "),
+        //     plugins: {filter: {}}
+        // }),
 
         table.column({
             header: "Created At",
-            accessor: "createdAt",
+            accessor: "created_at",
             cell: ({value}) => new Date(value).toLocaleDateString(),
             plugins: {sort: {}, filter: {exclude: true}}
         }),
         table.column({
             header: "Updated At",
-            accessor: "updatedAt",
+            accessor: "updated_at",
             cell: ({value}) => new Date(value).toLocaleDateString(),
             plugins: {sort: {}, filter: {exclude: true}}
         }),
         table.column({
             header: "Created By",
-            accessor: "createdBy",
+            accessor: "created_by",
             cell: ({value}) => value,
             plugins: {filter: {exclude: true}}
         }),
         table.column({
             header: "Updated By",
-            accessor: "updatedBy",
+            accessor: "updated_by",
             cell: ({value}) => value,
             plugins: {filter: {exclude: true}}
         }),
@@ -203,7 +210,7 @@
     const ids = flatColumns.map((c) => c.id);
     let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
 
-    let initialHiddenColumns = ['createdAt', 'updatedAt', 'attributes', 'createdBy', 'updatedBy'];
+    let initialHiddenColumns = ['ID', 'created_at', 'updated_at', 'attributes', 'created_by', 'updated_by'];
 
     $: hideForId = Object.fromEntries(ids.map((id) => [id, !initialHiddenColumns.includes(id)]));
 
@@ -216,7 +223,7 @@
 
     const {selectedDataIds} = pluginStates.select;
 
-    const hideableCols = ["createdAt", "updatedAt", 'description', 'tags', 'createdBy', 'updatedBy'];
+    const hideableCols = ["ID","created_at", "updated_at", 'description', 'tags', 'created_by', 'updated_by'];
 </script>
 
 <div class="w-full">
