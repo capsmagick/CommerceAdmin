@@ -13,31 +13,44 @@
       addPagination,
       addTableFilter,
       addSelectedRows,
+      addHiddenColumns
     } from "svelte-headless-table/plugins";
     import { readable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
-    import Actions from "./inventoryTableActions.svelte";
+    import Actions from "./batchTableActions.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
+    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
-    import DataTableCheckbox from "./inventoryTableCheckbox.svelte";
+    import DataTableCheckbox from "./batchTableCheckbox.svelte";
     import API from "$lib/services/api";
     import {createEventDispatcher} from "svelte";
 
     const dispatch = createEventDispatcher();
     import type {ActionsEvents} from './Actions.svelte';
     
-  type Inventories = {
+  type Batch = {
   id: string;
-  variants: string;
+  warehouse: string;
+  batch_number: string;
+  rack: string;
+  row: string;
+  expiry_date: string;
+  purchase_amount: string;
+  mrp: string;
+  selling_price: string;
+  purchase_quantity: string;
   stock: string;
-  batch: string;
-  low_stock_notification: string;
+  is_perishable: string;
+  is_disabled: string;
+  tax_inclusive: string;
+  purchase_amount_tax_inclusive: string;
+  tax: string;
 };
 
     // Create a readable store for the data
-    const data = readable<Inventories[]>([], (set) => {
-        getInventory().then((data) => {
+    const data = readable<Batch[]>([], (set) => {
+        getBatch().then((data) => {
             console.log(data);
             set(data);
         });
@@ -51,9 +64,9 @@
         location.reload();
     }
 
-    async function getInventory() {
+    async function getBatch() {
         try {
-        const res = await API.get("/inventory/inventory/");
+        const res = await API.get("/inventory/batch/");
         return res.data.results;
         } catch (error) {
         console.error("fetch:brands:", error);
@@ -69,6 +82,7 @@
         fn: ({ filterValue, value }) => value.includes(filterValue)
       }),
       select: addSelectedRows(),
+      hide: addHiddenColumns()
     });
    
      const columns = table.createColumns([
@@ -98,8 +112,46 @@
         }
       }),
       table.column({
-        header: "Variants",
-        accessor: "variants",
+        header: "Warehouse",
+        accessor: "warehouse",
+        cell: ({ value }) => `<img src="${value}" alt="Featured Image" class="h-10 w-10 rounded-full">`,
+        plugins: { filter: { exclude: true } }
+      }),
+    
+      table.column({
+        header: "Batch Number",
+        accessor: "batch_number",
+        cell: ({ value }) => value,
+        plugins: {
+          filter: {
+            getFilterValue(value) {
+              return value;
+            }
+          }
+        }
+      }),
+      table.column({
+        header: "Expiry Date",
+        accessor: "expiry_date",
+        cell: ({ value }) => value,
+        plugins: { filter: {} }
+      }),
+      table.column({
+        header: "Purchase Amount",
+        accessor: "purchase_amount",
+        cell: ({ value }) => value,
+        plugins: { filter: {} }
+      }),
+      table.column({
+        header: "MRP",
+        accessor: "mrp",
+        cell: ({ value }) => value,
+        plugins: { filter: {} }
+      }),
+    
+      table.column({
+        header: "Selling Price",
+        accessor: "selling_price",
         cell: ({ value }) => new Date(value).toLocaleDateString(),
         plugins: { sort: {}, filter: { exclude: true } }
       }),
@@ -108,12 +160,6 @@
         accessor: "stock",
         cell: ({ value }) => new Date(value).toLocaleDateString(),
         plugins: { sort: {}, filter: { exclude: true } }
-      }),
-      table.column({
-        header: "Batch",
-        accessor: "batch",
-        cell: ({ value }) => value,
-        plugins: { filter: { exclude: true } }
       }),
       table.column({
         header: "Actions",
@@ -146,23 +192,51 @@
     } = table.createViewModel(columns);
    
     const { sortKeys } = pluginStates.sort;
-  
+   
+    const { hiddenColumnIds } = pluginStates.hide;
+    const ids = flatColumns.map((c) => c.id);
+    let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
+    
+    let initialHiddenColumns = [ 'batch_number'];
+
+    $: hideForId = Object.fromEntries(ids.map((id) => [id, !initialHiddenColumns.includes(id)]));
+
+    $: $hiddenColumnIds = Object.entries(hideForId)
+      .filter(([, hide]) => !hide)
+      .map(([id]) => id);
+   
     const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
     const { filterValue } = pluginStates.filter;
    
     const { selectedDataIds } = pluginStates.select;
    
-    const hideableCols = [ "createdAt", "updatedAt",'description', 'tags', 'createdBy', 'updatedBy'];
+    const hideableCols = [ 'batch_number','rack','row','expiry_date','purchase_amount','mrp','selling_price','purchase_quantity','stock','is_perishable','is_disabled','tax_inclusive','purchase_amount_tax_inclusive','tax'];
   </script>
    
   <div class="w-full">
     <div class="mb-4 p-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter Inventory..."
+        placeholder="Filter Customer..."
         type="text"
         bind:value={$filterValue}
       />
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger asChild let:builder>
+          <Button variant="outline" class="ml-auto" builders={[builder]}>
+            Columns <ChevronDown class="ml-2 h-4 w-4" />
+          </Button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content>
+          {#each flatColumns as col}
+            {#if hideableCols.includes(col.id)}
+              <DropdownMenu.CheckboxItem bind:checked={hideForId[col.id]}>
+                {col.header}
+              </DropdownMenu.CheckboxItem>
+            {/if}
+          {/each}
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
     </div>
     <div class="rounded-md border">
       <Table.Root {...$tableAttrs}>

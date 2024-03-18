@@ -5,33 +5,7 @@
   import API from "$lib/services/api";
   import { Button } from "$lib/components/ui/button";
   import InventoryTable from "./inventoryTable.svelte";
-  //
-  export let data;
-  let categories: { id: string; name: string; handle: string; description: string }[] = [];
-  let showForm = false;
 
-  //
-  async function fetchCategories() {
-    try {
-      const res = await API.get("/masterdata/category/");
-      categories = Array.isArray(res.data?.results) ? res.data.results : []
-    } catch (error) {
-      console.log("fetch:categories:", error);
-      categories = []
-    }
-  }
-  async function onDeleteCategory(category: { id: string }) {
-    try {
-      await API.delete(`/masterdata/category/${category.id}/delete_record/`);
-    } catch (error) {
-      console.log("delete:category:", error);
-    }
-  }
-
-  //   Mount
-  onMount(async () => {
-    await fetchCategories();
-  });
 </script>
 <div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
   <div class="flex items-center ">
