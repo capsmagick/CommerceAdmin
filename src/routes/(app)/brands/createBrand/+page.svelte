@@ -1,11 +1,13 @@
 <script lang="ts">
     import {Input} from "$lib/components/ui/input";
+    import { Label } from "$lib/components/ui/label";
     import {Textarea} from "$lib/components/ui/textarea";
     import {Select} from "$lib/components/ui/select";
     import {Button} from "$lib/components/ui/button";
     import API from "$lib/services/api";
     import {createEventDispatcher} from "svelte";
     import {toast} from "svelte-sonner";
+    import * as Card from "$lib/components/ui/card";
 
     const dispatch = createEventDispatcher();
 
@@ -70,35 +72,45 @@
     }
 </script>
 
-<div class="fixed inset-0 flex bg-gray-500 bg-opacity-50 justify-end" style="z-index: 1">
-    <div class="bg-white p-6 rounded-lg">
-        <header class="font-bold mb-5" style="color: black">
-            <h1>{editForm ? 'Update Brand' : 'New Brand'}</h1>
-        </header>
-        <main>
-            <form class="space-y-6">
-                <Input bind:value={brandDetails.name} placeholder="Name" class="input"/>
-                <Textarea bind:value={brandDetails.description} placeholder="Description" class="textarea"/>
-                <div class="flex items-center gap-2">
-                    <Button type="button" class="btn flex gap-2 items-center bg-indigo-500 text-white text-xs"
-                            on:click={pickAvatar}>
-                        <i class="fa-solid fa-image text-sm"></i>Upload Logo
-                    </Button>
-
-                    <img id="selected-logo" alt="" class:showImg={brandDetails.logo} class:hideImg={!brandDetails.logo} src=""/>
-
-                    <input type="file" id="file-input" bind:this={imageUpload} hidden accept="image/png, image/jpeg"
-                           on:change={uploadAvatar}/>
-                </div>
-            </form>
-        </main>
-        <footer class="mt-5 flex">
-            <Button type="button" class="btn mr-2" on:click={createBrand}>Submit</Button>
-            <Button class="text-xs flex items-center gap-2 border border-red-500 bg-red-500 text-white px-4 py-1.5 rounded"
-                    on:click={() => dispatch("close")}>Cancel
-            </Button>
-        </footer>
-    </div>
+<div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
+   <div class="flex items-center justify-center">
+       <div class="glow-border">
+           <div class="card glow-border-content bg-background text-foreground">
+                <Card.Root class="bg-white p-6 rounded-lg">
+                    <Card.Header class="font-bold mb-5" style="color: black">
+                        <Card.Title>{editForm ? 'Update Brand' : 'New Brand'}</Card.Title>
+                    </Card.Header>
+                    <Card.Content>
+                            <div class="mb-3">
+                                <Label for="name">Name</Label>
+                                <Input id="name" bind:value={brandDetails.name} placeholder="Name" class="input"/>
+                            </div>
+                           
+                            <div class="mb-3">
+                                <Label for="description">Description</Label>
+                                <Textarea id="description" bind:value={brandDetails.description} placeholder="Description" class="textarea"/>
+                            </div>
+                           
+                            <div class="flex items-center gap-2">
+                                <Button type="button"  variant ="outline"
+                                        on:click={pickAvatar}>
+                                    <i class="fa-solid fa-image text-sm"></i>Upload Logo
+                                </Button>
+            
+                                <img id="selected-logo" alt="" class:showImg={brandDetails.logo} class:hideImg={!brandDetails.logo} src=""/>
+            
+                                <input type="file" id="file-input" bind:this={imageUpload} hidden accept="image/png, image/jpeg"
+                                       on:change={uploadAvatar}/>
+                            </div>
+                    </Card.Content>
+                    <Card.Footer  class="justify-between space-x-2">
+                        <Button type="button" variant="ghost" on:click={() => dispatch("close")}>Cancel</Button>
+                        <Button type="submit"  on:click={createBrand}>Save</Button>
+                    </Card.Footer>
+                </Card.Root>
+           </div>
+       </div>
+   </div>
 </div>
 
 <style>
