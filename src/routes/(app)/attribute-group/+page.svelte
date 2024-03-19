@@ -74,11 +74,13 @@
 <div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
     <div class="flex items-center ">
         <h4 class="text-lg font-medium text-gray-800 dark:text-gray-200 flex-1">Attribute Group</h4>
-        <Button class="text-xs flex items-center gap-2 border  px-4 py-1.5" on:click={() => toggleForm()}>
-            <span>
-                <i class="fa-solid fa-plus text-sm"></i>
-            </span>New Attribute Group
-        </Button>
+        <div class="glow-border mr-4">
+            <Button variant="outline"  class="text-xs flex items-center gap-2  px-4 py-1.5" on:click={() => toggleForm()}>
+                <span>
+                    <i class="fa-solid fa-plus text-sm"></i>
+                </span>New Attribute Group
+            </Button>
+        </div>
     </div>
     <AttributeGroupTable on:newAttributeGroup={() => toggleForm()}
                 on:edit={(event) => onEditAttributeGroup(event.detail.item.row)}
