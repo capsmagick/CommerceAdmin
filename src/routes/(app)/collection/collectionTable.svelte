@@ -212,7 +212,7 @@
     const hideableCols = ["categories", "rating", "createdAt", "updatedAt",'description', 'hsn_code', 'tags', 'attributes', 'createdBy', 'updatedBy'];
   </script>
    
-  <div class="w-full">
+  <div class="w-full p-4 bg-background text-foreground">
     <div class="mb-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
