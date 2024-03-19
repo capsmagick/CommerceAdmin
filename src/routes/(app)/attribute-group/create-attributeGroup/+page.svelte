@@ -7,6 +7,9 @@
     const dispatch = createEventDispatcher();
     import API from "$lib/services/api";
     import {Button} from "$lib/components/ui/button"
+    import * as Card from "$lib/components/ui/card"
+    import {Label} from "$lib/components/ui/label"
+    import {Input} from "$lib/components/ui/input"
 
     export let editData;
     export let editForm;
@@ -97,83 +100,69 @@
 </script>
 
 <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
-    <div class="bg-white p-6 rounded-lg">
-        <!--        <div class="flex items-center justify-between mb-2">-->
-        <header class="font-bold mb-5" style="color: black">
-            {#if editForm === false}
-                <h1>New Attribute Group</h1>
-            {:else}
-                <h1>Update Attribute Group</h1>
-            {/if}
-        </header>
-        <main>
-
-            <div>
-                <label
-                        for="name"
-                        class="block text-sm font-medium leading-6 text-gray-500 mb-2">Name</label
-                >
-                <div class="mb-2">
-                    <input required
-                           type="text"
-                           name="name"
-                           id="name"
-                           class="mb-2 block w-full rounded-md border-0 bg-white/5 py-1.5 px-4 outline-none text-gray-500 shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-                           bind:value={name}
-                    />
-                </div>
+    <div class="flex items-center justify-center">
+        <div class="glow-border" >
+            <div class="card glow-border-content bg-background text-foreground">
+                <Card.Root>
+                    <Card.Header class="font-bold mb-5" style="color: black">
+                        {#if editForm === false}
+                            <Card.Title>New Attribute Group</Card.Title>
+                        {:else}
+                            <Card.Title>Update Attribute Group</Card.Title>
+                        {/if}
+                    </Card.Header>
+                    <Card.Content>
+                        <div>
+                            <Label for="name">Name</Label>
+                            <div class="mb-2">
+                                <Input required
+                                       type="text"
+                                       name="name"
+                                       id="name"
+                                       bind:value={name}/>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="mt-2">
+                                <Select.Root>
+                                    <Select.Trigger class="input capitalize">
+                                        {selectedAttributeNames
+                                        ? selectedAttributeNames
+                                        : "Select a Attributes"}</Select.Trigger>
+                                    <Select.Content>
+                                        <Select.Group>
+                                            {#each attribute as a}
+                                                <Select.Item
+                                                        value={a.id}
+                                                        label={a.name}
+                                                        class="capitalize"
+                                                        on:click={() => handleAttributeChange({ value: a.id })}>
+                                                    {a.name}
+                                                </Select.Item>
+                                            {/each}
+                                        </Select.Group>
+                                    </Select.Content>
+                                </Select.Root>
+                            </div>
+                        </div>
+                    </Card.Content>
+                    <Card.Footer class="justify-between space-x-2">
+                        <Button variant="ghost"
+                                on:click={() => dispatch("close")}>Cancel
+                        </Button>
+                        {#if editForm === false}
+                            <Button type=submit
+                                    on:click={() =>onCreateNewAttribute()}>
+                                    Save
+                            </Button>
+                        {:else}
+                            <Button on:click={() =>onCreateNewAttribute()}>
+                                    Update
+                            </Button>
+                        {/if}
+                    </Card.Footer>
+                </Card.Root>
             </div>
-            <div>
-                <div class="mt-2">
-                    <Select.Root>
-                        <Select.Trigger class="input capitalize"
-                        >{selectedAttributeNames
-                            ? selectedAttributeNames
-                            : "Select a Attributes"}</Select.Trigger
-                        >
-                        <Select.Content>
-                            <Select.Group>
-                                {#each attribute as a}
-                                    <Select.Item
-                                            value={a.id}
-                                            label={a.name}
-                                            class="capitalize"
-                                            on:click={() => handleAttributeChange({ value: a.id })}
-                                    >
-                                        {a.name}
-                                    </Select.Item>
-                                {/each}
-                            </Select.Group>
-                        </Select.Content>
-                    </Select.Root>
-                </div>
-            </div>
-        </main>
-
-        <footer class="flex mt-5">
-            {#if editForm === false}
-                <Button type=submit
-                        class="text-xs flex items-center gap-2 border border-blue-500 bg-blue-500 text-white px-4 py-1.5 rounded"
-                        on:click={() =>onCreateNewAttribute()}
-                >Create Attribute Group
-                </Button>
-
-            {:else}
-
-                <Button class="text-xs flex items-center gap-2 border border-blue-500 bg-blue-500 text-white px-4 py-1.5 rounded"
-                        on:click={() =>onCreateNewAttribute()}
-                >Update Attribute Group
-                </Button>
-            {/if}
-
-            <Button class="text-xs
-                                ml-2
-                               flex items-center gap-2
-                               border border-red-500 bg-red-500 text-white px-4 py-1.5 rounded"
-                    on:click={() => dispatch("close")}
-            >Cancel
-            </Button>
-        </footer>
+        </div>
     </div>
-
 </div>
