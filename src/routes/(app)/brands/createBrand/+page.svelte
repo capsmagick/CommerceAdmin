@@ -105,7 +105,7 @@
                     </Card.Content>
                     <Card.Footer  class="justify-between space-x-2">
                         <Button type="button" variant="ghost" on:click={() => dispatch("close")}>Cancel</Button>
-                        <Button type="submit"  on:click={createBrand}>Submit</Button>
+                        <Button type="submit"  on:click={createBrand}>Save</Button>
                     </Card.Footer>
                 </Card.Root>
            </div>
