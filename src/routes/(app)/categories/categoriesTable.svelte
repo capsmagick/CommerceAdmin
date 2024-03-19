@@ -34,12 +34,12 @@
         name: string;
         description: string;
         tags: string[]; // Corrected type
-        Image: string;
+        image: string;
         status: string[];
-        createdAt: string;
-        updatedAt: string;
-        createdBy: string;
-        updatedBy: string;
+        created_at: string;
+        updated_at: string;
+        created_by: string;
+        updated_by: string;
     };
 
     // Create a readable store for the data

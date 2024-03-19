@@ -96,8 +96,8 @@
     });
 </script>
 
-<div class="fixed inset-0 flex bg-gray-500 bg-opacity-50 justify-end" style="z-index: 1">
-    <div class="bg-white p-6 rounded-l-lg">
+<div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
+    <div class="bg-white p-6 rounded-lg">
         <!--        <div class="flex items-center justify-between mb-2">-->
         <header class="font-bold mb-5" style="color: black">
             {#if editForm === false}

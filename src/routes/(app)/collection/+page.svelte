@@ -11,6 +11,11 @@
       <div class="glow-border mr-4">
         <Button variant="outline" class="text-xs flex items-center gap-2  px-4 py-1.5">Export Collection</Button>
       </div>
+      <div class="glow-border mr-4">
+        <Button variant="outline"  class="text-xs flex items-center gap-2  px-4 py-1.5">
+        <i class="fa-solid  fa-cloud-arrow-up text-sm"></i>
+        Add Collection</Button>
+      </div>
   </div>
   <CollectionTable />
 </div>

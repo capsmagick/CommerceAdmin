@@ -13,7 +13,11 @@
       <div class="glow-border mr-4">
         <Button variant="outline"  class="text-xs flex items-center gap-2  px-4 py-1.5">Export Tag</Button>
       </div>
-     
+      <div class="glow-border mr-4">
+        <Button variant="outline"  class="text-xs flex items-center gap-2  px-4 py-1.5">
+        <i class="fa-solid  fa-cloud-arrow-up text-sm"></i>
+        Add Tag</Button>
+      </div>
   </div>
   <TagTable />
 </div>

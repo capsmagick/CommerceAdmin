@@ -70,7 +70,7 @@
     }
 </script>
 
-<div class="fixed inset-0 flex bg-gray-500 bg-opacity-50 justify-end" style="z-index: 1">
+<div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
     <div class="bg-white p-6 rounded-lg">
         <header class="font-bold mb-5" style="color: black">
             <h1>{editForm ? 'Update Brand' : 'New Brand'}</h1>
