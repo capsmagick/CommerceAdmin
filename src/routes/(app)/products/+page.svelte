@@ -183,7 +183,7 @@
                         </div>
                         <div class="grid gap-2">
                             <Label for="security-level">Category</Label>
-                            <select id="category" bind:value={productDetails.categories} class="input" multiple>
+                            <select id="category"class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 input dark:focus:border-blue-500" bind:value={productDetails.categories}  multiple>
                               <option value="" disabled selected>Select</option>
                               {#each $categories as Category}
                                 <option value={Category.id}>{Category.name}</option>
