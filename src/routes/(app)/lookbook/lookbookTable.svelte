@@ -24,6 +24,10 @@
     import { Input } from "$lib/components/ui/input/index.js";
     import DataTableCheckbox from "./lookbookTableCheckbox.svelte";
     import API from "$lib/services/api";
+    import {createEventDispatcher} from "svelte";
+    import type {ActionsEvents} from './Actions.svelte';
+
+    const dispatch = createEventDispatcher();
    
     type Lookbook = {
       id: string;
@@ -128,7 +132,14 @@
         header: "Action",
         accessor: ({ id }) => id,
         cell: (item) => {
-          return createRender(Actions, { id: item.value });
+            // return createRender(Actions, {item: item});
+            return createRender(Actions, {item: item})
+                .on('edit', (event: ActionsEvents['edit']) => {
+                    dispatch('edit', {item})
+                })
+                .on('delete', (event: ActionsEvents['delete']) => {
+                    dispatch('delete', {item})
+                });
         },
         plugins: {
           sort: {
