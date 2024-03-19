@@ -22,72 +22,60 @@
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
     import DataTableCheckbox from "./returnTableCheckbox.svelte";
+    import API from "$lib/services/api";
+    import {createEventDispatcher} from "svelte";
+
+    const dispatch = createEventDispatcher();
    
-    type Payment = {
-      orderId: string;
-      customerName: string;
-      orderDate: string;
-      orderStatus: "Pending" | "Processing" | "Success" | "Failed";
-      amount: number;
-      paymentStatus: "Pending" | "Success" | "Failed";
-      paymentMethod: "Cash" | "Credit Card" | "Debit Card" | "Paypal" | "Other";
-      email: string;
+    type Return = {
+      id: string;
+      reason: string;
+      product: string;
+      purchase_bill: string;
+      description: string;
+      refund_method: string;
+      tracking_id: string;
+      shipping_agent: string;
+      status: string;
+      approved_user: string;
+      approved_comment: string;
+      approved_at: string;
+      rejected_user: string;
+      rejected_comment: string;
+      rejected_at: string;
+      refund_status: string;
+      refund_tracking_id: string;
+      refund_shipping_agent: string;
+      refund_transaction_id: string;
     };
+
+        // Create a readable store for the data
+    const data = readable<Return[]>([], (set) => {
+        getReturns().then((data) => {
+            console.log(data);
+            set(data);
+        });
+    });
    
-    const data: Payment[] = [
-      {
-        orderId: "m5gr84i9",
-        customerName: "Manoj Kumar",
-        orderDate: "2021-08-10",
-        amount: 316,
-        orderStatus: "Success",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "ken99@yahoo.com"
-      },
-      {
-        orderId: "3u1reuv4",
-        customerName: "Kudumon Potty",
-        orderDate: "2021-08-10",
-        amount: 242,
-        orderStatus: "Success",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "Abe45@gmail.com"
-      },
-      {
-        orderId: "derv1ws0",
-        customerName: "Suresh Gopi",
-        orderDate: "2021-08-10",
-        amount: 837,
-        orderStatus: "Processing",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "Monserrat44@gmail.com"
-      },
-      {
-        orderId: "5kma53ae",
-        customerName: "Vimala Rajedran",
-        orderDate: "2021-08-10",
-        amount: 874,
-        orderStatus: "Success",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "Silas22@gmail.com"
-      },
-      {
-        orderId: "bhqecj4p",
-        customerName: "Kunjilakshmi Ammal",
-        orderDate: "2021-08-10",
-        amount: 721,
-        orderStatus: "Failed",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "carmella@hotmail.com"
-      }
-    ];
+    function createFunction() {
+      dispatch('newAttribute')
+    }
+
+    export async function refreshTable() {
+        location.reload();
+    }
+
+    async function getReturns() {
+        try {
+        const res = await API.get("/customer/return-request/");
+        return res.data.results;
+        } catch (error) {
+        console.error("fetch:returns:", error);
+        return [];
+        }
+    }
    
-    const table = createTable(readable(data), {
+    const table = createTable(data, {
       sort: addSortBy({ disableMultiSort: true }),
       page: addPagination(),
       filter: addTableFilter({
@@ -105,7 +93,7 @@
             checked: allPageRowsSelected
           });
         },
-        accessor: "orderId",
+        accessor: "id",
         cell: ({ row }, { pluginStates }) => {
           const { getRowState } = pluginStates.select;
           const { isSelected } = getRowState(row);
@@ -124,13 +112,8 @@
         }
       }),
       table.column({
-        header: "Order ID",
-        accessor: ({ orderId }) => orderId,
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
-      }),
-      table.column({
-        header: "Customer Name",
-        accessor: "customerName",
+        header: "Product Name",
+        accessor: "product",
         cell: ({ value }) => value.toLowerCase(),
         plugins: {
           filter: {
@@ -141,47 +124,38 @@
         }
       }),
       table.column({
-        header: "Order Date",
-        accessor: "orderDate",
+        header: "Return Reason",
+        accessor: "reason",
         plugins: { sort: { disable: true }, filter: { exclude: true } }
       }),
       table.column({
-        header: "Order Status",
-        accessor: "orderStatus",
+        header: "Purchase Bill",
+        accessor: "purchase_bill",
         plugins: { sort: { disable: true }, filter: { exclude: true } }
       }),
       table.column({
-        header: "Payment Status",
-        accessor: "paymentStatus",
+        header: "Rejected User",
+        accessor: "rejected_user",
         plugins: { sort: { disable: true }, filter: { exclude: true } }
       }),
       table.column({
-        header: "Payment Method",
-        accessor: "paymentMethod",
+        header: "Rejected Comment",
+        accessor: "rejected_comment",
+        plugins: { sort: { disable: true }, filter: { exclude: true } }
+      }),
+        table.column({
+        header: "Rejected At",
+        accessor: "rejected_at",
+        plugins: { sort: { disable: true }, filter: { exclude: true } }
+      }),
+        table.column({
+        header: "Refund Status",
+        accessor: "refund_status",
         plugins: { sort: { disable: true }, filter: { exclude: true } }
       }),
       table.column({
-        header: "Total Amount",
-        accessor: "amount",
-        cell: ({ value }) => {
-          const formatted = new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "INR"
-          }).format(value);
-          return formatted;
-        },
-        plugins: {
-          sort: {
-            disable: true
-          },
-          filter: {
-            exclude: true
-          }
-        }
-      }),
-      table.column({
-        header: "",
-        accessor: ({ orderId }) => orderId,
+        header: "Actions",
+        accessor: ({ id }) => id,
         cell: (item) => {
           return createRender(Actions, { id: item.value });
         },
@@ -218,14 +192,14 @@
    
     const { selectedDataIds } = pluginStates.select;
    
-    const hideableCols = ["orderStatus", "orderDate", "customerName", "amount", "paymentStatus", "paymentMethod"];
+    const hideableCols = ["purchase_bill", "rejected_user", "rejected_comment", "rejected_at", "refund_status"];
   </script>
    
   <div class="w-full p-4 bg-background text-foreground">
     <div class="mb-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter Customer..."
+        placeholder="Filter Returns..."
         type="text"
         bind:value={$filterValue}
       />
