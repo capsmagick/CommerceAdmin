@@ -10,7 +10,7 @@
   const dispatch = createEventDispatcher();
 
   export let editData;
-  export let editForm;
+  export let editForm:boolean;
 
   let categoryDetails: any = {
     name: "",
@@ -86,8 +86,10 @@
         formData.append("name", categoryDetails.name);
         formData.append("description", categoryDetails.description);
         formData.append("handle", categoryDetails.handle);
-        formData.append("parent_category", categoryDetails.parent_category);
-        formData.append("second_parent_category", categoryDetails.second_parent_category);
+        if(categoryDetails.parent_category.length > 1) formData.append("parent_category", categoryDetails.parent_category);
+        if(categoryDetails.second_parent_category.length > 1) formData.append("second_parent_category", categoryDetails.second_parent_category);
+        if(categoryDetails.attribute_group.length > 0) formData.append("attribute_group", categoryDetails.attribute_group);
+        if(categoryDetails.tags.length > 0) formData.append("tags", categoryDetails.tags);
         formData.append("attribute_group", categoryDetails.attribute_group);
         if(categoryDetails.tags.length) formData.append("tags", categoryDetails.tags);
         formData.append("image", categoryDetails.image);
@@ -207,50 +209,23 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-          <Select.Root>
-            <Select.Trigger class="input capitalize"
-              >{parent_category
-                ? parent_category
-                : "Select Parent Category"}</Select.Trigger
-            >
-            <Select.Content>
-              <Select.Group>
-                {#each categories as category}
-                  <Select.Item
-                    value={category.id}
-                    label={category.name}
-                    class="capitalize"
-                    on:click={() => handleParentCat({ value: category.id })}
-                  >
-                    {category.name}
-                  </Select.Item>
-                {/each}
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
+          <select class="input capitalize" bind:value={parent_category}>
+            <option value="">Select Parent Category</option>
+            {#each categories as category}
+              <option value={""} on:click={() => handleParentCat({ value: category.id })}>
+                {category.name}
+              </option>
+            {/each}
+          </select>
           <!-- Secondary parent category -->
-          <Select.Root>
-            <Select.Trigger class="input capitalize"
-              >{second_parent_category
-                ? second_parent_category
-                : "Select secondary parent category"}</Select.Trigger
-            >
-            <Select.Content>
-              <Select.Group>
-                {#each categories as category}
-                  <Select.Item
-                    value={category.id}
-                    label={category.name}
-                    class="capitalize"
-                    on:click={() =>
-                      handleSecondaryParentCat({ value: category.id })}
-                  >
-                    {category.name}
-                  </Select.Item>
-                {/each}
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
+          <select class="input capitalize" bind:value={second_parent_category}>
+            <option value="">Select secondary parent category</option>
+            {#each categories as category}
+              <option value={""} on:click={() => handleSecondaryParentCat({ value: category.id })}>
+                {category.name}
+              </option>
+            {/each}
+          </select>
         </div>
         <div class="items-center gap-2">
           <Select.Root>
