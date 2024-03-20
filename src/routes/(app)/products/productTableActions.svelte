@@ -3,8 +3,21 @@
     import { MoreHorizontal } from "lucide-svelte";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
     import { Button } from "$lib/components/ui/button";
+    import {createEventDispatcher} from "svelte";
    
     export let id: string;
+
+
+
+    const dispatch = createEventDispatcher();
+
+    function handleEdit() {
+        dispatch('edit')
+    }
+
+    function handleDelete() {
+        dispatch('delete')
+    }
   </script>
    
   <DropdownMenu.Root>
@@ -27,8 +40,11 @@
         </DropdownMenu.Item>
       </DropdownMenu.Group>
       <DropdownMenu.Separator />
-      <DropdownMenu.Item>View/Add product</DropdownMenu.Item>
-      <DropdownMenu.Item>Add Variant</DropdownMenu.Item>
-      <DropdownMenu.Item>change status</DropdownMenu.Item>
+          <DropdownMenu.Item on:click={handleEdit}><i class="fa fa-pencil sm mr-2"></i>Edit
+          </DropdownMenu.Item>
+          <DropdownMenu.Item on:click={handleDelete}><i class="fa fa-trash sm mr-2" style="color:red"></i>Delete
+          </DropdownMenu.Item>
+          <DropdownMenu.Item>Add Variant</DropdownMenu.Item>
+          <DropdownMenu.Item>change status</DropdownMenu.Item>
     </DropdownMenu.Content>
   </DropdownMenu.Root>
