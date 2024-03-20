@@ -47,25 +47,25 @@
       icon: "fa-user",
       
       items: [
-		{ name: "Customers", page: "customers" },
+	    	{ name: "Customers", page: "customers" },
         { name: "Customer Group", page: "customer-group" },
         { name: "Review and Rating", page: "reviews" }
       ]
     },
-    {
-      name: "Inventory",
-      icon: "fa-warehouse",
-      route: "/inventory",
-      items: [
-        { name: "inventory", page: "inventory" },
-        { name: "batch", page: "batch" },
-        { name: "purchase orders", page: "purchase-orders" },
-        { name: "stock levels", page: "stock" },
-        { name: "stock adjustments", page: "stock-adjustment" },
-        { name: "stock transfers", page: "stock-transfer" },
-        { name: "warehouse", page: "warehouse" },
-      ]
-    },
+    // {
+    //   name: "Inventory",
+    //   icon: "fa-warehouse",
+    //   route: "/inventory",
+    //   items: [
+    //     { name: "inventory", page: "inventory" },
+    //     { name: "batch", page: "batch" },
+    //     { name: "purchase orders", page: "purchase-orders" },
+    //     { name: "stock levels", page: "stock" },
+    //     { name: "stock adjustments", page: "stock-adjustment" },
+    //     { name: "stock transfers", page: "stock-transfer" },
+    //     { name: "warehouse", page: "warehouse" },
+    //   ]
+    // },
     {
       name: "Reports",
       icon: "fa-file-invoice",

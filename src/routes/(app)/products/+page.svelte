@@ -12,6 +12,8 @@
     import * as Card from "$lib/components/ui/card";
     import { writable } from 'svelte/store';
     
+   
+    
 
     const dispatch = createEventDispatcher();
   
@@ -32,6 +34,7 @@
       tags: [],
       dimension: '',
     };
+    
    
     type Brand = {
         id: string;
@@ -136,6 +139,7 @@
 
    
   })
+  let selectedItem: any;
 
   async function createProduct() {
       try {
@@ -145,8 +149,17 @@
         console.error("create:product:", error);
       }
     }
-     
+    async function handleConditionChange(event:any) {
+  selectedItem =event.value;
+  console.log(selectedItem);
+}
 
+let selectload: { data: any[]; label: string; triggerplaceholder: string; selectedItem: string; } = {
+    data: $categories,
+    label: 'Initial Label',
+    triggerplaceholder: 'Initial Placeholder',
+    selectedItem: 'Initial Selected Item'
+  };
 </script>
 <div class="m-3  shadow-md glow-border">
   <div class=" bg-background text-foreground p-4 px-6 glow-border-content">
@@ -189,6 +202,8 @@
                                 <option value={Category.id}>{Category.name}</option>
                               {/each}
                             </select>
+                            
+                            
                         </div>
                         <div class="grid gap-2">
                             <Label for="security-level">Brand</Label>
@@ -218,13 +233,23 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div class="grid gap-2">
                             <Label for="area">Condition</Label>
-                            <select id="condition" bind:value={productDetails.condition} class="input">
-                              <option value="" disabled selected>Select</option>
-                              {#each condition as Category}
-                                <option value={Category.name}>{Category.name}</option>
-                              {/each}
-                            </select>
-                              
+                            <Select.Root 
+                            onSelectedChange={handleConditionChange}>
+                              <Select.Trigger class="w-[180px]">
+                                <Select.Value placeholder="Select the Condition" />
+                              </Select.Trigger>
+                              <Select.Content>
+                                <Select.Group>
+                                  <Select.Label>Fruits</Select.Label>
+                                  {#each condition as Condition}
+                                  <Select.Item  value={Condition.id} label={Condition.name}
+                                    >{Condition.name}</Select.Item
+                                  >
+                                {/each}
+                                </Select.Group>
+                              </Select.Content>
+                              <Select.Input name="selectedCondition" bind:value={selectedItem} />
+                            </Select.Root>
                         </div>
                         <div class="grid gap-2">
                             <Label for="area">Selling Price</Label>

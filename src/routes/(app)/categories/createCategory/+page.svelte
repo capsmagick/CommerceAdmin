@@ -226,7 +226,7 @@
           </select>
         </div>
         <div class="items-center gap-2">
-          <Select.Root>
+          <Select.Root  >
             <Select.Trigger class="input capitalize"
               >{selectedTags ? selectedTags : "Select a Tag"}</Select.Trigger
             >
