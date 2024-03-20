@@ -97,7 +97,7 @@
       table.column({
         header: "Name",
         accessor: "name",
-        cell: ({ value }) => new Date(value).toLocaleDateString(),
+        cell: ({ value }) => value,
         plugins: { sort: {}, filter: { exclude: true } }
       }),
       table.column({
