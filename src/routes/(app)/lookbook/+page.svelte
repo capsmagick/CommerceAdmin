@@ -1,8 +1,14 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
   import LookbookTable from "./lookbookTable.svelte";
+  import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
   import CreateLookbook from "./createLookbook/+page.svelte";
+  import API from "$lib/services/api";
+  import {toast} from "svelte-sonner";
 
+
+    let showDeleteModal = false;
+    let deletingLookbook: any;
     let refreshTable;
     let editData;
     let showForm: boolean = false;
@@ -28,11 +34,32 @@
     }
 
     async function onDeleteLookbook(eventData) {
-        deletingBrand = eventData.original;
+        deletingLookbook = eventData.original;
         showDeleteModal = true;
     }
 
+        function confirmDelete() {
+        API.delete(`/products/look-book/${deletingLookbook.id}/delete_record/`).then(() => {
+            closeDeleteModal();
+        }).catch((error) => {
+            console.error("Error deleting Lookbook:", error);
+            closeDeleteModal();
+        });
+    }
+
+    function closeDeleteModal() {
+        showDeleteModal = false;
+        refreshTable.refreshTable();
+        toast("Lookbook Deleted Successfully!");
+    }
+
 </script>
+<div>
+    {#if showDeleteModal}
+        <ConfirmDeleteModal attribute={deletingLookbook.name} on:confirm={confirmDelete}
+          on:cancel={closeDeleteModal}/>
+    {/if}
+</div>
 <div class="abc">
     {#if showForm}
       <CreateLookbook
