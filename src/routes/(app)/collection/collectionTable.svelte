@@ -170,8 +170,15 @@
         header: "Actions",
         accessor: ({ id }) => id,
         cell: (item) => {
-          return createRender(Actions, { id: item.value });
-        },
+                // return createRender(Actions, {item: item});
+                return createRender(Actions, {item: item})
+                    .on('edit', (event: ActionsEvents['edit']) => {
+                        dispatch('edit', {item})
+                    })
+                    .on('delete', (event: ActionsEvents['delete']) => {
+                        dispatch('delete', {item})
+                    });
+            },
         plugins: {
           sort: {
             disable: true

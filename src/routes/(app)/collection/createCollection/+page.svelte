@@ -1,0 +1,144 @@
+<script lang="ts">
+    import {Input} from "$lib/components/ui/input";
+    import { Label } from "$lib/components/ui/label";
+    import {Textarea} from "$lib/components/ui/textarea";
+    import {Select} from "$lib/components/ui/select";
+    import {Button} from "$lib/components/ui/button";
+    import API from "$lib/services/api";
+    import {createEventDispatcher} from "svelte";
+    import {toast} from "svelte-sonner";
+    import * as Card from "$lib/components/ui/card";
+
+    const dispatch = createEventDispatcher();
+
+    export let editData;
+    export let editForm;
+
+    let collectionDetails = {
+        name: "",
+        feature_image: "",
+        description: "",
+        collections: "",
+        tags: "",
+    };
+    let id = "";
+
+    if (editForm) {
+        collectionDetails = {
+            name: editData.name,
+            feature_image: editData.feature_image,
+            description: editData.description,
+            collections: editData.collections,
+            tags: editData.tags,
+        };
+        id = editData.id;
+    }
+
+    let imageUpload: HTMLInputElement;
+
+    function pickAvatar() {
+        imageUpload.click();
+    }
+
+    async function uploadAvatar() {
+        if (imageUpload.files && imageUpload.files.length > 0) {
+            collectionDetails.feature_image = imageUpload.files[0];
+            const img: HTMLImageElement | null = document.getElementById("selected-feature_image") as HTMLImageElement;
+            if (img) {
+                img.src = window.URL.createObjectURL(collectionDetails.feature_image);
+            }
+        }
+    }
+
+    async function createCollection() {
+        try {
+            const form = new FormData();
+            form.append("feature_image", collectionDetails.feature_image);
+            form.append("name", collectionDetails.name);
+            form.append("description", collectionDetails.description);
+            form.append("collections", collectionDetails.collections);
+            form.append("tags", collectionDetails.tags);
+
+            const url = editForm ? `/products/collection/${id}/update_record/` : "/products/collection/create_record/";
+
+            if (editForm) {
+                await API.put(url, form);
+            } else {
+                await API.post(url, form);
+            }
+
+            dispatch("newCollection");
+            const action = editForm ? "Collection Updated" : "Collection Created";
+            toast(`${action} successfully!`);
+        } catch (error) {
+            const action = editForm ? "Update Collection" : "Create Collection";
+            console.log(`${action}:`, error);
+            toast(`Failed to ${action}`);
+        }
+    }
+</script>
+
+<div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
+   <div class="flex items-center justify-center">
+       <div class="glow-border">
+           <div class="card glow-border-content bg-background text-foreground">
+                <Card.Root class="bg-white p-6 rounded-lg">
+                    <Card.Header class="font-bold mb-5" style="color: black">
+                        <Card.Title>{editForm ? 'Update Collection' : 'New Collection'}</Card.Title>
+                    </Card.Header>
+                    <Card.Content>
+                            <div class="mb-3">
+                                <Label for="name">Name</Label>
+                                <Input id="name" bind:value={collectionDetails.name} placeholder="Name" class="input"/>
+                            </div>
+                           
+                            <div class="mb-3">
+                                <Label for="description">Description</Label>
+                                <Textarea id="description" bind:value={collectionDetails.description} placeholder="Description" class="textarea"/>
+                            </div>
+
+                            <div class="mb-3">
+                                <Label for="collections">Collections</Label>
+                                <Input id="collections" bind:value={collectionDetails.collections} placeholder="Collections" class="input"/>
+                            </div>
+
+                            <div class="mb-3">
+                                <Label for="tags">Tags</Label>
+                                <Input id="tags" bind:value={collectionDetails.tags} placeholder="Tags" class="input"/>
+                            </div>
+                           
+                            <div class="flex items-center gap-2">
+                                <Button type="button"  variant ="outline"
+                                        on:click={pickAvatar}>
+                                    <i class="fa-solid fa-image text-sm"></i>Upload Image
+                                </Button>
+            
+                                <img id="selected-feature_image" alt="" class:showImg={collectionDetails.feature_image} class:hideImg={!collectionDetails.feature_image} src=""/>
+            
+                                <input type="file" id="file-input" bind:this={imageUpload} hidden accept="image/png, image/jpeg"
+                                       on:change={uploadAvatar}/>
+                            </div>
+                    </Card.Content>
+                    <Card.Footer  class="justify-between space-x-2">
+                        <Button type="button" variant="ghost" on:click={() => dispatch("close")}>Cancel</Button>
+                        <Button type="submit"  on:click={createCollection}>Save</Button>
+                    </Card.Footer>
+                </Card.Root>
+           </div>
+       </div>
+   </div>
+</div>
+
+<style>
+    .hideImg {
+        display: none;
+    }
+
+    .showImg {
+        display: block;
+        height: 6rem;
+        width: 6rem;
+        border-radius: 20px;
+        object-fit: cover;
+    }
+</style>
