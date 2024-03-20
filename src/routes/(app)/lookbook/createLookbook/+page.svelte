@@ -16,30 +16,16 @@
 
     let lookbookDetails = {
         name: "",
+        variants: "",
     };
     let id = "";
 
     if (editForm) {
         lookbookDetails = {
             name: editData.name,
+            variants: editData.variants,
         };
         id = editData.id;
-    }
-
-    let imageUpload: HTMLInputElement;
-
-    function pickAvatar() {
-        imageUpload.click();
-    }
-
-    async function uploadAvatar() {
-        if (imageUpload.files && imageUpload.files.length > 0) {
-            lookbookDetails.logo = imageUpload.files[0];
-            const img: HTMLImageElement | null = document.getElementById("selected-logo") as HTMLImageElement;
-            if (img) {
-                img.src = window.URL.createObjectURL(lookbookDetails.logo);
-            }
-        }
     }
 
     async function createLookbook() {
@@ -47,6 +33,8 @@
             const form = new FormData();
 
             form.append("name", lookbookDetails.name);
+            // form.append("variants", JSON.stringify(lookbookDetails.variants));
+            form.append("variants", lookbookDetails.variants);
 
             const url = editForm ? `/products/look-book/${id}/update_record/` : "/products/look-book/create_record/";
 
@@ -79,7 +67,11 @@
                             <div class="mb-3">
                                 <Label for="name">Name</Label>
                                 <Input id="name" bind:value={lookbookDetails.name} placeholder="Name" class="input"/>
-                            </div>              
+                            </div>
+                            <div class="mb-3">
+                                <Label for="variants">Variants</Label>
+                                <Input id="variants" bind:value={lookbookDetails.variants} placeholder="Variants" class="input"/>
+                            </div>                
                     </Card.Content>
                     <Card.Footer  class="justify-between space-x-2">
                         <Button type="button" variant="ghost" on:click={() => dispatch("close")}>Cancel</Button>

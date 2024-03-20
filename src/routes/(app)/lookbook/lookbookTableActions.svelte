@@ -40,7 +40,8 @@
           <i class="fa-solid fa-pencil"></i>
       </DropdownMenu.Item>
       <DropdownMenu.Item
-        class="text-red-500">
+        class="text-red-500"
+        on:click={handleDelete}>
           <i class="fa-solid fa-trash"></i>
       </DropdownMenu.Item>
     </DropdownMenu.Content>
