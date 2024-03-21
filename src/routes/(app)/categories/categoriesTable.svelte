@@ -135,7 +135,7 @@
             header: "Description",
             accessor: "description",
             cell: ({value}) => value,
-            plugins: {filter: {}}
+            plugins: {filter: {exclude: true}}
         }),
         table.column({
             header: "Tags",
