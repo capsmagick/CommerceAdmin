@@ -276,7 +276,7 @@
     <Card.Footer class="justify-between space-x-2">
 
       <Button
-       type="button"  variant ="outline"
+       type="button"  variant="ghost"
         on:click={() => dispatch("close")}
         >Cancel
       </Button>
