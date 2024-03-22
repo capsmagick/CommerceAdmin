@@ -41,6 +41,7 @@
         created_by: string;
         updated_by: string;
     };
+    
     let next: any;
     let nextPage = false;
     let previous: any;
