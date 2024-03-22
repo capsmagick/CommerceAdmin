@@ -66,7 +66,7 @@
             } else if (previousPage) {
                 res = await API.get(previous);
             } else {
-                res = await API.get("/masterdata/category/");
+                res = await API.get("/masterdata/brand/");
             }
             next = res.data.next;
             previous = res.data.previous;
