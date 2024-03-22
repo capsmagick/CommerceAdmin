@@ -58,7 +58,7 @@
         const res = await API.get("/account/customers/");
         return res.data.results;
         } catch (error) {
-        console.error("fetch:brands:", error);
+        console.error("fetch:customers:", error);
         return [];
         }
     }

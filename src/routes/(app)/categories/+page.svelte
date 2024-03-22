@@ -11,8 +11,8 @@
 
     let showDeleteModal = false;
     let deletingCategory: any;
-    let refreshTable;
-    let editData;
+    let refreshTable: any;
+    let editData: any;
     let showForm: boolean = false;
     let editForm: boolean = false;
 
@@ -22,13 +22,13 @@
     }
 
     // Edit Attribute
-    async function onEditCategory(eventData) {
+    async function onEditCategory(eventData:any) {
         editData = eventData.original;
         showForm = true;
         editForm = true;
     }
 
-    async function onDeleteCategory(eventData) {
+    async function onDeleteCategory(eventData: any) {
         deletingCategory = eventData.original;
         showDeleteModal = true;
     }
