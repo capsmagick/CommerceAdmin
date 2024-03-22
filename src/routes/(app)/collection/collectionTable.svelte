@@ -223,7 +223,7 @@
     <div class="mb-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter Customer..."
+        placeholder="Filter Collection..."
         type="text"
         bind:value={$filterValue}
       />

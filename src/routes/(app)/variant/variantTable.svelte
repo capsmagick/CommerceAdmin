@@ -145,7 +145,7 @@
     <div class="mb-4 p-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter Warehouse..."
+        placeholder="Filter Variant..."
         type="text"
         bind:value={$filterValue}
       />
