@@ -161,8 +161,11 @@
 
 
 <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
-    <Card.Root class="bg-white p-6 rounded-lg">
-        <Card.Header class="font-bold mb-5" style="color: black">
+  <div class="flex items-center justify-center">
+        <div class="glow-border" >
+        <div class="card glow-border-content bg-background text-foreground">
+    <Card.Root class="p-6 rounded-lg">
+        <Card.Header class="font-bold mb-5">
             <Card.Title>{editForm ? 'Update Category' : 'New Category'}</Card.Title>
         </Card.Header>
         <Card.Content>
@@ -288,6 +291,9 @@
 
     </Card.Footer>
   </Card.Root>
+</div>
+</div>
+</div>
 </div>
 
 <style>
