@@ -6,6 +6,7 @@
   import { Button } from "$lib/components/ui/button";
   import API from "$lib/services/api";
   import { toast } from "svelte-sonner";
+  import * as Card from "$lib/components/ui/card";
 
   const dispatch = createEventDispatcher();
 
@@ -160,53 +161,57 @@
 
 
 <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
-    <div class="bg-white p-6 rounded-lg">
-        <header class="font-bold mb-5" style="color: black">
-            <h1>{editForm ? 'Update Category' : 'New Category'}</h1>
-        </header>
-        <main>
-            <form
-                    class="space-y-6 rounded pt-6 pb-8 mb-4">
-                <Input bind:value={categoryDetails.name}
-                       placeholder="Name"
-                       class="input"/>
-                <Textarea
-                        bind:value={categoryDetails.description}
-                        placeholder="Description"
-                        class="textarea"
-                />
+  <div class="flex items-center justify-center">
+        <div class="glow-border" >
+        <div class="card glow-border-content bg-background text-foreground">
+    <Card.Root class="p-6 rounded-lg">
+        <Card.Header class="font-bold mb-5">
+            <Card.Title>{editForm ? 'Update Category' : 'New Category'}</Card.Title>
+        </Card.Header>
+        <Card.Content>
+          <div class="mb-3">
+            <Input bind:value={categoryDetails.name}
+                    placeholder="Name"
+                    class="input"/>
+          </div>
+          <div class="mb-3">
+            <Textarea
+                    bind:value={categoryDetails.description}
+                    placeholder="Description"
+                    class="textarea"
+            />
+          </div>
 
+          <div class="grid grid-cols-2 gap-4 mb-3">
+            <Input
+              bind:value={categoryDetails.handle}
+              placeholder="Handle"
+              class="input"
+            />
+            <Select.Root>
+              <Select.Trigger class="input capitalize"
+                >{selectedAttributeGroup
+                  ? selectedAttributeGroup
+                  : "Select a Attribute Group"}</Select.Trigger
+              >
+              <Select.Content>
+                <Select.Group>
+                  {#each attributeGroups as group}
+                    <Select.Item
+                      value={group.id}
+                      label={group.name}
+                      class="capitalize"
+                      on:click={() => handleGroupChange({ value: group.id })}
+                    >
+                      {group.name}
+                    </Select.Item>
+                  {/each}
+                </Select.Group>
+              </Select.Content>
+            </Select.Root>
+          </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <Input
-            bind:value={categoryDetails.handle}
-            placeholder="Handle"
-            class="input"
-          />
-          <Select.Root>
-            <Select.Trigger class="input capitalize"
-              >{selectedAttributeGroup
-                ? selectedAttributeGroup
-                : "Select a Attribute Group"}</Select.Trigger
-            >
-            <Select.Content>
-              <Select.Group>
-                {#each attributeGroups as group}
-                  <Select.Item
-                    value={group.id}
-                    label={group.name}
-                    class="capitalize"
-                    on:click={() => handleGroupChange({ value: group.id })}
-                  >
-                    {group.name}
-                  </Select.Item>
-                {/each}
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-4 mb-3">
           <select class="input capitalize" bind:value={parent_category}>
             <option value="">Select Parent Category</option>
             {#each categories as category}
@@ -225,7 +230,8 @@
             {/each}
           </select>
         </div>
-        <div class="items-center gap-2">
+
+        <div class="items-center gap-2 mb-3">
           <Select.Root  >
             <Select.Trigger class="input capitalize"
               >{selectedTags ? selectedTags : "Select a Tag"}</Select.Trigger
@@ -269,19 +275,25 @@
         </div>
 
         <!-- Assuming Select component exists and can handle multiple selections -->
-      </form>
-    </main>
-    <footer class="mt-5 flex">
-      <Button type="button" class="btn mr-2 rounded" on:click={createCategory}
-        >Submit</Button
-      >
+    </Card.Content>
+    <Card.Footer class="justify-between space-x-2">
+
       <Button
-        class="text-xs flex items-center gap-2 border border-red-500 bg-red-500 text-white px-4 py-1.5 rounded"
+       type="button"  variant="ghost"
         on:click={() => dispatch("close")}
         >Cancel
       </Button>
-    </footer>
-  </div>
+
+      <Button type="button" 
+       on:click={createCategory}
+        >Save</Button
+      >
+
+    </Card.Footer>
+  </Card.Root>
+</div>
+</div>
+</div>
 </div>
 
 <style>

@@ -135,7 +135,7 @@
             header: "Description",
             accessor: "description",
             cell: ({value}) => value,
-            plugins: {filter: {}}
+            plugins: {filter: {exclude: true}}
         }),
         table.column({
             header: "Tags",
@@ -230,7 +230,7 @@
     <div class="mb-4 p-4 flex items-center gap-4">
         <Input
                 class="max-w-sm"
-                placeholder="Filter Customer..."
+                placeholder="Filter Category..."
                 type="text"
                 bind:value={$filterValue}
         />

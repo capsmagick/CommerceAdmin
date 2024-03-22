@@ -37,10 +37,10 @@
     }
 
     function confirmDelete() {
-        API.delete(`/masterdata/brand/${deletingAttribute.id}/delete_record/`).then(() => {
+        API.delete(`/masterdata/attribute/${deletingAttribute.id}/delete_record/`).then(() => {
             closeDeleteModal();
         }).catch((error) => {
-            console.error("Error deleting Brand:", error);
+            console.error("Error deleting Attribute:", error);
             closeDeleteModal();
         });
     }
@@ -48,7 +48,7 @@
     function closeDeleteModal() {
         showDeleteModal = false;
         refreshTable.refreshTable();
-        toast("Brand Deleted Successfully!");
+        toast("Attribute Deleted Successfully!");
     }
 
     function handleNewAttribute() {

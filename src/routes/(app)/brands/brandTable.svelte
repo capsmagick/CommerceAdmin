@@ -184,7 +184,7 @@
     <div class="mb-4 flex p-4 items-center gap-4">
         <Input
                 class="max-w-sm"
-                placeholder="Filter Customer..."
+                placeholder="Filter Brands..."
                 type="text"
                 bind:value={$filterValue}/>
         <DropdownMenu.Root>

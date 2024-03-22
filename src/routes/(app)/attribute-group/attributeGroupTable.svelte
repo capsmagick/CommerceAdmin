@@ -164,7 +164,7 @@
     <div class="mb-4 p-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter Attributes..."
+        placeholder="Filter Attribute Group..."
         type="text"
         bind:value={$filterValue}/>
       <DropdownMenu.Root>

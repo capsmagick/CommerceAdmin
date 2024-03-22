@@ -76,8 +76,8 @@
    <div class="flex items-center justify-center">
        <div class="glow-border">
            <div class="card glow-border-content bg-background text-foreground">
-                <Card.Root class="bg-white p-6 rounded-lg">
-                    <Card.Header class="font-bold mb-5" style="color: black">
+                <Card.Root class="p-6 rounded-lg">
+                    <Card.Header class="font-bold mb-5">
                         <Card.Title>{editForm ? 'Update Brand' : 'New Brand'}</Card.Title>
                     </Card.Header>
                     <Card.Content>
