@@ -58,7 +58,7 @@
       <div class="card glow-border-content bg-background text-foreground">
         <!--        <div class="flex items-center justify-between mb-2">-->
         <Card.Root>
-            <Card.Header class="font-bold mb-5" style="color: black">
+            <Card.Header class="font-bold mb-5">
                 {#if editForm === false}
                     <Card.Title>New Attribute</Card.Title>
                 {:else}

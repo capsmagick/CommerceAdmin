@@ -12,7 +12,7 @@
         variant="ghost"
         builders={[builder]}
         size="icon"
-        class="relative h-8 w-8 p-0"
+        class="h-8 w-8 p-0"
       >
         <span class="sr-only">Open menu</span>
         <MoreHorizontal class="h-4 w-4" />
