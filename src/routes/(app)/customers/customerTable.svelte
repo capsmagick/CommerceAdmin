@@ -68,7 +68,6 @@
             } else {
                 res = await API.get("/account/customers/?page=1&per_page=10");
             }
-            console.log(res.data);
             next = res.data.next;
             previous = res.data.previous;
             return res.data.results;
