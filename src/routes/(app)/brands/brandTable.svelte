@@ -37,6 +37,12 @@
         name: string;
         logo: string;
         description: string;
+        created_at: string;
+        updated_at: string;
+        created_by: string;
+        updated_by: string;
+        tags: string [];
+       
     };
     let next: any;
     let nextPage = false;
@@ -157,6 +163,26 @@
             plugins: {sort: {disable: true}, filter: {exclude: true}}
         }),
         table.column({
+            header: "Created At",
+            accessor: "created_at",
+            plugins: {sort: {disable: true}, filter: {exclude: true}}
+        }),
+        table.column({
+            header: "Updated At",
+            accessor: "updated_at",
+            plugins: {sort: {disable: true}, filter: {exclude: true}}
+        }),
+                table.column({
+            header: "Created By",
+            accessor: "created_by",
+            plugins: {sort: {disable: true}, filter: {exclude: true}}
+        }),
+        table.column({
+            header: "Updated By",
+            accessor: "updated_by",
+            plugins: {sort: {disable: true}, filter: {exclude: true}}
+        }),
+        table.column({
             header: "Actions",
             accessor: ({id}) => id,
             cell: (item) => {
@@ -192,7 +218,7 @@
     const {hiddenColumnIds} = pluginStates.hide;
     const ids = flatColumns.map((c) => c.id);
     let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
-    let initialHiddenColumns = ['ID'];
+    let initialHiddenColumns = ['ID', 'created_at', 'updated_at', 'created_by', 'updated_by'];
 
     $: hideForId = Object.fromEntries(ids.map((id) => [id, !initialHiddenColumns.includes(id)]));
     $: $hiddenColumnIds = Object.entries(hideForId)
@@ -204,7 +230,7 @@
 
     const {selectedDataIds} = pluginStates.select;
 
-    const hideableCols = ["ID"];
+    const hideableCols = ["ID", 'created_at', 'updated_at', 'created_by', 'updated_by','description', 'logo'];
 </script>
 
 <div class="w-full">
