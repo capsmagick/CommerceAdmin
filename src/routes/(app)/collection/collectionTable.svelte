@@ -163,13 +163,6 @@
         cell: ({ value }) => value.join(", "),
         plugins: { filter: {} }
       }),
-      // table.column({
-      //   header: "Variants",
-      //   accessor: "variants",
-      //   cell: ({ value }) => value.join(", "),
-      //   plugins: { filter: {} }
-      // }),
-    
       table.column({
         header: "Created At",
         accessor: "created_at",
@@ -231,7 +224,7 @@
     const ids = flatColumns.map((c) => c.id);
     let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
     
-    let initialHiddenColumns = [ 'createdAt', 'updatedAt', 'description', 'hsn_code', 'tags', 'attributes', 'createdBy', 'updatedBy'];
+    let initialHiddenColumns = [ 'created_at', 'updated_at', 'tags', 'created_by', 'updated_by'];
 
     $: hideForId = Object.fromEntries(ids.map((id) => [id, !initialHiddenColumns.includes(id)]));
 
@@ -244,7 +237,7 @@
    
     const { selectedDataIds } = pluginStates.select;
    
-    const hideableCols = ["categories", "rating", "createdAt", "updatedAt",'description', 'hsn_code', 'tags', 'attributes', 'createdBy', 'updatedBy'];
+    const hideableCols = ["created_at", "updated_at",'description', 'tags', 'created_by', 'updated_by'];
   </script>
    
   <div class="w-full p-4 bg-background text-foreground">
