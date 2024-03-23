@@ -258,6 +258,9 @@
                   })
                   .on('delete', (event: ActionsEvents['delete']) => {
                       dispatch('delete', {item})
+                  })
+                  .on('addVariant', (event: ActionsEvents['addVariant']) => {
+                      dispatch('addVariant', {item})
                   });
         },
         plugins: {

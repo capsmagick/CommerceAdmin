@@ -5,21 +5,83 @@
   import { Button } from "$lib/components/ui/button";
   import ProductTable from "./productTable.svelte";
   import { createEventDispatcher } from "svelte";
+  import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
+  import CreateVariant from "../variant/createVariant/+page.svelte"
     import { Input} from "$lib/components/ui/input"; 
     import {Textarea} from "$lib/components/ui/textarea";
     import * as Select from "$lib/components/ui/select";
     import { Label } from "$lib/components/ui/label";
     import * as Card from "$lib/components/ui/card";
     import { writable } from 'svelte/store';
+    import {toast} from "svelte-sonner";
+
+
+    let showDeleteModal = false;
+    let deletingProduct: any;
+    let refreshTable: any;
+    let showVariantForm: boolean = false;
+    let showForm: boolean = false;
+    let editForm: boolean = false;
+    let editData:any;
+
+    function toggleForm() {
+        console.log(showForm)
+        showForm = !showForm
+    }
+
+    // Edit Attribute
+    async function onEditProduct(eventData:any) {
+        productDetails = eventData.original;
+        showModal = true;
+        editForm = true;
+        // console.log(productDetails);
+                
+    }
+
+    async function onDeleteProduct(eventData: any) {
+        deletingProduct = eventData.original;
+        showDeleteModal = true;
+    }
+    async function onCreateVariant(eventData: any) {
+        editData = eventData.original;
+        showVariantForm = true;
+    }
+
+    function closeVariantmodal() {
+      showVariantForm = false;
+      editData = null
+      editForm = false
+    }
+
+    function addVariantData() {
+      showVariantForm = false;
+      editData = null
+    }
+
+    function confirmDelete() {
+        API.delete(`/products/product/${deletingProduct.id}/delete_record/`).then(() => {
+            closeDeleteModal();
+        }).catch((error) => {
+            console.error("Error deleting Product:", error);
+            closeDeleteModal();
+        });
+    }
+
+    function closeDeleteModal() {
+        showDeleteModal = false;
+        refreshTable.refreshTable();
+        toast("Product Deleted Successfully!");
+    }
     
    
     
 
     const dispatch = createEventDispatcher();
   
-  let productDetails = {
+  let productDetails: any = {
+      id: '',
       name: '',
-      shortDescription: '',
+      short_description: '',
       description: '',
       sku: '',
       price: 0,
@@ -35,7 +97,6 @@
       dimension: '',
     };
     
-   
     type Brand = {
         id: string;
         name: string;
@@ -120,7 +181,7 @@
     },
   ];
   let showModal = false;
-  let showForm = false;
+  // let showForm = false;
    let products:any[] = [];
 
   // 
@@ -143,13 +204,51 @@
 
   async function createProduct() {
       try {
-        await API.post("/products/product/create_record/", productDetails);
-        dispatch("newProduct");
+        const url = editForm
+        ? `/products/product/${productDetails.id}/update_record/`
+        : "/products/product/create_record/";
+
+      if (editForm) {
+        await API.put(url, productDetails);
+      } else {
+        await API.post(url, productDetails);
+      }
+
+      dispatch("newProduct");
+      showModal = false
+      refreshTable.refreshTable();
+
+      const action = editForm ? "Product Updated" : "Product Created";
+      toast(`${action} successfully!`);
+        
       } catch (error) {
         console.error("create:product:", error);
       }
     }
-    async function handleConditionChange(event:any) {
+
+  async function closemodal() {
+    showModal = false
+    productDetails = {
+      id: '',
+      name: '',
+      short_description: '',
+      description: '',
+      sku: '',
+      price: 0,
+      selling_price: 0,
+      condition: '',
+      categories: [],
+      brand: '',
+      isDisabled: false,
+      hsn_code: '',
+      rating: 0,
+      noOfReviews: 0,
+      tags: [],
+      dimension: '',
+    };
+  }
+
+  async function handleConditionChange(event:any) {
   selectedItem =event.value;
   console.log(selectedItem);
 }
@@ -161,6 +260,24 @@ let selectload: { data: any[]; label: string; triggerplaceholder: string; select
     selectedItem: 'Initial Selected Item'
   };
 </script>
+
+<div>
+    {#if showDeleteModal}
+        <ConfirmDeleteModal attribute={deletingProduct.name} on:confirm={confirmDelete}
+                            on:cancel={closeDeleteModal}/>
+    {/if}
+</div>
+
+<div>
+    {#if showVariantForm}
+        <CreateVariant 
+                {editData}
+                {editForm}
+                on:close={() => closeVariantmodal()}
+                on:newVariant={() => addVariantData()}/>
+    {/if}
+</div>
+
 <div class="m-3  shadow-md glow-border">
   <div class=" bg-background text-foreground p-4 px-6 glow-border-content">
   <div class="flex items-center ">
@@ -174,7 +291,11 @@ let selectload: { data: any[]; label: string; triggerplaceholder: string; select
         Add Products</Button>
       </div>
   </div>
-  <ProductTable />
+  <ProductTable on:newCategory={() => toggleForm()}
+                     on:edit={(event) => onEditProduct(event.detail.item.row)}
+                     on:delete={(event) => onDeleteProduct(event.detail.item.row)}
+                     on:addVariant={(event) => onCreateVariant(event.detail.item.row)}
+                     bind:this={refreshTable}/>
   </div>
   </div>
   {#if showModal}
@@ -218,7 +339,7 @@ let selectload: { data: any[]; label: string; triggerplaceholder: string; select
                     </div>
                     <div class="grid gap-2">
                         <Label for="subject">Short description</Label>
-                        <Input id="subject" placeholder="short description of the product" bind:value={productDetails.shortDescription} />
+                        <Input id="subject" placeholder="short description of the product" bind:value={productDetails.short_description} />
                     </div>
                    
                     
@@ -255,6 +376,10 @@ let selectload: { data: any[]; label: string; triggerplaceholder: string; select
                             <Label for="area">Selling Price</Label>
                            <Input id="area" placeholder="name" bind:value={productDetails.selling_price} />
                         </div>
+                        <div class="grid gap-2">
+                            <Label for="area">Price</Label>
+                           <Input id="area" placeholder="name" bind:value={productDetails.price} />
+                        </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="grid gap-2">
@@ -278,7 +403,7 @@ let selectload: { data: any[]; label: string; triggerplaceholder: string; select
             
                 </Card.Content>
                 <Card.Footer class="justify-between space-x-2">
-                    <Button variant="ghost" on:click={() => (showModal = false)}>Cancel</Button>
+                    <Button variant="ghost" on:click={() => closemodal()}>Cancel</Button>
                     <Button on:click={() => createProduct()}>Save</Button>
                 </Card.Footer>
             </Card.Root>

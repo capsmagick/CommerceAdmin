@@ -39,7 +39,6 @@
         { name: "Attributes", page: "attributes" },
         { name: "Attribute Group", page: "attribute-group" },
         { name: "Tag", page: "tag" },
-        { name: "Variant", page: "variant" },
       ]
     },
     {

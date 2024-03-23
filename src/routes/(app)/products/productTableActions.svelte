@@ -18,6 +18,10 @@
     function handleDelete() {
         dispatch('delete')
     }
+
+    function handleAddVariant() {
+        dispatch('addVariant')
+    }
   </script>
    
   <DropdownMenu.Root>
@@ -37,7 +41,7 @@
           </DropdownMenu.Item>
           <DropdownMenu.Item on:click={handleDelete}><i class="fa fa-trash sm mr-2" style="color:red"></i>Delete
           </DropdownMenu.Item>
-          <DropdownMenu.Item>Add Variant</DropdownMenu.Item>
+          <DropdownMenu.Item on:click={handleAddVariant}>Add Variant</DropdownMenu.Item>
           <DropdownMenu.Item>Change status</DropdownMenu.Item>
     </DropdownMenu.Content>
   </DropdownMenu.Root>
