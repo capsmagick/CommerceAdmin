@@ -29,11 +29,11 @@
     // import type {ActionsEvents} from './Actions.svelte';
    
     type Customers = {
-      id: string;
-      name: string;
+      username: string;
+      first_name: string;
       status: "Pending" | "Processing" | "Success" | "Failed";
       email: string;
-      phoneNumber: number;
+      mobile_number: number;
       shippingAddress: string;
     };
 
@@ -55,7 +55,7 @@
 
     async function getCustomers() {
         try {
-        const res = await API.get("/account/customers/");
+        const res = await API.get("/account/customers/?page=1&per_page=10");
         return res.data.results;
         } catch (error) {
         console.error("fetch:customers:", error);
@@ -81,7 +81,7 @@
             checked: allPageRowsSelected
           });
         },
-        accessor: "id",
+        accessor: "username",
         cell: ({ row }, { pluginStates }) => {
           const { getRowState } = pluginStates.select;
           const { isSelected } = getRowState(row);
@@ -101,7 +101,7 @@
       }),
         table.column({
         header: "Name",
-        accessor: "name",
+        accessor: "first_name",
         plugins: { sort: { disable: true }, filter: { exclude: true } }
       }),
       table.column({
@@ -118,7 +118,7 @@
       }),
       table.column({
         header: "Phone Number",
-        accessor: "phoneNumber",
+        accessor: "mobile_number",
         plugins: {
           sort: {
             disable: true

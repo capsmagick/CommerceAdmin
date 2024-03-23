@@ -17,12 +17,18 @@
     let name = "";
     let value = "";
 
-    export let editData;
-    export let editForm;
+    interface EditData {
+    id: string;
+    name: string;
+    value: string;
+}
+
+    export let editData: { id: string, name: string, value: string };
+    export let editForm: boolean;
 
     const editDataStore = writable(editData);
 
-    function handleEditDataChange(newValue) {
+    function handleEditDataChange(newValue: EditData) {
         id = newValue.id;
         name = newValue.name;
         value = newValue.value;
