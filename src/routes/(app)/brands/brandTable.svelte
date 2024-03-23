@@ -14,7 +14,7 @@
         addSelectedRows,
         addHiddenColumns
     } from "svelte-headless-table/plugins";
-    import {readable} from "svelte/store";
+    import {writable} from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
 
     import {Button} from "$lib/components/ui/button";
@@ -37,10 +37,20 @@
         name: string;
         logo: string;
         description: string;
+        created_at: string;
+        updated_at: string;
+        created_by: string;
+        updated_by: string;
+        tags: string [];
+       
     };
+    let next: any;
+    let nextPage = false;
+    let previous: any;
+    let previousPage = false;
 
     // Create a readable store for the data
-    export const brands = readable<Brand[]>([], (set) => {
+    export const brands = writable<Brand[]>([], (set) => {
         getBrands().then((data) => {
             set(data);
         });
@@ -56,12 +66,35 @@
 
     async function getBrands() {
         try {
-            const response = await API.get("/masterdata/brand/");
-            return response.data.results;
+            let res;
+            if(nextPage) {
+                res = await API.get(next);
+            } else if (previousPage) {
+                res = await API.get(previous);
+            } else {
+                res = await API.get("/masterdata/brand/");
+            }
+            next = res.data.next;
+            previous = res.data.previous;
+            return res.data.results;
         } catch (error) {
             console.error("fetch:brands:", error);
             return [];
         }
+    }
+
+    async function getNextPage () {
+        nextPage = true;
+        previousPage = false;
+        const newData = await getBrands(); 
+        brands.set(newData);
+    }
+
+    async function getPreviousPage () {
+        nextPage = false;
+        previousPage = true;
+        const newData = await getBrands(); 
+        brands.set(newData);
     }
 
     const table = createTable(brands, {
@@ -130,6 +163,26 @@
             plugins: {sort: {disable: true}, filter: {exclude: true}}
         }),
         table.column({
+            header: "Created At",
+            accessor: "created_at",
+            plugins: {sort: {disable: true}, filter: {exclude: true}}
+        }),
+        table.column({
+            header: "Updated At",
+            accessor: "updated_at",
+            plugins: {sort: {disable: true}, filter: {exclude: true}}
+        }),
+                table.column({
+            header: "Created By",
+            accessor: "created_by",
+            plugins: {sort: {disable: true}, filter: {exclude: true}}
+        }),
+        table.column({
+            header: "Updated By",
+            accessor: "updated_by",
+            plugins: {sort: {disable: true}, filter: {exclude: true}}
+        }),
+        table.column({
             header: "Actions",
             accessor: ({id}) => id,
             cell: (item) => {
@@ -165,7 +218,7 @@
     const {hiddenColumnIds} = pluginStates.hide;
     const ids = flatColumns.map((c) => c.id);
     let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
-    let initialHiddenColumns = ['ID'];
+    let initialHiddenColumns = ['ID', 'created_at', 'updated_at', 'created_by', 'updated_by'];
 
     $: hideForId = Object.fromEntries(ids.map((id) => [id, !initialHiddenColumns.includes(id)]));
     $: $hiddenColumnIds = Object.entries(hideForId)
@@ -177,7 +230,7 @@
 
     const {selectedDataIds} = pluginStates.select;
 
-    const hideableCols = ["ID"];
+    const hideableCols = ["ID", 'created_at', 'updated_at', 'created_by', 'updated_by','description', 'logo'];
 </script>
 
 <div class="w-full">
@@ -273,15 +326,15 @@
         <Button
                 variant="outline"
                 size="sm"
-                on:click={() => ($pageIndex = $pageIndex - 1)}
-                disabled={!$hasPreviousPage}>Previous
+                on:click={getPreviousPage}
+                disabled={!previous}>Previous
         </Button
         >
         <Button
                 variant="outline"
                 size="sm"
-                disabled={!$hasNextPage}
-                on:click={() => ($pageIndex = $pageIndex + 1)}>Next
+                disabled={!next}
+                on:click={getNextPage}>Next
         </Button
         >
     </div>

@@ -14,7 +14,7 @@
       addSelectedRows,
       addHiddenColumns
     } from "svelte-headless-table/plugins";
-    import { readable } from "svelte/store";
+    import { writable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
     // import Actions from "./customerTableActions.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
@@ -37,8 +37,13 @@
       shippingAddress: string;
     };
 
+    let next: any;
+    let nextPage = false;
+    let previous: any;
+    let previousPage = false;
+
     // Create a readable store for the data
-    const data = readable<Customers[]>([], (set) => {
+    const data = writable<Customers[]>([], (set) => {
         getCustomers().then((data) => {
             console.log(data);
             set(data);
@@ -55,12 +60,35 @@
 
     async function getCustomers() {
         try {
-        const res = await API.get("/account/customers/?page=1&per_page=10");
-        return res.data.results;
+            let res;
+            if(nextPage) {
+                res = await API.get(next);
+            } else if (previousPage) {
+                res = await API.get(previous);
+            } else {
+                res = await API.get("/account/customers/?page=1&per_page=10");
+            }
+            next = res.data.next;
+            previous = res.data.previous;
+            return res.data.results;
         } catch (error) {
         console.error("fetch:customers:", error);
         return [];
         }
+    }
+
+        async function getNextPage () {
+        nextPage = true;
+        previousPage = false;
+        const newData = await getCustomers(); 
+        data.set(newData);
+    }
+
+    async function getPreviousPage () {
+        nextPage = false;
+        previousPage = true;
+        const newData = await getCustomers(); 
+        data.set(newData);
     }
    
     const table = createTable(data, {
@@ -280,14 +308,14 @@
       <Button
         variant="outline"
         size="sm"
-        on:click={() => ($pageIndex = $pageIndex - 1)}
-        disabled={!$hasPreviousPage}>Previous</Button
+        on:click={getPreviousPage}
+        disabled={!previous}>Previous</Button
       >
       <Button
         variant="outline"
         size="sm"
-        disabled={!$hasNextPage}
-        on:click={() => ($pageIndex = $pageIndex + 1)}>Next</Button
+        disabled={!next}
+        on:click={getNextPage}>Next</Button
       >
     </div>
   </div>
