@@ -15,7 +15,7 @@
       addSelectedRows,
       addHiddenColumns
     } from "svelte-headless-table/plugins";
-    import { readable } from "svelte/store";
+    import { writable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
     import Actions from "./productTableActions.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
@@ -50,8 +50,13 @@
       
     };
 
+    let next: any;
+    let nextPage = false;
+    let previous: any;
+    let previousPage = false;
+
     // Create a readable store for the data
-    const data = readable<Product[]>([], (set) => {
+    const data = writable<Product[]>([], (set) => {
         getProducts().then((data) => {
             console.log(data);
             set(data);
@@ -68,12 +73,35 @@
 
     async function getProducts() {
         try {
-        const res = await API.get("/products/product/");
-        return res.data.results;
+        let res;
+            if(nextPage) {
+                res = await API.get(next);
+            } else if (previousPage) {
+                res = await API.get(previous);
+            } else {
+                res = await API.get("/products/product/");
+            }
+            next = res.data.next;
+            previous = res.data.previous;
+            return res.data.results;
         } catch (error) {
         console.error("fetch:brands:", error);
         return [];
         }
+    }
+
+        async function getNextPage () {
+        nextPage = true;
+        previousPage = false;
+        const newData = await getProducts(); 
+        data.set(newData);
+    }
+
+    async function getPreviousPage () {
+        nextPage = false;
+        previousPage = true;
+        const newData = await getProducts(); 
+        data.set(newData);
     }
    
     const table = createTable(data, {
@@ -230,6 +258,9 @@
                   })
                   .on('delete', (event: ActionsEvents['delete']) => {
                       dispatch('delete', {item})
+                  })
+                  .on('addVariant', (event: ActionsEvents['addVariant']) => {
+                      dispatch('addVariant', {item})
                   });
         },
         plugins: {
@@ -372,14 +403,14 @@
       <Button
         variant="outline"
         size="sm"
-        on:click={() => ($pageIndex = $pageIndex - 1)}
-        disabled={!$hasPreviousPage}>Previous</Button
+        on:click={getPreviousPage}
+        disabled={!previous}>Previous</Button
       >
       <Button
         variant="outline"
         size="sm"
-        disabled={!$hasNextPage}
-        on:click={() => ($pageIndex = $pageIndex + 1)}>Next</Button
+        disabled={!next}
+        on:click={getNextPage}>Next</Button
       >
     </div>
   </div>

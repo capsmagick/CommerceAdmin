@@ -18,6 +18,10 @@
     function handleDelete() {
         dispatch('delete')
     }
+
+    function handleAddVariant() {
+        dispatch('addVariant')
+    }
   </script>
    
   <DropdownMenu.Root>
@@ -33,18 +37,11 @@
       </Button>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content>
-      <DropdownMenu.Group>
-        <DropdownMenu.Label>Actions</DropdownMenu.Label>
-        <DropdownMenu.Item on:click={() => navigator.clipboard.writeText(id)}>
-          Copy product ID
-        </DropdownMenu.Item>
-      </DropdownMenu.Group>
-      <DropdownMenu.Separator />
           <DropdownMenu.Item on:click={handleEdit}><i class="fa fa-pencil sm mr-2"></i>Edit
           </DropdownMenu.Item>
           <DropdownMenu.Item on:click={handleDelete}><i class="fa fa-trash sm mr-2" style="color:red"></i>Delete
           </DropdownMenu.Item>
-          <DropdownMenu.Item>Add Variant</DropdownMenu.Item>
-          <DropdownMenu.Item>change status</DropdownMenu.Item>
+          <DropdownMenu.Item on:click={handleAddVariant}>Add Variant</DropdownMenu.Item>
+          <DropdownMenu.Item>Change status</DropdownMenu.Item>
     </DropdownMenu.Content>
   </DropdownMenu.Root>
