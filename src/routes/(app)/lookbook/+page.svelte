@@ -41,6 +41,7 @@
         function confirmDelete() {
         API.delete(`/products/look-book/${deletingLookbook.id}/delete_record/`).then(() => {
             closeDeleteModal();
+            toast("Lookbook Deleted Successfully!");
         }).catch((error) => {
             console.error("Error deleting Lookbook:", error);
             closeDeleteModal();
@@ -50,7 +51,6 @@
     function closeDeleteModal() {
         showDeleteModal = false;
         refreshTable.refreshTable();
-        toast("Lookbook Deleted Successfully!");
     }
 
 </script>

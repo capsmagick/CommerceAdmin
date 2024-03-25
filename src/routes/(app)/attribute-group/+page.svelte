@@ -33,6 +33,7 @@
     function confirmDelete() {
         API.delete(`/masterdata/attributegroup/${deletingAttributeGroup.id}/delete_record/`).then(() => {
             closeDeleteModal();
+            toast("Attribute Group Deleted Successfully!");
         }).catch((error) => {
             console.error("Error deleting AttributeGroup:", error);
             closeDeleteModal();
@@ -42,7 +43,6 @@
     function closeDeleteModal() {
         showDeleteModal = false;
         refreshTable.refreshTable();
-        toast("Attribute Group Deleted Successfully!");
     }
 
     function handleNewAttributeGroup() {

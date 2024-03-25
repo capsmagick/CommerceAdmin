@@ -1,9 +1,10 @@
 <!-- ConfirmDeleteModal.svelte -->
 <script>
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import * as Card from "$lib/components/ui/card";
   import {Button }from "$lib/components/ui/button";
   import {Label} from "$lib/components/ui/label"
+  import Table from '../table/table.svelte';
 
   export let attribute;
 
@@ -16,6 +17,26 @@
   function cancelDelete() {
     dispatch('cancel');
   }
+    function handleClickOutside(event) {
+    if (!event.target.closest('.card')) {
+      cancelDelete();
+    }
+  }
+  
+onMount(() => {
+  const timeout = setTimeout(() => {
+    document.addEventListener('click', handleClickOutside);
+  }, 500);
+
+  return () => {
+    clearTimeout(timeout);
+    document.removeEventListener('click', handleClickOutside);
+  };
+});
+
+
+
+
 </script>
 
 <div class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50" style="color: black">

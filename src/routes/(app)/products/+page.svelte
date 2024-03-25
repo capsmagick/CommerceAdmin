@@ -61,6 +61,7 @@
     function confirmDelete() {
         API.delete(`/products/product/${deletingProduct.id}/delete_record/`).then(() => {
             closeDeleteModal();
+            toast("Product Deleted Successfully!");
         }).catch((error) => {
             console.error("Error deleting Product:", error);
             closeDeleteModal();
@@ -70,7 +71,6 @@
     function closeDeleteModal() {
         showDeleteModal = false;
         refreshTable.refreshTable();
-        toast("Product Deleted Successfully!");
     }
     
    

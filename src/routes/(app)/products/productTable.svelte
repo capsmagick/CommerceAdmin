@@ -85,7 +85,7 @@
             previous = res.data.previous;
             return res.data.results;
         } catch (error) {
-        console.error("fetch:brands:", error);
+        console.error("fetch:Product:", error);
         return [];
         }
     }

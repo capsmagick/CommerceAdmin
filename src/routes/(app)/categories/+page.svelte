@@ -36,6 +36,7 @@
     function confirmDelete() {
         API.delete(`/masterdata/category/${deletingCategory.id}/delete_record/`).then(() => {
             closeDeleteModal();
+            toast("Category Deleted Successfully!");
         }).catch((error) => {
             console.error("Error deleting Category:", error);
             closeDeleteModal();
@@ -45,7 +46,6 @@
     function closeDeleteModal() {
         showDeleteModal = false;
         refreshTable.refreshTable();
-        toast("Category Deleted Successfully!");
     }
 
     function handleNewCategory() {
