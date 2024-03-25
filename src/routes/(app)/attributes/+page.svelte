@@ -71,7 +71,7 @@
         <CreditAttribute
                 {editData}
                 {editForm}
-                on:close={() => {editData = null;editForm = false;showForm = false;}}
+                on:cancel={() => {editData = null;editForm = false;showForm = false;}}
                 on:newAttribute={() => handleNewAttribute()}/>
     {/if}
 </div>

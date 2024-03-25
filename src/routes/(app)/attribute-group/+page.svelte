@@ -66,7 +66,7 @@
         <CreateAttributeGroup
                 {editData}
                 {editForm}
-                on:close={() => {editData = null;editForm = false;showForm = false;}}
+                on:cancel={() => {editData = null;editForm = false;showForm = false;}}
                 on:newAttributeGroup={() => handleNewAttributeGroup()}/>
     {/if}
 </div>

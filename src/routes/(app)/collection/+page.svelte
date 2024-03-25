@@ -67,7 +67,7 @@ import {toast} from "svelte-sonner";
         <CreateCollection
                 {editData}
                 {editForm}
-                on:close={() => {editData = null;editForm = false;showForm = false;}}
+                on:cancel={() => {editData = null;editForm = false;showForm = false;}}
                 on:newCollection={() => handleNewCollection()}/>
     {/if}
 </div>

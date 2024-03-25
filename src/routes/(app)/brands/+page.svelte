@@ -67,7 +67,7 @@
         <CreditBrand
                 {editData}
                 {editForm}
-                on:close={() => {editData = null;editForm = false;showForm = false;}}
+                on:cancel={() => {editData = null;editForm = false;showForm = false;}}
                 on:newBrand={() => handleNewBrand()}/>
     {/if}
 </div>

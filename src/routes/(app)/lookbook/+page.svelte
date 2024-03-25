@@ -65,7 +65,7 @@
       <CreateLookbook
       {editData}
       {editForm}
-      on:close={() => {editData = null;editForm = false;showForm = false;}}
+      on:cancel={() => {editData = null;editForm = false;showForm = false;}}
       on:newLookbook={() => handleNewLookbook()}/>
     {/if}
 </div>

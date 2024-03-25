@@ -157,6 +157,26 @@
     await fetchAttributeGroups();
     await fetchTags();
   });
+
+    function cancelModel() {
+    dispatch('cancel');
+  }
+    function handleClickOutside(event) {
+    if (!event.target.closest('.card')) {
+      cancelModel();
+    }
+  }
+  
+onMount(() => {
+  const timeout = setTimeout(() => {
+    document.addEventListener('click', handleClickOutside);
+  }, 500);
+
+    return () => {
+    clearTimeout(timeout);
+    document.removeEventListener('click', handleClickOutside);
+  };
+});
 </script>
 
 
@@ -280,7 +300,7 @@
 
       <Button
        type="button"  variant="ghost"
-        on:click={() => dispatch("close")}
+        on:click={() => dispatch("cancel")}
         >Cancel
       </Button>
 
