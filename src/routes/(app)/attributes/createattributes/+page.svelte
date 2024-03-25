@@ -63,7 +63,7 @@
 onMount(() => {
   const timeout = setTimeout(() => {
     document.addEventListener('click', handleClickOutside);
-  }, 500);
+  }, 100);
 
   return () => {
     clearTimeout(timeout);
