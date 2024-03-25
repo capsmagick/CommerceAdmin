@@ -204,7 +204,7 @@ onMount(() => {
                                 <Select.Group>
                                   <Select.Label>Fruits</Select.Label>
                                   {#each condition as Condition}
-                                  <Select.Item  value={Condition.id} label={Condition.name}
+                                  <Select.Item class="card"  value={Condition.id} label={Condition.name}
                                     >{Condition.name}</Select.Item
                                   >
                                 {/each}

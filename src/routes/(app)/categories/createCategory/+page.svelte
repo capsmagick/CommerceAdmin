@@ -220,7 +220,7 @@ onMount(() => {
                     <Select.Item
                       value={group.id}
                       label={group.name}
-                      class="capitalize"
+                      class="capitalize card"
                       on:click={() => handleGroupChange({ value: group.id })}
                     >
                       {group.name}
@@ -262,7 +262,7 @@ onMount(() => {
                   <Select.Item
                     value={tag.id}
                     label={tag.name}
-                    class="capitalize"
+                    class="capitalize card"
                     on:click={() => handleTagChange({ value: tag.id })}
                   >
                     {tag.name}

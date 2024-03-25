@@ -155,7 +155,7 @@ onMount(() => {
                                                 <Select.Item
                                                         value={a.id}
                                                         label={a.name}
-                                                        class="capitalize"
+                                                        class="capitalize card"
                                                         on:click={() => handleAttributeChange({ value: a.id })}>
                                                     {a.name}
                                                 </Select.Item>
