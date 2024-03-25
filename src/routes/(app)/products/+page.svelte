@@ -232,6 +232,7 @@
     productDetails = {
       id: '',
       name: '',
+      image: '',
       short_description: '',
       description: '',
       sku: '',

@@ -138,12 +138,28 @@ onMount(() => {
   };
 });
 
+// image upload
+ let imageUpload: HTMLInputElement;
+
+    function pickAvatar() {
+        imageUpload.click();
+    }
+
+    async function uploadAvatar() {
+        if (imageUpload.files && imageUpload.files.length > 0) {
+            productDetails.image = imageUpload.files[0];
+            const img: HTMLImageElement | null = document.getElementById("selected-logo") as HTMLImageElement;
+            if (img) {
+                img.src = window.URL.createObjectURL(productDetails.image);
+            }
+        }
+    }
 </script>
 
 <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
       <div class="flex items-center justify-center">
         <div class="glow-border" >
-        <div class="card glow-border-content bg-background text-foreground">
+        <div class="card glow-border-content bg-background text-foreground overflow-y-auto" style="height:90vh; web">
             
             <Card.Root>
                 <Card.Header>
@@ -235,9 +251,17 @@ onMount(() => {
                     <div class="grid grid-cols-1 gap-4">
                         <div class="grid gap-2">
                             <Label for="area">Display Image</Label>
-                           <Button id="area" variant ="outline" placeholder="name" >
+                           <Button id="area" variant ="outline" placeholder="name" 
+                           on:click={pickAvatar}>
                            Upload Image
                         </Button>
+
+                    <div style="display:flex; justify-content: center; align-items: center; margin-top: 10px;">
+                          <img id="selected-logo" style="height: 100px;" alt="" class:showImg={productDetails.image} class:hideImg={!productDetails.image} src=""/>
+  
+                      </div>    
+                        <input type="file" id="file-input" bind:this={imageUpload} hidden accept="image/png, image/jpeg"
+                                on:change={uploadAvatar}/>
                         </div>
                        
                     </div>
@@ -253,3 +277,10 @@ onMount(() => {
     </div>
     </div>
     </div>
+
+    <style>
+      .card::-webkit-scrollbar {
+    display: none;
+}
+    </style>
+   
