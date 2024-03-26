@@ -14,10 +14,6 @@
     function handleDelete() {
         dispatch('delete')
     }
-   
-    export let id: string;
-
-
 
   </script>
    
