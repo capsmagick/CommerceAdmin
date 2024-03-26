@@ -5,7 +5,7 @@
     import { Button } from "$lib/components/ui/button";
     import {createEventDispatcher} from "svelte";
    
-    export let id: string;
+    // export let id: string;
 
 
 
