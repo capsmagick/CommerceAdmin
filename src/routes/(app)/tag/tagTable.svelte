@@ -135,17 +135,6 @@
       plugins: { sort: {}, filter: { exclude: true } },
     }),
     table.column({
-      header: "ID",
-      accessor: ({ id }) => id,
-      cell: ({ value }) => value,
-      plugins: { sort: {}, filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Original ID",
-      accessor: ({ id }) => id,
-      plugins: { sort: {}, filter: { exclude: true } },
-    }),
-    table.column({
       header: "Actions",
       accessor: ({ id }) => id,
       cell: (item) => {
