@@ -1,247 +1,264 @@
 <script lang="ts">
-    import CaretSort from "svelte-radix/CaretSort.svelte";
-    import ChevronDown from "svelte-radix/ChevronDown.svelte";
-    import * as Avatar from "$lib/components/ui/avatar";
-    import {
-        createTable,
-        Subscribe,
-        Render,
-        createRender
-    } from "svelte-headless-table";
-    import {
-        addSortBy,
-        addPagination,
-        addTableFilter,
-        addSelectedRows,
-        addHiddenColumns
-    } from "svelte-headless-table/plugins";
-    import { writable } from "svelte/store";
-    import * as Table from "$lib/components/ui/table/index.js";
-    import Actions from "./categoriesTableActions.svelte";
-    import {Button} from "$lib/components/ui/button/index.js";
-    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-    import {cn} from "$lib/utils.js";
-    import {Input} from "$lib/components/ui/input/index.js";
-    import DataTableCheckbox from "./categoriesTableCheckbox.svelte";
-    import API from "$lib/services/api";
-    import {createEventDispatcher} from "svelte";
+  import CaretSort from "svelte-radix/CaretSort.svelte";
+  import ChevronDown from "svelte-radix/ChevronDown.svelte";
+  import * as Avatar from "$lib/components/ui/avatar";
+  import {
+    createTable,
+    Subscribe,
+    Render,
+    createRender,
+  } from "svelte-headless-table";
+  import {
+    addSortBy,
+    addPagination,
+    addTableFilter,
+    addSelectedRows,
+    addHiddenColumns,
+  } from "svelte-headless-table/plugins";
+  import { writable } from "svelte/store";
+  import * as Table from "$lib/components/ui/table/index.js";
+  import Actions from "./categoriesTableActions.svelte";
+  import { Button } from "$lib/components/ui/button/index.js";
+  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+  import { cn } from "$lib/utils.js";
+  import { Input } from "$lib/components/ui/input/index.js";
+  import DataTableCheckbox from "./categoriesTableCheckbox.svelte";
+  import API from "$lib/services/api";
+  import { createEventDispatcher } from "svelte";
 
-    const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
-    type Categories = {
-        id: string;
-        name: string;
-        description: string;
-        tags: string[]; // Corrected type
-        image: string;
-        status: string[];
-        created_at: string;
-        updated_at: string;
-        created_by: string;
-        updated_by: string;
-    };
-    
-    let next: any;
-    let nextPage = false;
-    let previous: any;
-    let previousPage = false;
+  type Categories = {
+    id: string;
+    name: string;
+    description: string;
+    tags: string[]; // Corrected type
+    image: string;
+    status: string[];
+    created_at: string;
+    updated_at: string;
+    created_by: string;
+    updated_by: string;
+  };
 
-    // Create a readable store for the data
-    const data = writable<Categories[]>([], (set) => {
-        getCategory().then((data) => {
-            set(data);
+  let next: any;
+  let nextPage = false;
+  let previous: any;
+  let previousPage = false;
+
+  // Create a readable store for the data
+  const data = writable<Categories[]>([], (set) => {
+    getCategory().then((data) => {
+      set(data);
+    });
+  });
+
+  function createFunction() {
+    dispatch("newCategory");
+  }
+
+  export async function refreshTable() {
+    location.reload();
+  }
+
+  async function getCategory() {
+    try {
+      let res;
+      if (nextPage) {
+        res = await API.get(next);
+      } else if (previousPage) {
+        res = await API.get(previous);
+      } else {
+        res = await API.get("/masterdata/category/");
+      }
+      next = res.data.next;
+      previous = res.data.previous;
+      return res.data.results;
+    } catch (error) {
+      console.error("fetch:category:", error);
+      return [];
+    }
+  }
+
+  async function getNextPage() {
+    nextPage = true;
+    previousPage = false;
+    const newData = await getCategory();
+    data.set(newData);
+  }
+
+  async function getPreviousPage() {
+    nextPage = false;
+    previousPage = true;
+    const newData = await getCategory();
+    data.set(newData);
+  }
+
+  const table = createTable(data, {
+    sort: addSortBy({ disableMultiSort: true }),
+    page: addPagination(),
+    filter: addTableFilter({
+      fn: ({ filterValue, value }) => value.includes(filterValue),
+    }),
+    select: addSelectedRows(),
+    hide: addHiddenColumns(),
+  });
+
+  const columns = table.createColumns([
+    table.column({
+      header: (_, { pluginStates }) => {
+        const { allPageRowsSelected } = pluginStates.select;
+        return createRender(DataTableCheckbox, {
+          checked: allPageRowsSelected,
         });
-    });
+      },
+      accessor: "id",
+      cell: ({ row }, { pluginStates }) => {
+        const { getRowState } = pluginStates.select;
+        const { isSelected } = getRowState(row);
 
-    function createFunction() {
-        dispatch('newCategory')
-    }
+        return createRender(DataTableCheckbox, {
+          checked: isSelected,
+        });
+      },
+      plugins: {
+        sort: {
+          disable: true,
+        },
+        filter: {
+          exclude: true,
+        },
+      },
+    }),
+    table.column({
+      header: "ID",
+      accessor: ({ id }) => id,
+      plugins: { sort: { disable: true }, filter: { exclude: true } },
+    }),
+    table.column({
+      header: "Category",
+      accessor: "name",
+      cell: ({ value }) => value,
+      plugins: {
+        filter: {
+          getFilterValue(value) {
+            return value;
+          },
+        },
+      },
+    }),
 
-    export async function refreshTable() {
-        location.reload();
-    }
+    table.column({
+      header: "Image",
+      accessor: "image",
+      cell: ({ value }) =>
+        `<img src="${value}" alt="Featured Image" class="h-10 w-10 rounded-full">`,
+      plugins: { filter: { exclude: true } },
+    }),
 
-    async function getCategory() {
-        try {
-            let res;
-            if(nextPage) {
-                res = await API.get(next);
-            } else if (previousPage) {
-                res = await API.get(previous);
-            } else {
-                res = await API.get("/masterdata/category/");
-            }
-            next = res.data.next;
-            previous = res.data.previous;
-            return res.data.results;
-        } catch (error) {
-            console.error("fetch:category:", error);
-            return [];
-        }
-    }
+    table.column({
+      header: "Description",
+      accessor: "description",
+      cell: ({ value }) => value,
+      plugins: { filter: { exclude: true } },
+    }),
+    table.column({
+      header: "Tags",
+      accessor: "tags",
+      cell: ({ value }) => value.map((tag) => tag.name).join(", "),
+      plugins: { filter: {} },
+    }),
+    table.column({
+      header: "Created At",
+      accessor: "created_at",
+      cell: ({ value }) => new Date(value).toLocaleDateString(),
+      plugins: { sort: {}, filter: { exclude: true } },
+    }),
+    table.column({
+      header: "Updated At",
+      accessor: "updated_at",
+      cell: ({ value }) => new Date(value).toLocaleDateString(),
+      plugins: { sort: {}, filter: { exclude: true } },
+    }),
+    table.column({
+      header: "Created By",
+      accessor: "created_by",
+      cell: ({ value }) => value,
+      plugins: { filter: { exclude: true } },
+    }),
+    table.column({
+      header: "Updated By",
+      accessor: "updated_by",
+      cell: ({ value }) => value,
+      plugins: { filter: { exclude: true } },
+    }),
+    table.column({
+      header: "Actions",
+      accessor: ({ id }) => id,
+      cell: (item) => {
+        return createRender(Actions)
+          .on("edit", (event: Actions["edit"]) => {
+            dispatch("edit", { item });
+          })
+          .on("delete", (event: Actions["delete"]) => {
+            dispatch("delete", { item });
+          });
+      },
+      plugins: {
+        sort: {
+          disable: true,
+        },
+      },
+    }),
+  ]);
 
-    async function getNextPage () {
-        nextPage = true;
-        previousPage = false;
-        const newData = await getCategory(); 
-        data.set(newData);
-    }
+  const {
+    headerRows,
+    pageRows,
+    tableAttrs,
+    tableBodyAttrs,
+    flatColumns,
+    pluginStates,
+    rows,
+  } = table.createViewModel(columns);
 
-    async function getPreviousPage () {
-        nextPage = false;
-        previousPage = true;
-        const newData = await getCategory(); 
-        data.set(newData);
-    }
+  const { sortKeys } = pluginStates.sort;
 
-    const table = createTable(data, {
-        sort: addSortBy({disableMultiSort: true}),
-        page: addPagination(),
-        filter: addTableFilter({
-            fn: ({filterValue, value}) => value.includes(filterValue)
-        }),
-        select: addSelectedRows(),
-        hide: addHiddenColumns()
-    });
+  const { hiddenColumnIds } = pluginStates.hide;
+  const ids = flatColumns.map((c) => c.id);
+  let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
 
-    const columns = table.createColumns([
-        table.column({
-            header: (_, {pluginStates}) => {
-                const {allPageRowsSelected} = pluginStates.select;
-                return createRender(DataTableCheckbox, {
-                    checked: allPageRowsSelected
-                });
-            },
-            accessor: "id",
-            cell: ({row}, {pluginStates}) => {
-                const {getRowState} = pluginStates.select;
-                const {isSelected} = getRowState(row);
+  let initialHiddenColumns = [
+    "ID",
+    "created_at",
+    "updated_at",
+    "attributes",
+    "created_by",
+    "updated_by",
+  ];
 
-                return createRender(DataTableCheckbox, {
-                    checked: isSelected
-                });
-            },
-            plugins: {
-                sort: {
-                    disable: true
-                },
-                filter: {
-                    exclude: true
-                }
-            }
-        }),
-        table.column({
-            header: "ID",
-            accessor: ({id}) => id,
-            plugins: {sort: {disable: true}, filter: {exclude: true}}
-        }),
-        table.column({
-            header: "Category",
-            accessor: "name",
-            cell: ({value}) => value,
-            plugins: {
-                filter: {
-                    getFilterValue(value) {
-                        return value;
-                    }
-                }
-            }
-        }),
+  $: hideForId = Object.fromEntries(
+    ids.map((id) => [id, !initialHiddenColumns.includes(id)])
+  );
 
-        table.column({
-            header: "Image",
-            accessor: "image",
-            cell: ({value}) => `<img src="${value}" alt="Featured Image" class="h-10 w-10 rounded-full">`,
-            plugins: {filter: {exclude: true}}
-        }),
+  $: $hiddenColumnIds = Object.entries(hideForId)
+    .filter(([, hide]) => !hide)
+    .map(([id]) => id);
 
+  const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
+  const { filterValue } = pluginStates.filter;
 
-        table.column({
-            header: "Description",
-            accessor: "description",
-            cell: ({value}) => value,
-            plugins: {filter: {exclude: true}}
-        }),
-        table.column({
-            header: "Tags",
-            accessor: "tags",
-            cell: ({ value }) => value.map(tag => tag.name).join(", "),
-            plugins: {filter: {}}
-        }),
-        table.column({
-            header: "Created At",
-            accessor: "created_at",
-            cell: ({value}) => new Date(value).toLocaleDateString(),
-            plugins: {sort: {}, filter: {exclude: true}}
-        }),
-        table.column({
-            header: "Updated At",
-            accessor: "updated_at",
-            cell: ({value}) => new Date(value).toLocaleDateString(),
-            plugins: {sort: {}, filter: {exclude: true}}
-        }),
-        table.column({
-            header: "Created By",
-            accessor: "created_by",
-            cell: ({value}) => value,
-            plugins: {filter: {exclude: true}}
-        }),
-        table.column({
-            header: "Updated By",
-            accessor: "updated_by",
-            cell: ({value}) => value,
-            plugins: {filter: {exclude: true}}
-        }),
-        table.column({
-            header: "Actions",
-            accessor: ({id}) => id,
-            cell: (item) => {
-                return createRender(Actions)
-                    .on('edit', (event: Actions['edit']) => {
-                        dispatch('edit', {item})
-                    })
-                    .on('delete', (event: Actions['delete']) => {
-                        dispatch('delete', {item})
-                    });
-            },
-            plugins: {
-                sort: {
-                    disable: true
-                }
-            }
-        })
-    ]);
+  const { selectedDataIds } = pluginStates.select;
 
-    const {
-        headerRows,
-        pageRows,
-        tableAttrs,
-        tableBodyAttrs,
-        flatColumns,
-        pluginStates,
-        rows
-    } = table.createViewModel(columns);
-
-    const {sortKeys} = pluginStates.sort;
-
-    const {hiddenColumnIds} = pluginStates.hide;
-    const ids = flatColumns.map((c) => c.id);
-    let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
-
-    let initialHiddenColumns = ['ID', 'created_at', 'updated_at', 'attributes', 'created_by', 'updated_by'];
-
-    $: hideForId = Object.fromEntries(ids.map((id) => [id, !initialHiddenColumns.includes(id)]));
-
-    $: $hiddenColumnIds = Object.entries(hideForId)
-        .filter(([, hide]) => !hide)
-        .map(([id]) => id);
-
-    const {hasNextPage, hasPreviousPage, pageIndex} = pluginStates.page;
-    const {filterValue} = pluginStates.filter;
-
-    const {selectedDataIds} = pluginStates.select;
-
-    const hideableCols = ["ID","created_at", "updated_at", 'description', 'tags', 'created_by', 'updated_by'];
+  const hideableCols = [
+    "ID",
+    "created_at",
+    "updated_at",
+    "description",
+    "tags",
+    "created_by",
+    "updated_by",
+  ];
 </script>
 
 <div class="w-full">

@@ -1,45 +1,45 @@
 <script lang="ts">
-    import CaretSort from "svelte-radix/CaretSort.svelte";
-    import ChevronDown from "svelte-radix/ChevronDown.svelte";
-    import * as Avatar from "$lib/components/ui/avatar";
-    import {
-      createTable,
-      Subscribe,
-      Render,
-      createRender
-    } from "svelte-headless-table";
-    import {
-      addSortBy,
-      addPagination,
-      addTableFilter,
-      addSelectedRows,
-      addHiddenColumns
-    } from "svelte-headless-table/plugins";
-    import { writable } from "svelte/store";
-    import * as Table from "$lib/components/ui/table/index.js";
-    import Actions from "./collectionTableActions.svelte";
-    import { Button } from "$lib/components/ui/button/index.js";
-    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-    import { cn } from "$lib/utils.js";
-    import { Input } from "$lib/components/ui/input/index.js";
-    import DataTableCheckbox from "./collectionTableCheckbox.svelte";
-    import API from "$lib/services/api";
-    import {createEventDispatcher} from "svelte";
+  import CaretSort from "svelte-radix/CaretSort.svelte";
+  import ChevronDown from "svelte-radix/ChevronDown.svelte";
+  import * as Avatar from "$lib/components/ui/avatar";
+  import {
+    createTable,
+    Subscribe,
+    Render,
+    createRender,
+  } from "svelte-headless-table";
+  import {
+    addSortBy,
+    addPagination,
+    addTableFilter,
+    addSelectedRows,
+    addHiddenColumns,
+  } from "svelte-headless-table/plugins";
+  import { writable } from "svelte/store";
+  import * as Table from "$lib/components/ui/table/index.js";
+  import Actions from "./collectionTableActions.svelte";
+  import { Button } from "$lib/components/ui/button/index.js";
+  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+  import { cn } from "$lib/utils.js";
+  import { Input } from "$lib/components/ui/input/index.js";
+  import DataTableCheckbox from "./collectionTableCheckbox.svelte";
+  import API from "$lib/services/api";
+  import { createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();
     
   type Collection = {
-  id: string;
-  name: string;
-  description: string;
-  tags: string[]; // Corrected type
-  featuredImage: string;
-  variants: string[];
-  created_at: string;
-  updated_at: string;
-  created_by: string;
-  updated_by: string;
-};
+    id: string;
+    name: string;
+    description: string;
+    tags: string[]; // Corrected type
+    featuredImage: string;
+    variants: string[];
+    created_at: string;
+    updated_at: string;
+    created_by: string;
+    updated_by: string;
+  };
 
     let next: any;
     let nextPage = false;
@@ -53,39 +53,39 @@
         });
     });
 
-    function createFunction() {
-      dispatch('newAttribute')
-    }
+  function createFunction() {
+    dispatch("newAttribute");
+  }
 
-    export async function refreshTable() {
-        location.reload();
-    }
+  export async function refreshTable() {
+    location.reload();
+  }
 
-    async function getCollections() {
-        try {
-        let res;
-            if(nextPage) {
-                res = await API.get(next);
-            } else if (previousPage) {
-                res = await API.get(previous);
-            } else {
-                res = await API.get("/products/collection/");
-            }
-            next = res.data.next;
-            previous = res.data.previous;
-            return res.data.results;
-        } catch (error) {
-        console.error("fetch:brands:", error);
-        return [];
-        }
+  async function getCollections() {
+    try {
+      let res;
+      if (nextPage) {
+        res = await API.get(next);
+      } else if (previousPage) {
+        res = await API.get(previous);
+      } else {
+        res = await API.get("/products/collection/");
+      }
+      next = res.data.next;
+      previous = res.data.previous;
+      return res.data.results;
+    } catch (error) {
+      console.error("fetch:brands:", error);
+      return [];
     }
+  }
 
-     async function getNextPage () {
-        nextPage = true;
-        previousPage = false;
-        const newData = await getCollections(); 
-        data.set(newData);
-    }
+  async function getNextPage() {
+    nextPage = true;
+    previousPage = false;
+    const newData = await getCollections();
+    data.set(newData);
+  }
 
     async function getPreviousPage () {
         nextPage = false;
@@ -224,128 +224,122 @@
     
     let initialHiddenColumns = [ 'created_at', 'updated_at', 'tags', 'created_by', 'updated_by'];
 
-    $: hideForId = Object.fromEntries(ids.map((id) => [id, !initialHiddenColumns.includes(id)]));
+  $: hideForId = Object.fromEntries(
+    ids.map((id) => [id, !initialHiddenColumns.includes(id)])
+  );
 
-    $: $hiddenColumnIds = Object.entries(hideForId)
-      .filter(([, hide]) => !hide)
-      .map(([id]) => id);
-   
-    const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
-    const { filterValue } = pluginStates.filter;
-   
-    const { selectedDataIds } = pluginStates.select;
-   
-    const hideableCols = ["created_at", "updated_at",'description', 'tags', 'created_by', 'updated_by'];
-  </script>
-   
-  <div class="w-full p-4 bg-background text-foreground">
-    <div class="mb-4 flex items-center gap-4">
-      <Input
-        class="max-w-sm"
-        placeholder="Filter Collection..."
-        type="text"
-        bind:value={$filterValue}
-      />
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild let:builder>
-          <Button variant="outline" class="ml-auto" builders={[builder]}>
-            Columns <ChevronDown class="ml-2 h-4 w-4" />
-          </Button>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Content>
-          {#each flatColumns as col}
-            {#if hideableCols.includes(col.id)}
-              <DropdownMenu.CheckboxItem bind:checked={hideForId[col.id]}>
-                {col.header}
-              </DropdownMenu.CheckboxItem>
-            {/if}
-          {/each}
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
-    </div>
-    <div class="rounded-md border">
-      <Table.Root {...$tableAttrs}>
-        <Table.Header>
-          {#each $headerRows as headerRow}
-            <Subscribe rowAttrs={headerRow.attrs()}>
-              <Table.Row>
-                {#each headerRow.cells as cell (cell.id)}
-                  <Subscribe
-                    attrs={cell.attrs()}
-                    let:attrs
-                    props={cell.props()}
-                    let:props
-                  >
-                    <Table.Head
-                      {...attrs}
-                      class={cn("[&:has([role=checkbox])]:pl-3")}
-                    >
-                      {#if cell.id === "amount"}
-                        <div class="text-right">
-                          <Render of={cell.render()} />
-                        </div>
-                      {:else if cell.id === "customerName"}
-                        <Button variant="ghost" on:click={props.sort.toggle}>
-                          <Render of={cell.render()} />
-                          <CaretSort
-                            class={cn(
-                              $sortKeys[0]?.id === cell.id && "text-foreground",
-                              "ml-2 h-4 w-4"
-                            )}
-                          />
-                        </Button>
-                      {:else}
-                        <Render of={cell.render()} />
-                      {/if}
-                    </Table.Head>
-                  </Subscribe>
-                {/each}
-              </Table.Row>
-            </Subscribe>
-          {/each}
-        </Table.Header>
-        <Table.Body {...$tableBodyAttrs}>
-          {#each $pageRows as row (row.id)}
-            <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-              <Table.Row
-                {...rowAttrs}
-                data-state={$selectedDataIds[row.id] && "selected"}
-              >
-                {#each row.cells as cell (cell.id)}
-                  <Subscribe attrs={cell.attrs()} let:attrs>
-                    <Table.Cell class="[&:has([role=checkbox])]:pl-3" {...attrs}>
-                      {#if cell.id === "amount"}
-                        <div class="text-right font-medium">
-                          <Render of={cell.render()} />
-                        </div>
-                      {:else}
-                        <Render of={cell.render()} />
-                      {/if}
-                    </Table.Cell>
-                  </Subscribe>
-                {/each}
-              </Table.Row>
-            </Subscribe>
-          {/each}
-        </Table.Body>
-      </Table.Root>
-    </div>
-    <div class="flex items-center justify-end space-x-2 py-4">
-      <div class="flex-1 text-sm text-muted-foreground">
-        {Object.keys($selectedDataIds).length} of{" "}
-        {$rows.length} row(s) selected.
-      </div>
-      <Button
-        variant="outline"
-        size="sm"
-        on:click={getPreviousPage}
-        disabled={!previous}>Previous</Button
-      >
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={!next}
-        on:click={getNextPage}>Next</Button
-      >
-    </div>
+  $: $hiddenColumnIds = Object.entries(hideForId)
+    .filter(([, hide]) => !hide)
+    .map(([id]) => id);
+
+  const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
+  const { filterValue } = pluginStates.filter;
+
+  const { selectedDataIds } = pluginStates.select;
+
+  const hideableCols = [
+    "created_at",
+    "updated_at",
+    "description",
+    "tags",
+    "created_by",
+    "updated_by",
+  ];
+</script>
+
+<div class="w-full p-4 bg-background text-foreground">
+  <div class="mb-4 flex items-center gap-4">
+    <Input
+      class="max-w-sm"
+      placeholder="Filter Collection..."
+      type="text"
+      bind:value={$filterValue}
+    />
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild let:builder>
+        <Button variant="outline" class="ml-auto" builders={[builder]}>
+          Columns <ChevronDown class="ml-2 h-4 w-4" />
+        </Button>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        {#each flatColumns as col}
+          {#if hideableCols.includes(col.id)}
+            <DropdownMenu.CheckboxItem bind:checked={hideForId[col.id]}>
+              {col.header}
+            </DropdownMenu.CheckboxItem>
+          {/if}
+        {/each}
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
   </div>
+  <div class="rounded-md border">
+    <Table.Root {...$tableAttrs}>
+      <Table.Header>
+        {#each $headerRows as headerRow}
+          <Subscribe rowAttrs={headerRow.attrs()}>
+            <Table.Row>
+              {#each headerRow.cells as cell (cell.id)}
+                <Subscribe
+                  attrs={cell.attrs()}
+                  let:attrs
+                  props={cell.props()}
+                  let:props>
+                  <Table.Head
+                    {...attrs}
+                    class={cn("[&:has([role=checkbox])]:pl-3")}>
+                    {#if cell.id === "name"}
+                      <Button variant="ghost" on:click={props.sort.toggle}>
+                        <Render of={cell.render()} />
+                        <CaretSort
+                          class={cn(
+                            $sortKeys[0]?.id === cell.id && "text-foreground",
+                            "ml-2 h-4 w-4"
+                          )}/>
+                      </Button>
+                    {:else}
+                      <Render of={cell.render()} />
+                    {/if}
+                  </Table.Head>
+                </Subscribe>
+              {/each}
+            </Table.Row>
+          </Subscribe>
+        {/each}
+      </Table.Header>
+      <Table.Body {...$tableBodyAttrs}>
+        {#each $pageRows as row (row.id)}
+          <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
+            <Table.Row
+              {...rowAttrs}
+              data-state={$selectedDataIds[row.id] && "selected"}>
+              {#each row.cells as cell (cell.id)}
+                <Subscribe attrs={cell.attrs()} let:attrs>
+                  <Table.Cell class="[&:has([role=checkbox])]:pl-3" {...attrs}>
+                    {#if typeof cell.render() === "string"}
+                      {@html cell.render()}
+                    {:else}
+                      <Render of={cell.render()} />
+                    {/if}
+                  </Table.Cell>
+                </Subscribe>
+              {/each}
+            </Table.Row>
+          </Subscribe>
+        {/each}
+      </Table.Body>
+    </Table.Root>
+  </div>
+  <div class="flex items-center justify-end space-x-2 py-4">
+    <div class="flex-1 text-sm text-muted-foreground">
+      {Object.keys($selectedDataIds).length} of{" "}
+      {$rows.length} row(s) selected.
+    </div>
+    <Button
+      variant="outline"
+      size="sm"
+      on:click={getPreviousPage}
+      disabled={!previous}>Previous</Button>
+    <Button variant="outline" size="sm" disabled={!next} on:click={getNextPage}
+      >Next</Button>
+  </div>
+</div>
