@@ -331,8 +331,12 @@
                             {#each row.cells as cell (cell.id)}
                                 <Subscribe attrs={cell.attrs()} let:attrs>
                                     <Table.Cell class="[&:has([role=checkbox])]:pl-3" {...attrs}>
-                                            <Render of={cell.render()}/>
-                                    </Table.Cell>
+                                      {#if typeof cell.render() === "string"}
+                                        {@html cell.render()}
+                                      {:else}
+                                          <Render of={cell.render()} />
+                                      {/if}    
+                                      </Table.Cell>
                                 </Subscribe>
                             {/each}
                         </Table.Row>
