@@ -48,9 +48,6 @@
   let second_parent_category: string;
   let categories: any[] = [];
   let imageUpload: any;
-  let image: any;
-
-  let selectedTagName:string
 
   async function fetchCategories() {
     try {
@@ -149,7 +146,7 @@
   async function uploadAvatar() {
     categoryDetails.image = imageUpload.files[0];
     const img: any = document.getElementById("selected-logo");
-    img.src = window.URL.createObjectURL(image);
+    img.src = window.URL.createObjectURL(categoryDetails.image);
   }
 
   // Mount
@@ -273,7 +270,7 @@ onMount(() => {
             </Select.Content>
           </Select.Root>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center justify-evenly gap-2">
           <Button
             type="button"
             class="btn flex gap-2 items-center bg-indigo-500 text-white text-xs"
@@ -283,7 +280,7 @@ onMount(() => {
           <img
             id="selected-logo"
             alt=""
-            class={image ? "showImg" : "hideImg"}
+            class={categoryDetails.image ? "showImg" : "hideImg"}
           />
           <input
             type="file"
