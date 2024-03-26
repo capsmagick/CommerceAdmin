@@ -27,7 +27,6 @@
     import {createEventDispatcher} from "svelte";
 
     const dispatch = createEventDispatcher();
-    import type {ActionsEvents} from './Actions.svelte';
  
     type Product = {
       id: string;
@@ -58,7 +57,6 @@
     // Create a readable store for the data
     const data = writable<Product[]>([], (set) => {
         getProducts().then((data) => {
-            console.log(data);
             set(data);
         });
     });
@@ -252,14 +250,14 @@
         header: "Actions",
         accessor: ({ id }) => id,
         cell: (item) => {
-              return createRender(Actions, {item: item})
-                  .on('edit', (event: ActionsEvents['edit']) => {
+              return createRender(Actions)
+                  .on('edit', (event: Actions['edit']) => {
                       dispatch('edit', {item})
                   })
-                  .on('delete', (event: ActionsEvents['delete']) => {
+                  .on('delete', (event: Actions['delete']) => {
                       dispatch('delete', {item})
                   })
-                  .on('addVariant', (event: ActionsEvents['addVariant']) => {
+                  .on('addVariant', (event: Actions['addVariant']) => {
                       dispatch('addVariant', {item})
                   });
         },

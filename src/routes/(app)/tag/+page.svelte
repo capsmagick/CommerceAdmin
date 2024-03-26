@@ -36,6 +36,7 @@
     function confirmDelete() {
         API.delete(`/masterdata/tag/${deletingTag.id}/delete_record/`).then(() => {
             closeDeleteModal();
+            toast("Tag Deleted Successfully!");
         }).catch((error) => {
             console.error("Error deleting Tag:", error);
             closeDeleteModal();
@@ -45,7 +46,6 @@
     function closeDeleteModal() {
         showDeleteModal = false;
         refreshTable.refreshTable();
-        toast("Tag Deleted Successfully!");
     }
 
     function handleNewTag() {
@@ -67,7 +67,7 @@
         <CreateTag
                 {editData}
                 {editForm}
-                on:close={() => {editData = null;editForm = false;showForm = false;}}
+                on:cancel={() => {editData = null;editForm = false;showForm = false;}}
                 on:newTag={() => handleNewTag()}/>
     {/if}
 </div>

@@ -25,7 +25,6 @@
   import { createEventDispatcher } from "svelte";
   import { writable } from "svelte/store";
   import { onMount } from "svelte";
-  import type {ActionsEvents} from './Actions.svelte';
   import { get } from "svelte/store";
 
   const dispatch = createEventDispatcher();
@@ -35,6 +34,11 @@
     id: string;
     name: string;
   };
+
+    let next: any;
+    let nextPage = false;
+    let previous: any;
+    let previousPage = false;
 
   // Create a readable store for the data
   export const data = writable<Tag[]>([], (set) => {
@@ -61,15 +65,36 @@
 
   async function getTags() {
     try {
-      console.log("Fetching tags...");
-      const res = await API.get("/masterdata/tag/");
-      console.log("Tags fetched:", res.data.results);
-      return res.data.results;
-    } catch (error) {
-      console.error("fetch:brands:", error);
-      return [];
+          let res;
+            if(nextPage) {
+                res = await API.get(next);
+            } else if (previousPage) {
+                res = await API.get(previous);
+            } else {
+                res = await API.get("/masterdata/tag/");
+            }
+            next = res.data.next;
+            previous = res.data.previous;
+            return res.data.results;    
+        } catch (error) {
+            console.error("fetch:Tags:", error);
+            return [];
+        }
     }
-  }
+
+        async function getNextPage () {
+        nextPage = true;
+        previousPage = false;
+        const newData = await getTags(); 
+        data.set(newData);
+    }
+
+    async function getPreviousPage () {
+        nextPage = false;
+        previousPage = true;
+        const newData = await getTags(); 
+        data.set(newData);
+    }
 
     const table = createTable(data, {
       sort: addSortBy({ disableMultiSort: true }),
@@ -127,12 +152,11 @@
         header: "Actions",
         accessor: ({ id }) => id,
         cell: (item) => {
-                // return createRender(Actions, {item: item});
-                return createRender(Actions, {item: item})
-                    .on('edit', (event: ActionsEvents['edit']) => {
+                return createRender(Actions)
+                    .on('edit', (event: Actions['edit']) => {
                         dispatch('edit', {item})
                     })
-                    .on('delete', (event: ActionsEvents['delete']) => {
+                    .on('delete', (event: Actions['delete']) => {
                         dispatch('delete', {item})
                     });
             },
@@ -220,14 +244,14 @@
     <Button
       variant="outline"
       size="sm"
-      on:click={() => ($pageIndex = $pageIndex - 1)}
-      disabled={!$hasPreviousPage}>Previous</Button
+      on:click={getPreviousPage}
+      disabled={!previous}>Previous</Button
     >
     <Button
       variant="outline"
       size="sm"
-      disabled={!$hasNextPage}
-      on:click={() => ($pageIndex = $pageIndex + 1)}>Next</Button
+      disabled={!next}
+      on:click={getNextPage}>Next</Button
     >
   </div>
 </div>

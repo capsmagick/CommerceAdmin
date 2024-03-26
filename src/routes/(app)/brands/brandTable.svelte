@@ -29,7 +29,6 @@
 
     const dispatch = createEventDispatcher();
     import Actions from "./brandTableActions.svelte"
-    import type {ActionsEvents} from './Actions.svelte';
 
 
     type Brand = {
@@ -187,11 +186,11 @@
             accessor: ({id}) => id,
             cell: (item) => {
                 // return createRender(Actions, {item: item});
-                return createRender(Actions, {item: item})
-                    .on('edit', (event: ActionsEvents['edit']) => {
+                return createRender(Actions)
+                    .on('edit', (event: Actions['edit']) => {
                         dispatch('edit', {item})
                     })
-                    .on('delete', (event: ActionsEvents['delete']) => {
+                    .on('delete', (event: Actions['delete']) => {
                         dispatch('delete', {item})
                     });
             },

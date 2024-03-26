@@ -4,10 +4,6 @@
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
     import { Button } from "$lib/components/ui/button";
     import {createEventDispatcher} from "svelte";
-   
-    export let id: string;
-
-
 
     const dispatch = createEventDispatcher();
 

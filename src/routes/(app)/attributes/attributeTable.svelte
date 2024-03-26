@@ -29,7 +29,6 @@
     import {attributeDataStore} from "$lib/stores/data";
 
     const dispatch = createEventDispatcher();
-    import type {ActionsEvents} from './Actions.svelte';
 
     type Attribute = {
         id: string;
@@ -52,7 +51,7 @@
     });
 
     // Create a readable store for the data
-    export const brands = readable<Attribute[]>([], (set) => {
+    export const data = readable<Attribute[]>([], (set) => {
         getAttribute().then((data) => {
             set(data);
         });
@@ -60,10 +59,10 @@
 
     async function getAttribute() {
         try {
-            const response = await API.get("/masterdata/ATTRIBUTE/");
+            const response = await API.get("/masterdata/attribute/");
             return response.data.results;
         } catch (error) {
-            console.error("fetch:brands:", error);
+            console.error("fetch:Attribute:", error);
             return [];
         }
     }
@@ -127,11 +126,11 @@
             header: "Actions  ",
             accessor: ({id}) => id,
             cell: (item) => {
-                return createRender(Actions, {item: item})
-                    .on('edit', (event: ActionsEvents['edit']) => {
+                return createRender(Actions)
+                    .on('edit', (event: Actions['edit']) => {
                         dispatch('edit', {item})
                     })
-                    .on('delete', (event: ActionsEvents['delete']) => {
+                    .on('delete', (event: Actions['delete']) => {
                         dispatch('delete', {item})
                     });
             },
