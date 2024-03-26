@@ -45,6 +45,7 @@
     updated_at: string;
     created_by: string;
     updated_by: string;
+    short_description: string;
   };
 
   let next: any;
@@ -58,6 +59,8 @@
       set(data);
     });
   });
+
+  $: console.log($data.map(item => item.short_description));
 
   function createFunction() {
     dispatch("newAttribute");
@@ -155,6 +158,10 @@
           },
         },
       },
+    }),
+    table.column({
+      header: "Short Description",
+      accessor: "short_description",
     }),
     table.column({
       header: "Description",
@@ -308,6 +315,7 @@
     "created_at",
     "updated_at",
     "description",
+    "short_description",
     "hsn_code",
     "tags",
     "attributes",
