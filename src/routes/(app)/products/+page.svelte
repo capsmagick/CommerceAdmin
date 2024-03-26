@@ -7,6 +7,7 @@
   import { createEventDispatcher } from "svelte";
   import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
   import CreateVariant from "../variant/createVariant/+page.svelte"
+  import ProductModal from "./productModalForm/+page.svelte"
     import { Input} from "$lib/components/ui/input"; 
     import {Textarea} from "$lib/components/ui/textarea";
     import * as Select from "$lib/components/ui/select";
@@ -61,6 +62,7 @@
     function confirmDelete() {
         API.delete(`/products/product/${deletingProduct.id}/delete_record/`).then(() => {
             closeDeleteModal();
+            toast("Product Deleted Successfully!");
         }).catch((error) => {
             console.error("Error deleting Product:", error);
             closeDeleteModal();
@@ -70,13 +72,12 @@
     function closeDeleteModal() {
         showDeleteModal = false;
         refreshTable.refreshTable();
-        toast("Product Deleted Successfully!");
     }
     
    
     
 
-    const dispatch = createEventDispatcher();
+    // const dispatch = createEventDispatcher();
   
   let productDetails: any = {
       id: '',
@@ -97,74 +98,74 @@
       dimension: '',
     };
     
-    type Brand = {
-        id: string;
-        name: string;
-        logo: string;
-        description: string;
-    };
+    // type Brand = {
+    //     id: string;
+    //     name: string;
+    //     logo: string;
+    //     description: string;
+    // };
 
-    type Condition = {
-        id: number;
-        name: string;
+    // type Condition = {
+    //     id: number;
+    //     name: string;
        
-    };
+    // };
   
-    type Categories = {
-  id: string;
-  name: string;
-  description: string;
-  tags: string[]; // Corrected type
-  Image: string;
-  status: string[];
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  updatedBy: string;
-};
+//     type Categories = {
+//   id: string;
+//   name: string;
+//   description: string;
+//   tags: string[]; // Corrected type
+//   Image: string;
+//   status: string[];
+//   createdAt: string;
+//   updatedAt: string;
+//   createdBy: string;
+//   updatedBy: string;
+// };
 
 
-    export const brands = writable<Brand[]>([], (set) => {
-        getBrands().then((data) => {
-            set(data);
-        });
-    });
+    // export const brands = writable<Brand[]>([], (set) => {
+    //     getBrands().then((data) => {
+    //         set(data);
+    //     });
+    // });
 
-    async function getBrands() {
-        try {
-            const response = await API.get("/masterdata/brand/");
-            return response.data.results;
-        } catch (error) {
-            console.error("fetch:brands:", error);
-            return [];
-        }
-    }
+    // async function getBrands() {
+    //     try {
+    //         const response = await API.get("/masterdata/brand/");
+    //         return response.data.results;
+    //     } catch (error) {
+    //         console.error("fetch:brands:", error);
+    //         return [];
+    //     }
+    // }
 
   
-  async function getCategory() {
-        try {
-        const res = await API.get("/masterdata/category/");
-        return res.data.results;
-        } catch (error) {
-        console.error("fetch:brands:", error);
-        return [];
-        }
-    }
+  // async function getCategory() {
+  //       try {
+  //       const res = await API.get("/masterdata/category/");
+  //       return res.data.results;
+  //       } catch (error) {
+  //       console.error("fetch:brands:", error);
+  //       return [];
+  //       }
+  //   }
 
-  let categories = writable<Categories[]>([], (set) => {
-        getCategory().then((data) => {
-            console.log(data);
-            set(data);
-        });
-    });
+  // let categories = writable<Categories[]>([], (set) => {
+  //       getCategory().then((data) => {
+  //           console.log(data);
+  //           set(data);
+  //       });
+  //   });
 
-    let condition: Condition[] = [
-      { id: 1, name: "New" },
-      { id: 2, name: "Refurbished" },
-      { id: 3, name: "Factory Out" },
-      { id: 4, name: "Used" },
+    // let condition: Condition[] = [
+    //   { id: 1, name: "New" },
+    //   { id: 2, name: "Refurbished" },
+    //   { id: 3, name: "Factory Out" },
+    //   { id: 4, name: "Used" },
       
-    ];
+    // ];
  
   let a = [
     {
@@ -200,37 +201,38 @@
 
    
   })
-  let selectedItem: any;
+  // let selectedItem: any;
 
-  async function createProduct() {
-      try {
-        const url = editForm
-        ? `/products/product/${productDetails.id}/update_record/`
-        : "/products/product/create_record/";
+  // async function createProduct() {
+  //     try {
+  //       const url = editForm
+  //       ? `/products/product/${productDetails.id}/update_record/`
+  //       : "/products/product/create_record/";
 
-      if (editForm) {
-        await API.put(url, productDetails);
-      } else {
-        await API.post(url, productDetails);
-      }
+  //     if (editForm) {
+  //       await API.put(url, productDetails);
+  //     } else {
+  //       await API.post(url, productDetails);
+  //     }
 
-      dispatch("newProduct");
-      showModal = false
-      refreshTable.refreshTable();
+  //     dispatch("newProduct");
+  //     showModal = false
+  //     refreshTable.refreshTable();
 
-      const action = editForm ? "Product Updated" : "Product Created";
-      toast(`${action} successfully!`);
+  //     const action = editForm ? "Product Updated" : "Product Created";
+  //     toast(`${action} successfully!`);
         
-      } catch (error) {
-        console.error("create:product:", error);
-      }
-    }
+  //     } catch (error) {
+  //       console.error("create:product:", error);
+  //     }
+  //   }
 
   async function closemodal() {
     showModal = false
     productDetails = {
       id: '',
       name: '',
+      image: '',
       short_description: '',
       description: '',
       sku: '',
@@ -248,23 +250,24 @@
     };
   }
 
-  async function handleConditionChange(event:any) {
-  selectedItem =event.value;
-  console.log(selectedItem);
-}
+//   async function handleConditionChange(event:any) {
+//   selectedItem =event.value;
+//   console.log(selectedItem);
+// }
 
-let selectload: { data: any[]; label: string; triggerplaceholder: string; selectedItem: string; } = {
-    data: $categories,
-    label: 'Initial Label',
-    triggerplaceholder: 'Initial Placeholder',
-    selectedItem: 'Initial Selected Item'
-  };
+// let selectload: { data: any[]; label: string; triggerplaceholder: string; selectedItem: string; } = {
+//     data: $categories,
+//     label: 'Initial Label',
+//     triggerplaceholder: 'Initial Placeholder',
+//     selectedItem: 'Initial Selected Item'
+//   };
 </script>
 
 <div>
     {#if showDeleteModal}
         <ConfirmDeleteModal attribute={deletingProduct.name} on:confirm={confirmDelete}
-                            on:cancel={closeDeleteModal}/>
+                            on:cancel={closeDeleteModal}
+                            />
     {/if}
 </div>
 
@@ -298,7 +301,22 @@ let selectload: { data: any[]; label: string; triggerplaceholder: string; select
                      bind:this={refreshTable}/>
   </div>
   </div>
-  {#if showModal}
+  <div>
+    {#if showModal}
+    <ProductModal 
+      {productDetails}
+      {showModal}
+      {editForm}
+      on:cancel = {() => closemodal()}
+      on:newProduct={() => {
+                            closemodal();
+                            refreshTable.refreshTable();
+      }}
+    />
+    {/if}
+  </div>
+ 
+  <!-- {#if showModal}
     <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
       <div class="flex items-center justify-center">
         <div class="glow-border" >
@@ -412,7 +430,7 @@ let selectload: { data: any[]; label: string; triggerplaceholder: string; select
     </div>
     </div>
     </div>
-  {/if}
+  {/if} -->
 
 
    

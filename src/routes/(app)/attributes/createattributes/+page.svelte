@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {createEventDispatcher} from "svelte";
+    import {createEventDispatcher, onMount} from "svelte";
     import { toast } from "svelte-sonner";
 
     const dispatch = createEventDispatcher();
@@ -50,6 +50,26 @@
             toast(`Failed to ${action}`);
         }
     }
+
+      function cancelDelete() {
+    dispatch('cancel');
+  }
+    function handleClickOutside(event) {
+    if (!event.target.closest('.card')) {
+      cancelDelete();
+    }
+  }
+  
+onMount(() => {
+  const timeout = setTimeout(() => {
+    document.addEventListener('click', handleClickOutside);
+  }, 100);
+
+  return () => {
+    clearTimeout(timeout);
+    document.removeEventListener('click', handleClickOutside);
+  };
+});
 </script>
 
 <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
@@ -97,7 +117,7 @@
             </Card.Content>
             <Card.Footer class="justify-between space-x-2">
                     <Button variant="ghost"
-                            on:click={() => dispatch("close")}>
+                            on:click={() => dispatch("cancel")}>
                             Cancel
                     </Button>
                     {#if editForm === false}

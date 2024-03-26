@@ -39,6 +39,7 @@
     function confirmDelete() {
         API.delete(`/masterdata/attribute/${deletingAttribute.id}/delete_record/`).then(() => {
             closeDeleteModal();
+            toast("Attribute Deleted Successfully!");
         }).catch((error) => {
             console.error("Error deleting Attribute:", error);
             closeDeleteModal();
@@ -48,7 +49,6 @@
     function closeDeleteModal() {
         showDeleteModal = false;
         refreshTable.refreshTable();
-        toast("Attribute Deleted Successfully!");
     }
 
     function handleNewAttribute() {
@@ -71,7 +71,7 @@
         <CreditAttribute
                 {editData}
                 {editForm}
-                on:close={() => {editData = null;editForm = false;showForm = false;}}
+                on:cancel={() => {editData = null;editForm = false;showForm = false;}}
                 on:newAttribute={() => handleNewAttribute()}/>
     {/if}
 </div>

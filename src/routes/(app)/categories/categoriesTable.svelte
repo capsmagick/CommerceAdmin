@@ -166,16 +166,9 @@
         table.column({
             header: "Tags",
             accessor: "tags",
-            cell: ({value}) => value.join(", "),
+            cell: ({ value }) => value.map(tag => tag.name).join(", "),
             plugins: {filter: {}}
         }),
-        // table.column({
-        //     header: "Status",
-        //     accessor: "status",
-        //     cell: ({value}) => value.join(", "),
-        //     plugins: {filter: {}}
-        // }),
-
         table.column({
             header: "Created At",
             accessor: "created_at",

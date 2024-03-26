@@ -97,6 +97,26 @@
     onMount(async () => {
         await fetchAttribute();
     });
+
+      function cancelDelete() {
+    dispatch('cancel');
+  }
+    function handleClickOutside(event) {
+    if (!event.target.closest('.card')) {
+      cancelDelete();
+    }
+  }
+  
+onMount(() => {
+  const timeout = setTimeout(() => {
+    document.addEventListener('click', handleClickOutside);
+  }, 100);
+
+  return () => {
+    clearTimeout(timeout);
+    document.removeEventListener('click', handleClickOutside);
+  };
+});
 </script>
 
 <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
@@ -135,7 +155,7 @@
                                                 <Select.Item
                                                         value={a.id}
                                                         label={a.name}
-                                                        class="capitalize"
+                                                        class="capitalize card"
                                                         on:click={() => handleAttributeChange({ value: a.id })}>
                                                     {a.name}
                                                 </Select.Item>
@@ -148,7 +168,7 @@
                     </Card.Content>
                     <Card.Footer class="justify-between space-x-2">
                         <Button variant="ghost"
-                                on:click={() => dispatch("close")}>Cancel
+                                on:click={() => dispatch("cancel")}>Cancel
                         </Button>
                         {#if editForm === false}
                             <Button type=submit

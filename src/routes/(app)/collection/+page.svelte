@@ -35,6 +35,7 @@ import {toast} from "svelte-sonner";
     function confirmDelete() {
         API.delete(`/products/collection/${deletingCollection.id}/delete_record/`).then(() => {
             closeDeleteModal();
+            toast("Collection Deleted Successfully!");
         }).catch((error) => {
             console.error("Error deleting Collection:", error);
             closeDeleteModal();
@@ -44,7 +45,6 @@ import {toast} from "svelte-sonner";
     function closeDeleteModal() {
         showDeleteModal = false;
         refreshTable.refreshTable();
-        toast("Collection Deleted Successfully!");
     }
 
     function handleNewCollection() {
@@ -67,7 +67,7 @@ import {toast} from "svelte-sonner";
         <CreateCollection
                 {editData}
                 {editForm}
-                on:close={() => {editData = null;editForm = false;showForm = false;}}
+                on:cancel={() => {editData = null;editForm = false;showForm = false;}}
                 on:newCollection={() => handleNewCollection()}/>
     {/if}
 </div>

@@ -5,7 +5,7 @@
     import {Select} from "$lib/components/ui/select";
     import {Button} from "$lib/components/ui/button";
     import API from "$lib/services/api";
-    import {createEventDispatcher} from "svelte";
+    import {createEventDispatcher, onMount} from "svelte";
     import {toast} from "svelte-sonner";
     import * as Card from "$lib/components/ui/card";
 
@@ -53,6 +53,26 @@
             toast(`Failed to ${action}`);
         }
     }
+
+      function cancelDelete() {
+    dispatch('cancel');
+  }
+    function handleClickOutside(event) {
+    if (!event.target.closest('.card')) {
+      cancelDelete();
+    }
+  }
+  
+onMount(() => {
+  const timeout = setTimeout(() => {
+    document.addEventListener('click', handleClickOutside);
+  }, 100);
+
+  return () => {
+    clearTimeout(timeout);
+    document.removeEventListener('click', handleClickOutside);
+  };
+});
 </script>
 
 <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
@@ -74,7 +94,7 @@
                             </div>                
                     </Card.Content>
                     <Card.Footer  class="justify-between space-x-2">
-                        <Button type="button" variant="ghost" on:click={() => dispatch("close")}>Cancel</Button>
+                        <Button type="button" variant="ghost" on:click={() => dispatch("cancel")}>Cancel</Button>
                         <Button type="submit"  on:click={createLookbook}>Save</Button>
                     </Card.Footer>
                 </Card.Root>

@@ -34,6 +34,7 @@
     function confirmDelete() {
         API.delete(`/masterdata/brand/${deletingBrand.id}/delete_record/`).then(() => {
             closeDeleteModal();
+            toast("Brand Deleted Successfully!");
         }).catch((error) => {
             console.error("Error deleting Brand:", error);
             closeDeleteModal();
@@ -43,7 +44,6 @@
     function closeDeleteModal() {
         showDeleteModal = false;
         refreshTable.refreshTable();
-        toast("Brand Deleted Successfully!");
     }
 
     function handleNewBrand() {
@@ -67,7 +67,7 @@
         <CreditBrand
                 {editData}
                 {editForm}
-                on:close={() => {editData = null;editForm = false;showForm = false;}}
+                on:cancel={() => {editData = null;editForm = false;showForm = false;}}
                 on:newBrand={() => handleNewBrand()}/>
     {/if}
 </div>

@@ -36,6 +36,7 @@
     function confirmDelete() {
         API.delete(`/masterdata/category/${deletingCategory.id}/delete_record/`).then(() => {
             closeDeleteModal();
+            toast("Category Deleted Successfully!");
         }).catch((error) => {
             console.error("Error deleting Category:", error);
             closeDeleteModal();
@@ -45,7 +46,6 @@
     function closeDeleteModal() {
         showDeleteModal = false;
         refreshTable.refreshTable();
-        toast("Category Deleted Successfully!");
     }
 
     function handleNewCategory() {
@@ -69,7 +69,7 @@
         <CreditCategory
                 {editData}
                 {editForm}
-                on:close={() => {editData = null;editForm = false;showForm = false;}}
+                on:cancel={() => {editData = null;editForm = false;showForm = false;}}
                 on:newCategory={() => handleNewCategory()}/>
     {/if}
 </div>

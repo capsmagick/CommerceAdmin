@@ -41,16 +41,13 @@
   }
 
   let tags: any = [];
-  let selectedTags: string;
+  let selectedTagGroups: string;
   let attributeGroups: any = [];
   let selectedAttributeGroup: string;
   let parent_category: string;
   let second_parent_category: string;
   let categories: any[] = [];
   let imageUpload: any;
-  let image: any;
-
-  let selectedTagName:string
 
   async function fetchCategories() {
     try {
@@ -122,8 +119,9 @@
     ).name;
   }
   function handleTagChange(selectedTags: { value: number }) {
-    const selectT= tags.find((g: any) => g.id == selectedTags.value)
-    categoryDetails.tags.push(selectT);
+    selectedTagGroups= tags.find((g: any) => g.id == selectedTags.value)
+    categoryDetails.tags.push(selectedTagGroups.id);  
+
   }
 
   function handleParentCat(selectedCat: { value: number }) {
@@ -148,7 +146,7 @@
   async function uploadAvatar() {
     categoryDetails.image = imageUpload.files[0];
     const img: any = document.getElementById("selected-logo");
-    img.src = window.URL.createObjectURL(image);
+    img.src = window.URL.createObjectURL(categoryDetails.image);
   }
 
   // Mount
@@ -157,6 +155,26 @@
     await fetchAttributeGroups();
     await fetchTags();
   });
+
+    function cancelModel() {
+    dispatch('cancel');
+  }
+    function handleClickOutside(event) {
+    if (!event.target.closest('.card')) {
+      cancelModel();
+    }
+  }
+  
+onMount(() => {
+  const timeout = setTimeout(() => {
+    document.addEventListener('click', handleClickOutside);
+  }, 100);
+
+    return () => {
+    clearTimeout(timeout);
+    document.removeEventListener('click', handleClickOutside);
+  };
+});
 </script>
 
 
@@ -200,7 +218,7 @@
                     <Select.Item
                       value={group.id}
                       label={group.name}
-                      class="capitalize"
+                      class="capitalize card"
                       on:click={() => handleGroupChange({ value: group.id })}
                     >
                       {group.name}
@@ -234,7 +252,7 @@
         <div class="items-center gap-2 mb-3">
           <Select.Root  >
             <Select.Trigger class="input capitalize"
-              >{selectedTags ? selectedTags : "Select a Tag"}</Select.Trigger
+              >{selectedTagGroups ? selectedTagGroups.name : "Select a Tag"}</Select.Trigger
             >
             <Select.Content>
               <Select.Group>
@@ -242,7 +260,7 @@
                   <Select.Item
                     value={tag.id}
                     label={tag.name}
-                    class="capitalize"
+                    class="capitalize card"
                     on:click={() => handleTagChange({ value: tag.id })}
                   >
                     {tag.name}
@@ -252,7 +270,7 @@
             </Select.Content>
           </Select.Root>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center justify-evenly gap-2">
           <Button
             type="button"
             class="btn flex gap-2 items-center bg-indigo-500 text-white text-xs"
@@ -262,7 +280,7 @@
           <img
             id="selected-logo"
             alt=""
-            class={image ? "showImg" : "hideImg"}
+            class={categoryDetails.image ? "showImg" : "hideImg"}
           />
           <input
             type="file"
@@ -280,7 +298,7 @@
 
       <Button
        type="button"  variant="ghost"
-        on:click={() => dispatch("close")}
+        on:click={() => dispatch("cancel")}
         >Cancel
       </Button>
 
