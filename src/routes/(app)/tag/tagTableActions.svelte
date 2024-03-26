@@ -15,7 +15,6 @@
         dispatch('delete')
     }
    
-    export let id: string;
   </script>
    
   <DropdownMenu.Root>

@@ -25,7 +25,6 @@
   import { createEventDispatcher } from "svelte";
   import { writable } from "svelte/store";
   import { onMount } from "svelte";
-  import type {ActionsEvents} from './Actions.svelte';
   import { get } from "svelte/store";
 
   const dispatch = createEventDispatcher();
@@ -153,12 +152,11 @@
         header: "Actions",
         accessor: ({ id }) => id,
         cell: (item) => {
-                // return createRender(Actions, {item: item});
-                return createRender(Actions, {item: item})
-                    .on('edit', (event: ActionsEvents['edit']) => {
+                return createRender(Actions)
+                    .on('edit', (event: Actions['edit']) => {
                         dispatch('edit', {item})
                     })
-                    .on('delete', (event: ActionsEvents['delete']) => {
+                    .on('delete', (event: Actions['delete']) => {
                         dispatch('delete', {item})
                     });
             },

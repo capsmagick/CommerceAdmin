@@ -29,7 +29,7 @@
     import {attributeDataStore} from "$lib/stores/data";
 
     const dispatch = createEventDispatcher();
-    
+
     type Attribute = {
         id: string;
         name: string;
@@ -51,7 +51,7 @@
     });
 
     // Create a readable store for the data
-    export const datas = readable<Attribute[]>([], (set) => {
+    export const data = readable<Attribute[]>([], (set) => {
         getAttribute().then((data) => {
             set(data);
         });
