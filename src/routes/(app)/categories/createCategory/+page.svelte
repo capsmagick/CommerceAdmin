@@ -41,7 +41,7 @@
   }
 
   let tags: any = [];
-  let selectedTags: string;
+  let selectedTagGroups: string;
   let attributeGroups: any = [];
   let selectedAttributeGroup: string;
   let parent_category: string;
@@ -122,8 +122,9 @@
     ).name;
   }
   function handleTagChange(selectedTags: { value: number }) {
-    const selectT= tags.find((g: any) => g.id == selectedTags.value)
-    categoryDetails.tags.push(selectT);
+    selectedTagGroups= tags.find((g: any) => g.id == selectedTags.value)
+    categoryDetails.tags.push(selectedTagGroups.id);  
+
   }
 
   function handleParentCat(selectedCat: { value: number }) {
@@ -254,7 +255,7 @@ onMount(() => {
         <div class="items-center gap-2 mb-3">
           <Select.Root  >
             <Select.Trigger class="input capitalize"
-              >{selectedTags ? selectedTags : "Select a Tag"}</Select.Trigger
+              >{selectedTagGroups ? selectedTagGroups.name : "Select a Tag"}</Select.Trigger
             >
             <Select.Content>
               <Select.Group>
