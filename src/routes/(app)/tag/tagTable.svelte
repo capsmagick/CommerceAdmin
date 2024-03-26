@@ -28,24 +28,23 @@
   import { get } from "svelte/store";
 
   const dispatch = createEventDispatcher();
-  
 
   type Tag = {
     id: string;
     name: string;
   };
 
-    let next: any;
-    let nextPage = false;
-    let previous: any;
-    let previousPage = false;
+  let next: any;
+  let nextPage = false;
+  let previous: any;
+  let previousPage = false;
 
   // Create a readable store for the data
   export const data = writable<Tag[]>([], (set) => {
-        getTags().then((data) => {
-            set(data);
-        });
+    getTags().then((data) => {
+      set(data);
     });
+  });
   function createFunction() {
     dispatch("newAttribute");
   }
@@ -61,112 +60,110 @@
     }
   }
 
-
-
   async function getTags() {
     try {
-          let res;
-            if(nextPage) {
-                res = await API.get(next);
-            } else if (previousPage) {
-                res = await API.get(previous);
-            } else {
-                res = await API.get("/masterdata/tag/");
-            }
-            next = res.data.next;
-            previous = res.data.previous;
-            return res.data.results;    
-        } catch (error) {
-            console.error("fetch:Tags:", error);
-            return [];
-        }
+      let res;
+      if (nextPage) {
+        res = await API.get(next);
+      } else if (previousPage) {
+        res = await API.get(previous);
+      } else {
+        res = await API.get("/masterdata/tag/");
+      }
+      next = res.data.next;
+      previous = res.data.previous;
+      return res.data.results;
+    } catch (error) {
+      console.error("fetch:Tags:", error);
+      return [];
     }
+  }
 
-        async function getNextPage () {
-        nextPage = true;
-        previousPage = false;
-        const newData = await getTags(); 
-        data.set(newData);
-    }
+  async function getNextPage() {
+    nextPage = true;
+    previousPage = false;
+    const newData = await getTags();
+    data.set(newData);
+  }
 
-    async function getPreviousPage () {
-        nextPage = false;
-        previousPage = true;
-        const newData = await getTags(); 
-        data.set(newData);
-    }
+  async function getPreviousPage() {
+    nextPage = false;
+    previousPage = true;
+    const newData = await getTags();
+    data.set(newData);
+  }
 
-    const table = createTable(data, {
-      sort: addSortBy({ disableMultiSort: true }),
-      page: addPagination(),
-      filter: addTableFilter({
-        fn: ({ filterValue, value }) => value.includes(filterValue),
-      }),
-      select: addSelectedRows(),
-    });
-//async function InitalizeTable() {
+  const table = createTable(data, {
+    sort: addSortBy({ disableMultiSort: true }),
+    page: addPagination(),
+    filter: addTableFilter({
+      fn: ({ filterValue, value }) => value.includes(filterValue),
+    }),
+    select: addSelectedRows(),
+  });
+  //async function InitalizeTable() {
   const columns = table.createColumns([
-      table.column({
-        header: (_, { pluginStates }) => {
-          const { allPageRowsSelected } = pluginStates.select;
-          return createRender(DataTableCheckbox, {
-            checked: allPageRowsSelected,
+    table.column({
+      header: (_, { pluginStates }) => {
+        const { allPageRowsSelected } = pluginStates.select;
+        return createRender(DataTableCheckbox, {
+          checked: allPageRowsSelected,
+        });
+      },
+      accessor: "id",
+      cell: ({ row }, { pluginStates }) => {
+        const { getRowState } = pluginStates.select;
+        const { isSelected } = getRowState(row);
+        // console.log("Row ID:", row.original.id);
+        return createRender(DataTableCheckbox, {
+          checked: isSelected,
+        });
+      },
+      plugins: {
+        sort: {
+          disable: true,
+        },
+        filter: {
+          exclude: true,
+        },
+      },
+    }),
+    table.column({
+      header: "Name",
+      accessor: "name",
+      cell: ({ value }) => value,
+      plugins: { sort: {}, filter: { exclude: true } },
+    }),
+    table.column({
+      header: "ID",
+      accessor: ({ id }) => id,
+      cell: ({ value }) => value,
+      plugins: { sort: {}, filter: { exclude: true } },
+    }),
+    table.column({
+      header: "Original ID",
+      accessor: ({ id }) => id,
+      plugins: { sort: {}, filter: { exclude: true } },
+    }),
+    table.column({
+      header: "Actions",
+      accessor: ({ id }) => id,
+      cell: (item) => {
+        return createRender(Actions)
+          .on("edit", (event: Actions["edit"]) => {
+            dispatch("edit", { item });
+          })
+          .on("delete", (event: Actions["delete"]) => {
+            dispatch("delete", { item });
           });
+      },
+      plugins: {
+        sort: {
+          disable: true,
         },
-        accessor: "id",
-        cell: ({ row }, { pluginStates }) => {
-          const { getRowState } = pluginStates.select;
-          const { isSelected } = getRowState(row);
-          // console.log("Row ID:", row.original.id);
-          return createRender(DataTableCheckbox, {
-            checked: isSelected,
-          });
-        },
-        plugins: {
-          sort: {
-            disable: true,
-          },
-          filter: {
-            exclude: true,
-          },
-        },
-      }),
-      table.column({
-        header: "Name",
-        accessor: "name",
-        cell: ({ value }) => value,
-        plugins: { sort: {}, filter: { exclude: true } },
-      }),
-      table.column({
-        header: "ID",
-        accessor: ({ id }) => id,
-        cell: ({ value }) => value,
-        plugins: { sort: {}, filter: { exclude: true } },
-      }),
-      table.column({
-        header: "Original ID",
-        accessor: ({ id }) => id,
-        plugins: { sort: {}, filter: { exclude: true } },
-      }),
-      table.column({
-        header: "Actions",
-        accessor: ({ id }) => id,
-        cell: (item) => {
-                return createRender(Actions)
-                    .on('edit', (event: Actions['edit']) => {
-                        dispatch('edit', {item})
-                    })
-                    .on('delete', (event: Actions['delete']) => {
-                        dispatch('delete', {item})
-                    });
-            },
-        plugins: {
-          sort: {
-            disable: true,
-          },
-        },
-      }),
-    ]);
+      },
+    }),
+  ]);
 
   const {
     headerRows,
@@ -184,7 +181,6 @@
   const { filterValue } = pluginStates.filter;
 
   const { selectedDataIds } = pluginStates.select;
-
 </script>
 
 <div class="w-full">
@@ -208,8 +204,22 @@
                   let:attrs
                   props={cell.props()}
                   let:props>
-                  <Table.Head class={cn("[&:has([role=checkbox])]:pl-3")} {...attrs}>
+                  <Table.Head
+                    class={cn("[&:has([role=checkbox])]:pl-3")}
+                    {...attrs}>
+                    {#if cell.id === "name"}
+                      <Button variant="ghost" on:click={props.sort.toggle}>
                         <Render of={cell.render()} />
+                        <CaretSort
+                          class={cn(
+                            $sortKeys[0]?.id === cell.id && "text-foreground",
+                            "ml-2 h-4 w-4"
+                          )}
+                        />
+                      </Button>
+                    {:else}
+                      <Render of={cell.render()} />
+                    {/if}
                   </Table.Head>
                 </Subscribe>
               {/each}
@@ -222,11 +232,12 @@
           <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
             <Table.Row
               {...rowAttrs}
-              data-state={$selectedDataIds[row.id] && "selected"}>
+              data-state={$selectedDataIds[row.id] && "selected"}
+            >
               {#each row.cells as cell (cell.id)}
                 <Subscribe attrs={cell.attrs()} let:attrs>
                   <Table.Cell class="[&:has([role=checkbox])]:pl-3" {...attrs}>
-                        <Render of={cell.render()} />
+                    <Render of={cell.render()} />
                   </Table.Cell>
                 </Subscribe>
               {/each}
@@ -247,11 +258,8 @@
       on:click={getPreviousPage}
       disabled={!previous}>Previous</Button
     >
-    <Button
-      variant="outline"
-      size="sm"
-      disabled={!next}
-      on:click={getNextPage}>Next</Button
+    <Button variant="outline" size="sm" disabled={!next} on:click={getNextPage}
+      >Next</Button
     >
   </div>
 </div>
