@@ -250,7 +250,7 @@
         header: "Actions",
         accessor: ({ id }) => id,
         cell: (item) => {
-              return createRender(Actions,)
+              return createRender(Actions)
                   .on('edit', (event: Actions['edit']) => {
                       dispatch('edit', {item})
                   })
