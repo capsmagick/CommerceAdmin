@@ -34,18 +34,17 @@
     description: string;
     price: number;
     stock: number;
-    categories: string;
+    categories: string[];
     hsn_code: string;
     tags: string[];
-    attributes: string[];
     images: string;
     rating: number;
     no_of_reviews: number;
     status: "active" | "inactive";
-    createdAt: string;
-    updatedAt: string;
-    createdBy: string;
-    updatedBy: string;
+    created_at: string;
+    updated_at: string;
+    created_by: string;
+    updated_by: string;
   };
 
   let next: any;
@@ -176,13 +175,6 @@
       plugins: { filter: {} },
     }),
     table.column({
-      header: "Attributes",
-      accessor: "attributes",
-      cell: ({ value }) => value.join(", "),
-      plugins: { filter: {} },
-    }),
-
-    table.column({
       header: "Number of Reviews",
       accessor: "no_of_reviews",
       cell: ({ value }) => `${value} reviews`,
@@ -196,25 +188,25 @@
     }),
     table.column({
       header: "Created At",
-      accessor: "createdAt",
+      accessor: "created_at",
       cell: ({ value }) => new Date(value).toLocaleDateString(),
       plugins: { sort: {}, filter: { exclude: true } },
     }),
     table.column({
       header: "Updated At",
-      accessor: "updatedAt",
+      accessor: "updated_at",
       cell: ({ value }) => new Date(value).toLocaleDateString(),
       plugins: { sort: {}, filter: { exclude: true } },
     }),
     table.column({
       header: "Created By",
-      accessor: "createdBy",
+      accessor: "created_by",
       cell: ({ value }) => value,
       plugins: { filter: { exclude: true } },
     }),
     table.column({
       header: "Updated By",
-      accessor: "updatedBy",
+      accessor: "updated_by",
       cell: ({ value }) => value,
       plugins: { filter: { exclude: true } },
     }),
@@ -238,6 +230,7 @@
     table.column({
       header: "Categories",
       accessor: "categories",
+      cell: ({ value }) => value.join(", "),
       plugins: { sort: {}, filter: {} },
     }),
     table.column({
@@ -286,14 +279,14 @@
   let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
 
   let initialHiddenColumns = [
-    "createdAt",
-    "updatedAt",
+    "created_at",
+    "updated_at",
     "description",
     "hsn_code",
     "tags",
     "attributes",
-    "createdBy",
-    "updatedBy",
+    "created_by",
+    "updated_by",
   ];
 
   $: hideForId = Object.fromEntries(
@@ -312,14 +305,14 @@
   const hideableCols = [
     "categories",
     "rating",
-    "createdAt",
-    "updatedAt",
+    "created_at",
+    "updated_at",
     "description",
     "hsn_code",
     "tags",
     "attributes",
-    "createdBy",
-    "updatedBy",
+    "created_by",
+    "updated_by",
   ];
 </script>
 
