@@ -21,11 +21,11 @@
         showForm = !showForm
     }
 
-    // Edit Attribute
     async function onEditTag(eventData) {
         editData = eventData.original;
         showForm = true;
         editForm = true;
+        console.log("Edit Tag ID : ",eventData.original.id);
     }
 
     async function onDeleteTag(eventData) {
