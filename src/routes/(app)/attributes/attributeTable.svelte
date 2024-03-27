@@ -36,6 +36,11 @@
     value: string[];
   };
 
+  let next: any;
+  let nextPage = false;
+  let previous: any;
+  let previousPage = false;
+
   function createFunction() {
     dispatch("newAttribute");
   }
@@ -48,8 +53,8 @@
     refreshtable();
   });
 
-  // Create a readable store for the data
-  export const data = readable<Attribute[]>([], (set) => {
+  // Create a writable store for the data
+  export const data = writable<Attribute[]>([], (set) => {
     getAttribute().then((data) => {
       set(data);
     });
@@ -57,17 +62,40 @@
 
   async function getAttribute() {
     try {
-      const response = await API.get("/masterdata/attribute/");
-      return response.data.results;
+      let res;
+      if (nextPage) {
+        res = await API.get(next);
+      } else if (previousPage) {
+        res = await API.get(previous);
+      } else {
+        res = await API.get("/masterdata/attribute/");
+      }      
+      next = res.data.next;
+      previous = res.data.previous;
+      return res.data.results;
     } catch (error) {
       console.error("fetch:Attribute:", error);
       return [];
     }
   }
 
+    async function getNextPage() {
+    nextPage = true;
+    previousPage = false;
+    const newData = await getAttribute();
+    data.set(newData);
+  }
+
+  async function getPreviousPage() {
+    nextPage = false;
+    previousPage = true;
+    const newData = await getAttribute();
+    data.set(newData);
+  }
+
   // Create a readable store for the data
 
-  const table = createTable(attributeDataStore, {
+  const table = createTable(data, {
     sort: addSortBy({ disableMultiSort: true }),
     page: addPagination(),
     filter: addTableFilter({
@@ -105,7 +133,7 @@
     table.column({
       header: "Name",
       accessor: "name",
-      cell: ({ value }) => value.toLowerCase(),
+      cell: ({ value }) => value,
       plugins: {
         filter: {
           getFilterValue(value) {
@@ -249,15 +277,15 @@
     <Button
       variant="outline"
       size="sm"
-      on:click={() => ($pageIndex = $pageIndex - 1)}
-      disabled={!$hasPreviousPage}
+      on:click={getPreviousPage}
+      disabled={!previous}
       >Previous
     </Button>
     <Button
       variant="outline"
       size="sm"
-      disabled={!$hasNextPage}
-      on:click={() => ($pageIndex = $pageIndex + 1)}
+      disabled={!next}
+      on:click={getNextPage}
       >Next
     </Button>
   </div>

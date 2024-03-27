@@ -16,7 +16,7 @@
     } from "svelte-headless-table/plugins";
     import { writable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
-    // import Actions from "./customerTableActions.svelte";
+    import Actions from "./customerTableActions.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { cn } from "$lib/utils.js";
@@ -26,9 +26,9 @@
     import {createEventDispatcher} from "svelte";
 
     const dispatch = createEventDispatcher();
-    // import type {ActionsEvents} from './Actions.svelte';
    
     type Customers = {
+      id: string
       username: string;
       first_name: string;
       status: "Pending" | "Processing" | "Success" | "Failed";
@@ -45,7 +45,6 @@
     // Create a readable store for the data
     const data = writable<Customers[]>([], (set) => {
         getCustomers().then((data) => {
-            console.log(data);
             set(data);
         });
     });
@@ -166,18 +165,18 @@
         accessor: "status",
         plugins: { sort: { disable: true }, filter: { exclude: true } }
       }),
-      // table.column({
-      //   header: "",
-      //   accessor: ({ id }) => id,
-      //   cell: (item) => {
-      //     return createRender(Actions, { id: item.value });
-      //   },
-      //   plugins: {
-      //     sort: {
-      //       disable: true
-      //     }
-      //   }
-      // })
+      table.column({
+        header: "",
+        accessor: ({ id }) => id,
+        cell: (item) => {
+          return createRender(Actions, { id: item.value });
+        },
+        plugins: {
+          sort: {
+            disable: true
+          }
+        }
+      })
     ]);
    
     const {

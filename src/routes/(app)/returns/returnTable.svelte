@@ -78,7 +78,7 @@
             } else if (previousPage) {
                 res = await API.get(previous);
             } else {
-                res = await API.get("/customer/return-request/");
+                res = await API.get("/customer/manage/return-request/");
             }
             next = res.data.next;
             previous = res.data.previous;

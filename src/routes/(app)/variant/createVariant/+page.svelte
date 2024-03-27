@@ -86,7 +86,7 @@ onMount(() => {
 <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
    <div class="flex items-center justify-center">
        <div class="glow-border">
-           <div class="card glow-border-content bg-background text-foreground">
+           <div class="card glow-border-content bg-background text-foreground overflow-y-auto" style="height:90vh;">
                 <Card.Root class="bg-white p-6 rounded-lg">
                     <Card.Header class="font-bold mb-5" style="color: black">
                         <Card.Title>{editForm ? 'Update Variant' : 'New Variant'}</Card.Title>
@@ -128,3 +128,8 @@ onMount(() => {
    </div>
 </div>
 
+    <style>
+      .card::-webkit-scrollbar {
+    display: none;
+}
+    </style>

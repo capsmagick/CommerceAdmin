@@ -26,9 +26,8 @@
   import API from "$lib/services/api";
   import { createEventDispatcher } from "svelte";
 
-  const dispatch = createEventDispatcher();
-  import type { ActionsEvents } from "./Actions.svelte";
-
+    const dispatch = createEventDispatcher();
+    
   type Collection = {
     id: string;
     name: string;
@@ -42,18 +41,17 @@
     updated_by: string;
   };
 
-  let next: any;
-  let nextPage = false;
-  let previous: any;
-  let previousPage = false;
-
-  // Create a readable store for the data
-  const data = writable<Collection[]>([], (set) => {
-    getCollections().then((data) => {
-      console.log(data);
-      set(data);
+    let next: any;
+    let nextPage = false;
+    let previous: any;
+    let previousPage = false;
+   
+// Create a readable store for the data
+    const data = writable<Collection[]>([], (set) => {
+        getCollections().then((data) => {
+            set(data);
+        });
     });
-  });
 
   function createFunction() {
     dispatch("newAttribute");
@@ -89,149 +87,142 @@
     data.set(newData);
   }
 
-  async function getPreviousPage() {
-    nextPage = false;
-    previousPage = true;
-    const newData = await getCollections();
-    data.set(newData);
-  }
-
-  const table = createTable(data, {
-    sort: addSortBy({ disableMultiSort: true }),
-    page: addPagination(),
-    filter: addTableFilter({
-      fn: ({ filterValue, value }) => value.includes(filterValue),
-    }),
-    select: addSelectedRows(),
-    hide: addHiddenColumns(),
-  });
-
-  const columns = table.createColumns([
-    table.column({
-      header: (_, { pluginStates }) => {
-        const { allPageRowsSelected } = pluginStates.select;
-        return createRender(DataTableCheckbox, {
-          checked: allPageRowsSelected,
-        });
-      },
-      accessor: "id",
-      cell: ({ row }, { pluginStates }) => {
-        const { getRowState } = pluginStates.select;
-        const { isSelected } = getRowState(row);
-
-        return createRender(DataTableCheckbox, {
-          checked: isSelected,
-        });
-      },
-      plugins: {
-        sort: {
-          disable: true,
-        },
-        filter: {
-          exclude: true,
-        },
-      },
-    }),
-    table.column({
-      header: "Featured Image",
-      accessor: "featuredImage",
-      cell: ({ value }) => {
-        return `<img src="${value}" alt="Profile Photo" class="h-10 w-10 rounded-full">`;
-      },
-    }),
-
-    table.column({
-      header: "Collection Name",
-      accessor: "name",
-      cell: ({ value }) => value,
-      plugins: {
-        filter: {
-          getFilterValue(value) {
-            return value;
-          },
-        },
-      },
-    }),
-    table.column({
-      header: "Description",
-      accessor: "description",
-      cell: ({ value }) => value,
-      plugins: { filter: {} },
-    }),
-    table.column({
-      header: "Tags",
-      accessor: "tags",
-      cell: ({ value }) => value.join(", "),
-      plugins: { filter: {} },
-    }),
-    table.column({
-      header: "Created At",
-      accessor: "created_at",
-      cell: ({ value }) => new Date(value).toLocaleDateString(),
-      plugins: { sort: {}, filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Updated At",
-      accessor: "updated_at",
-      cell: ({ value }) => new Date(value).toLocaleDateString(),
-      plugins: { sort: {}, filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Created By",
-      accessor: "created_by",
-      cell: ({ value }) => value,
-      plugins: { filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Updated By",
-      accessor: "updated_by",
-      cell: ({ value }) => value,
-      plugins: { filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Actions",
-      accessor: ({ id }) => id,
-      cell: (item) => {
-        // return createRender(Actions, {item: item});
-        return createRender(Actions, { item: item })
-          .on("edit", (event: ActionsEvents["edit"]) => {
-            dispatch("edit", { item });
-          })
-          .on("delete", (event: ActionsEvents["delete"]) => {
-            dispatch("delete", { item });
+    async function getPreviousPage () {
+        nextPage = false;
+        previousPage = true;
+        const newData = await getCollections(); 
+        data.set(newData);
+    }
+   
+    const table = createTable(data, {
+      sort: addSortBy({ disableMultiSort: true }),
+      page: addPagination(),
+      filter: addTableFilter({
+        fn: ({ filterValue, value }) => value.includes(filterValue)
+      }),
+      select: addSelectedRows(),
+      hide: addHiddenColumns()
+    });
+   
+     const columns = table.createColumns([
+      table.column({
+        header: (_, { pluginStates }) => {
+          const { allPageRowsSelected } = pluginStates.select;
+          return createRender(DataTableCheckbox, {
+            checked: allPageRowsSelected
           });
-      },
-      plugins: {
-        sort: {
-          disable: true,
         },
-      },
-    }),
-  ]);
-
-  const {
-    headerRows,
-    pageRows,
-    tableAttrs,
-    tableBodyAttrs,
-    flatColumns,
-    pluginStates,
-    rows,
-  } = table.createViewModel(columns);
-
-  const { sortKeys } = pluginStates.sort;
-
-  const { hiddenColumnIds } = pluginStates.hide;
-  const ids = flatColumns.map((c) => c.id);
-  let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
-
-  let initialHiddenColumns = [
-    "created_at",
-    "updated_at",
-    "tags",
-    "created_by",
-    "updated_by",
-  ];
+        accessor: "id",
+        cell: ({ row }, { pluginStates }) => {
+          const { getRowState } = pluginStates.select;
+          const { isSelected } = getRowState(row);
+   
+          return createRender(DataTableCheckbox, {
+            checked: isSelected
+          });
+        },
+        plugins: {
+          sort: {
+            disable: true
+          },
+          filter: {
+            exclude: true
+          }
+        }
+      }),
+      table.column({
+        header: "Featured Image",
+        accessor: "featuredImage",
+        cell: ({ value }) => `<img src="${value}" alt="Featured Image" class="h-10 w-10 rounded-full">`,
+        plugins: { filter: { exclude: true } }
+      }),
+    
+      table.column({
+        header: "Collection Name",
+        accessor: "name",
+        cell: ({ value }) => value,
+        plugins: {
+          filter: {
+            getFilterValue(value) {
+              return value;
+            }
+          }
+        }
+      }),
+      table.column({
+        header: "Description",
+        accessor: "description",
+        cell: ({ value }) => value,
+        plugins: { filter: {} }
+      }),
+      table.column({
+        header: "Tags",
+        accessor: "tags",
+        cell: ({ value }) => value.join(", "),
+        plugins: { filter: {} }
+      }),
+      table.column({
+        header: "Created At",
+        accessor: "created_at",
+        cell: ({ value }) => new Date(value).toLocaleDateString(),
+        plugins: { sort: {}, filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Updated At",
+        accessor: "updated_at",
+        cell: ({ value }) => new Date(value).toLocaleDateString(),
+        plugins: { sort: {}, filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Created By",
+        accessor: "created_by",
+        cell: ({ value }) => value,
+        plugins: { filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Updated By",
+        accessor: "updated_by",
+        cell: ({ value }) => value,
+        plugins: { filter: { exclude: true } }
+      }),
+      table.column({
+        header: "Actions",
+        accessor: ({ id }) => id,
+        cell: (item) => {
+                // return createRender(Actions, {item: item});
+                return createRender(Actions)
+                    .on('edit', (event: Actions['edit']) => {
+                        dispatch('edit', {item})
+                    })
+                    .on('delete', (event: Actions['delete']) => {
+                        dispatch('delete', {item})
+                    });
+            },
+        plugins: {
+          sort: {
+            disable: true
+          }
+        }
+      })
+    ]);
+   
+    const {
+      headerRows,
+      pageRows,
+      tableAttrs,
+      tableBodyAttrs,
+      flatColumns,
+      pluginStates,
+      rows
+    } = table.createViewModel(columns);
+   
+    const { sortKeys } = pluginStates.sort;
+   
+    const { hiddenColumnIds } = pluginStates.hide;
+    const ids = flatColumns.map((c) => c.id);
+    let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
+    
+    let initialHiddenColumns = [ 'created_at', 'updated_at', 'tags', 'created_by', 'updated_by'];
 
   $: hideForId = Object.fromEntries(
     ids.map((id) => [id, !initialHiddenColumns.includes(id)])
