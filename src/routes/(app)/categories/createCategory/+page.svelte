@@ -210,8 +210,7 @@ onMount(() => {
               <Select.Trigger class="input capitalize"
                 >{selectedAttributeGroup
                   ? selectedAttributeGroup
-                  : "Select a Attribute Group"}</Select.Trigger
-              >
+                  : "Select a Attribute Group"}</Select.Trigger>
               <Select.Content>
                 <Select.Group>
                   {#each attributeGroups as group}
@@ -219,8 +218,7 @@ onMount(() => {
                       value={group.id}
                       label={group.name}
                       class="capitalize card"
-                      on:click={() => handleGroupChange({ value: group.id })}
-                    >
+                      on:click={() => handleGroupChange({ value: group.id })}>
                       {group.name}
                     </Select.Item>
                   {/each}

@@ -1,78 +1,77 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { goto } from '$app/navigation';
+  import { goto } from "$app/navigation";
   import API from "$lib/services/api";
   import { Button } from "$lib/components/ui/button";
   import { createEventDispatcher } from "svelte";
-    import { Input} from "$lib/components/ui/input"; 
-    import {Textarea} from "$lib/components/ui/textarea";
-    import * as Select from "$lib/components/ui/select";
-    import { Label } from "$lib/components/ui/label";
-    import * as Card from "$lib/components/ui/card";
-    import { writable } from 'svelte/store';
-    import {toast} from "svelte-sonner";
+  import { Input } from "$lib/components/ui/input";
+  import { Textarea } from "$lib/components/ui/textarea";
+  import * as Select from "$lib/components/ui/select";
+  import { Label } from "$lib/components/ui/label";
+  import * as Card from "$lib/components/ui/card";
+  import { writable } from "svelte/store";
+  import { toast } from "svelte-sonner";
+  import { Value } from "svelte-radix";
 
   const dispatch = createEventDispatcher();
 
   export let productDetails: any;
-  export let editForm: boolean
+  export let editForm: boolean;
   export let showModal;
   let selectedItem: any;
-//   let refreshTable: any;
+  let selectedBrand: string;
+  //   let refreshTable: any;
 
-      type Brand = {
-        id: string;
-        name: string;
-        logo: string;
-        description: string;
-    };
+  type Brand = {
+    id: string;
+    name: string;
+    logo: string;
+    description: string;
+  };
 
-    type Condition = {
-        id: number;
-        name: string;
-       
-    };
-  
-    type Categories = {
-  id: string;
-  name: string;
-  description: string;
-  tags: string[]; // Corrected type
-  Image: string;
-  status: string[];
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  updatedBy: string;
-};
+  type Condition = {
+    id: number;
+    name: string;
+  };
 
+  type Categories = {
+    id: string;
+    name: string;
+    description: string;
+    tags: string[]; // Corrected type
+    Image: string;
+    status: string[];
+    createdAt: string;
+    updatedAt: string;
+    createdBy: string;
+    updatedBy: string;
+  };
 
-    export const brands = writable<Brand[]>([], (set) => {
-        getBrands().then((data) => {
-            set(data);
-        });
+  export const brands = writable<Brand[]>([], (set) => {
+    getBrands().then((data) => {
+      set(data);
     });
+  });
 
-    async function getBrands() {
-        try {
-            const response = await API.get("/masterdata/brand/");
-            return response.data.results;
-        } catch (error) {
-            console.error("fetch:brands:", error);
-            return [];
-        }
+  async function getBrands() {
+    try {
+      const response = await API.get("/masterdata/brand/");
+      return response.data.results;
+    } catch (error) {
+      console.error("fetch:brands:", error);
+      return [];
     }
+  }
 
-  
   async function getCategory() {
-        try {
-        const res = await API.get("/masterdata/category/");
-        return res.data.results;
-        } catch (error) {
-        console.error("fetch:brands:", error);
-        return [];
-        }
+    try {
+      const res = await API.get("/masterdata/category/");
+      return res.data.results;
+    } catch (error) {
+      console.error("fetch:brands:", error);
+      return [];
     }
+  }
 
   let categories = writable<Categories[]>([], (set) => {
         getCategory().then((data) => {
@@ -80,22 +79,21 @@
         });
     });
 
-    let condition: Condition[] = [
-      { id: 1, name: "New" },
-      { id: 2, name: "Refurbished" },
-      { id: 3, name: "Factory Out" },
-      { id: 4, name: "Used" },
-      
-    ];
+  let condition: Condition[] = [
+    { id: 1, name: "New" },
+    { id: 2, name: "Refurbished" },
+    { id: 3, name: "Factory Out" },
+    { id: 4, name: "Used" },
+  ];
 
-async function handleConditionChange(event:any) {
-  selectedItem =event.value;
-  console.log(selectedItem);
-}
+  async function handleConditionChange(event: any) {
+    selectedItem = event.value;
+    console.log(selectedItem);
+  }
 
-    async function createProduct() {
-      try {
-        const url = editForm
+  async function createProduct() {
+    try {
+      const url = editForm
         ? `/products/product/${productDetails.id}/update_record/`
         : "/products/product/create_record/";
 
@@ -106,53 +104,61 @@ async function handleConditionChange(event:any) {
       }
 
       dispatch("newProduct");
-      showModal = false
+      showModal = false;
 
       const action = editForm ? "Product Updated" : "Product Created";
       toast(`${action} successfully!`);
-        
-      } catch (error) {
-        console.error("create:product:", error);
-      }
+    } catch (error) {
+      console.error("create:product:", error);
     }
-
-
-        function cancelModel() {
-    dispatch('cancel');
   }
-    function handleClickOutside(event) {
-    if (!event.target.closest('.card')) {
+
+  function cancelModel() {
+    dispatch("cancel");
+  }
+  function handleClickOutside(event) {
+    if (!event.target.closest(".card")) {
       cancelModel();
     }
   }
-  
-onMount(() => {
-  const timeout = setTimeout(() => {
-    document.addEventListener('click', handleClickOutside);
-  }, 100);
+
+  onMount(() => {
+    const timeout = setTimeout(() => {
+      document.addEventListener("click", handleClickOutside);
+    }, 100);
 
     return () => {
-    clearTimeout(timeout);
-    document.removeEventListener('click', handleClickOutside);
-  };
-});
+      clearTimeout(timeout);
+      document.removeEventListener("click", handleClickOutside);
+    };
+  });
 
-// image upload
- let imageUpload: HTMLInputElement;
+  // image upload
+  let imageUpload: HTMLInputElement;
 
-    function pickAvatar() {
-        imageUpload.click();
+  function pickAvatar() {
+    imageUpload.click();
+  }
+
+  async function uploadAvatar() {
+    if (imageUpload.files && imageUpload.files.length > 0) {
+      productDetails.image = imageUpload.files[0];
+      const img: HTMLImageElement | null = document.getElementById(
+        "selected-logo"
+      ) as HTMLImageElement;
+      if (img) {
+        img.src = window.URL.createObjectURL(productDetails.image);
+      }
     }
-
-    async function uploadAvatar() {
-        if (imageUpload.files && imageUpload.files.length > 0) {
-            productDetails.image = imageUpload.files[0];
-            const img: HTMLImageElement | null = document.getElementById("selected-logo") as HTMLImageElement;
-            if (img) {
-                img.src = window.URL.createObjectURL(productDetails.image);
-            }
-        }
+  }
+  function handleBrandChange(selectedBrandId: string) {
+    const brandsArray = $brands;
+    productDetails.brand = selectedBrandId;
+    const foundBrand  = brandsArray.find((g: any) => g.id == selectedBrandId);
+    if (foundBrand) {
+      selectedBrand = foundBrand.name;
     }
+  }
 </script>
 
 <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
@@ -255,31 +261,38 @@ onMount(() => {
                            Upload Image
                         </Button>
 
-                    <div style="display:flex; justify-content: center; align-items: center; margin-top: 10px;">
-                          <img id="selected-logo" style="height: 100px;" alt="" class:showImg={productDetails.image} class:hideImg={!productDetails.image} src=""/>
-  
-                      </div>    
-                        <input type="file" id="file-input" bind:this={imageUpload} hidden accept="image/png, image/jpeg"
-                                on:change={uploadAvatar}/>
-                        </div>
-                       
-                    </div>
-            
-                </Card.Content>
-                <Card.Footer class="justify-between space-x-2">
-                    <Button variant="ghost" on:click={() => dispatch("cancel")}>Cancel</Button>
-                    <Button on:click={() => createProduct()}>Save</Button>
-                </Card.Footer>
-            </Card.Root>
-    
-        </div>
+                <div style="display:flex; justify-content: center; align-items: center; margin-top: 10px;">
+                  <img
+                    id="selected-logo"
+                    style="height: 100px;"
+                    alt=""
+                    class:showImg={productDetails.image}
+                    class:hideImg={!productDetails.image}
+                    src=""/>
+                </div>
+                <input
+                  type="file"
+                  id="file-input"
+                  bind:this={imageUpload}
+                  hidden
+                  accept="image/png, image/jpeg"
+                  on:change={uploadAvatar}/>
+              </div>
+            </div>
+          </Card.Content>
+          <Card.Footer class="justify-between space-x-2">
+            <Button variant="ghost" on:click={() => dispatch("cancel")}
+              >Cancel</Button>
+            <Button on:click={() => createProduct()}>Save</Button>
+          </Card.Footer>
+        </Card.Root>
+      </div>
     </div>
-    </div>
-    </div>
+  </div>
+</div>
 
-    <style>
-      .card::-webkit-scrollbar {
+<style>
+  .card::-webkit-scrollbar {
     display: none;
-}
-    </style>
-   
+  }
+</style>
