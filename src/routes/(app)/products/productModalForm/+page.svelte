@@ -74,10 +74,11 @@
   }
 
   let categories = writable<Categories[]>([], (set) => {
-        getCategory().then((data) => {
-            set(data);
-        });
+    getCategory().then((data) => {
+      console.log(data);
+      set(data);
     });
+  });
 
   let condition: Condition[] = [
     { id: 1, name: "New" },
@@ -161,105 +162,141 @@
   }
 </script>
 
-<div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
-      <div class="flex items-center justify-center">
-        <div class="glow-border" >
-        <div class="card glow-border-content bg-background text-foreground overflow-y-auto" style="max-height:90vh;">
-            
-            <Card.Root>
-                <Card.Header>
-                    <Card.Title>Add Product</Card.Title>
-                    <Card.Description>add product details</Card.Description>
-                </Card.Header>
-                <Card.Content class="grid gap-6">
-                    <div class="grid grid-cols-3 gap-4">
-                        <div class="grid gap-2">
-                            <Label for="area">Product Name</Label>
-                           <Input id="area" placeholder="name" bind:value={productDetails.name} />
-                        </div>
-                        <div class="grid gap-2">
-                            <Label for="security-level">Category</Label>
-                            <select id="category"class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 input dark:focus:border-blue-500" bind:value={productDetails.categories}  multiple>
-                              <option value="" disabled selected>Select</option>
-                              {#each $categories as Category}
-                                <option value={Category.id}>{Category.name}</option>
-                              {/each}
-                            </select>
-                            
-                            
-                        </div>
-                        <div class="grid gap-2">
-                            <Label for="security-level">Brand</Label>
-                            <select id="brand" bind:value={productDetails.brand} class="input">
-                              <option value="" disabled selected>Select</option>
-                              {#each $brands as brand}
-                                <option value={brand.id}>{brand.name}</option>
-                              {/each}
-                            </select>
-                        </div>
-                   
-                    </div>
-                    <div class="grid gap-2">
-                        <Label for="subject">Short description</Label>
-                        <Input id="subject" placeholder="short description of the product" bind:value={productDetails.short_description} />
-                    </div>
-                   
-                    
-                    <div class="grid gap-2">
-                        <Label for="description">Description</Label>
-                        <Textarea
-                            id="description"
-                            placeholder="Please include all information relevant to your product."
-                            bind:value={productDetails.description}
-                        />
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="grid gap-2">
-                            <Label for="area">Condition</Label>
-                            <Select.Root 
-                            onSelectedChange={handleConditionChange}>
-                              <Select.Trigger class="w-[180px]">
-                                <Select.Value placeholder="Select the Condition" />
-                              </Select.Trigger>
-                              <Select.Content>
-                                <Select.Group>
-                                  <Select.Label>Fruits</Select.Label>
-                                  {#each condition as Condition}
-                                  <Select.Item class="card"  value={Condition.id} label={Condition.name}
-                                    >{Condition.name}</Select.Item
-                                  >
-                                {/each}
-                                </Select.Group>
-                              </Select.Content>
-                              <Select.Input name="selectedCondition" bind:value={selectedItem} />
-                            </Select.Root>
-                        </div>
-                        <div class="grid gap-2">
-                            <Label for="area">Selling Price</Label>
-                           <Input id="area" placeholder="name" bind:value={productDetails.selling_price} />
-                        </div>
-                        <div class="grid gap-2">
-                            <Label for="area">Price</Label>
-                           <Input id="area" placeholder="name" bind:value={productDetails.price} />
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="grid gap-2">
-                            <Label for="area">HSN</Label>
-                           <Input id="area" placeholder="name" bind:value={productDetails.hsn_code} />
-                        </div>
-                        <div class="grid gap-2">
-                            <Label for="security-level">SKU</Label>
-                            <Input id="area" placeholder="name" bind:value={productDetails.sku} />
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 gap-4">
-                        <div class="grid gap-2">
-                            <Label for="area">Display Image</Label>
-                           <Button id="area" variant ="outline" placeholder="name" 
-                           on:click={pickAvatar}>
-                           Upload Image
-                        </Button>
+<div
+  class="fixed bg-background inset-0 flex items-center justify-center"
+  style="background-color: rgba(0, 0, 0, 0.5);">
+  <div class="flex items-center justify-center">
+    <div class="glow-border">
+      <div
+        class="card glow-border-content bg-background text-foreground overflow-y-auto"
+        style="height:90vh;">
+        <Card.Root>
+          <Card.Header>
+            <Card.Title>Add Product</Card.Title>
+            <Card.Description>add product details</Card.Description>
+          </Card.Header>
+          <Card.Content class="grid gap-6">
+            <div class="grid grid-cols-3 gap-4">
+              <div class="grid gap-2">
+                <Label for="area">Product Name</Label>
+                <Input
+                  id="area"
+                  placeholder="name"
+                  bind:value={productDetails.name}/>
+              </div>
+              <div class="grid gap-2">
+                <Label for="security-level">Category</Label>
+                <select
+                  id="category"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 input dark:focus:border-blue-500"
+                  bind:value={productDetails.categories}
+                  multiple>
+                  <option value="" disabled selected>Select</option>
+                  {#each $categories as Category}
+                    <option value={Category.id}>{Category.name}</option>
+                  {/each}
+                </select>
+              </div>
+              <div class="grid gap-2">
+                <Label for="security-level">Brand</Label>
+                <Select.Root>
+                  <Select.Trigger class="input capitalize">
+                    {selectedBrand
+                      ? selectedBrand
+                      : "Select a Brand"}
+                  </Select.Trigger>
+                  <Select.Content>
+                    <Select.Group>
+                      {#each $brands as brand}
+                      <Select.Item value={brand.id} label={brand.name} class="capitalize card"
+                        on:click={() => handleBrandChange( brand.id )}>
+                        {brand.name}
+                      </Select.Item>
+                      {/each}
+                    </Select.Group>
+                  </Select.Content>
+                </Select.Root>
+              </div>
+            </div>
+            <div class="grid gap-2">
+              <Label for="subject">Short description</Label>
+              <Input
+                id="subject"
+                placeholder="short description of the product"
+                bind:value={productDetails.short_description}/>
+            </div>
+
+            <div class="grid gap-2">
+              <Label for="description">Description</Label>
+              <Textarea
+                id="description"
+                placeholder="Please include all information relevant to your product."
+                bind:value={productDetails.description}/>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="grid gap-2">
+                <Label for="area">Condition</Label>
+                <Select.Root onSelectedChange={handleConditionChange}>
+                  <Select.Trigger class="w-[180px]">
+                    <Select.Value placeholder="Select the Condition"/>
+                  </Select.Trigger>
+                  <Select.Content>
+                    <Select.Group>
+                      <Select.Label>Fruits</Select.Label>
+                      {#each condition as Condition}
+                        <Select.Item
+                          class="card"
+                          value={Condition.id}
+                          label={Condition.name}>{Condition.name}</Select.Item>
+                      {/each}
+                    </Select.Group>
+                  </Select.Content>
+                  <Select.Input
+                    name="selectedCondition"
+                    bind:value={selectedItem}/>
+                </Select.Root>
+              </div>
+              <div class="grid gap-2">
+                <Label for="area">Selling Price</Label>
+                <Input
+                  id="area"
+                  placeholder="name"
+                  bind:value={productDetails.selling_price}/>
+              </div>
+              <div class="grid gap-2">
+                <Label for="area">Price</Label>
+                <Input
+                  id="area"
+                  placeholder="name"
+                  bind:value={productDetails.price}/>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="grid gap-2">
+                <Label for="area">HSN</Label>
+                <Input
+                  id="area"
+                  placeholder="name"
+                  bind:value={productDetails.hsn_code}/>
+              </div>
+              <div class="grid gap-2">
+                <Label for="security-level">SKU</Label>
+                <Input
+                  id="area"
+                  placeholder="name"
+                  bind:value={productDetails.sku}/>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 gap-4">
+              <div class="grid gap-2">
+                <Label for="area">Display Image</Label>
+                <Button
+                  id="area"
+                  variant="outline"
+                  placeholder="name"
+                  on:click={pickAvatar}>
+                  Upload Image
+                </Button>
 
                 <div style="display:flex; justify-content: center; align-items: center; margin-top: 10px;">
                   <img
