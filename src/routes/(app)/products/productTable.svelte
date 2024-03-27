@@ -262,6 +262,9 @@
           })
           .on("addVariant", (event: Actions["addVariant"]) => {
             dispatch("addVariant", { item });
+          })
+          .on("viewVariant", (event: Actions["viewVariant"]) => {
+            dispatch("viewVariant", { item });
           });
       },
       plugins: {
