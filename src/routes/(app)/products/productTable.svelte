@@ -32,6 +32,7 @@
     id: string;
     name: string;
     description: string;
+    brand: string;
     price: number;
     stock: number;
     categories: string[];
@@ -40,7 +41,7 @@
     images: string;
     rating: number;
     no_of_reviews: number;
-    status: "active" | "inactive";
+    is_disabled: boolean;
     created_at: string;
     updated_at: string;
     created_by: string;
@@ -167,6 +168,10 @@
       cell: ({ value }) => value,
       plugins: { filter: {} },
     }),
+        table.column({
+      header: "Brand",
+      accessor: ({brand}) => brand.name,
+    }),
     table.column({
       header: "HSN Code",
       accessor: "hsn_code",
@@ -187,8 +192,8 @@
     }),
     table.column({
       header: "Status",
-      accessor: "status",
-      cell: ({ value }) => value,
+      accessor: "is_disabled",
+      cell: ({ value }) => value ? "Inactive" : "Active",
       plugins: { filter: {} },
     }),
     table.column({
@@ -235,7 +240,7 @@
     table.column({
       header: "Categories",
       accessor: "categories",
-      cell: ({ value }) => value.join(", "),
+      cell: ({ value }) => value.map(category => category.name).join(", "),
       plugins: { sort: {}, filter: {} },
     }),
     table.column({
