@@ -3,7 +3,7 @@
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
     import { Button } from "$lib/components/ui/button";
    
-    export let id: string;
+    export let id;
   </script>
    
   <DropdownMenu.Root>
