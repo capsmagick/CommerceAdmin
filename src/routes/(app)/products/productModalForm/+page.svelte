@@ -76,7 +76,6 @@
 
   let categories = writable<Categories[]>([], (set) => {
         getCategory().then((data) => {
-            console.log(data);
             set(data);
         });
     });
@@ -159,7 +158,7 @@ onMount(() => {
 <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
       <div class="flex items-center justify-center">
         <div class="glow-border" >
-        <div class="card glow-border-content bg-background text-foreground overflow-y-auto" style="height:90vh;">
+        <div class="card glow-border-content bg-background text-foreground overflow-y-auto" style="max-height:90vh;">
             
             <Card.Root>
                 <Card.Header>

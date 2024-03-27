@@ -60,8 +60,6 @@
     });
   });
 
-  $: console.log($data.map(item => item.short_description));
-
   function createFunction() {
     dispatch("newAttribute");
   }
