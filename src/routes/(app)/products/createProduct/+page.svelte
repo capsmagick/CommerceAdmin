@@ -20,6 +20,8 @@
   export let editData;
   let selectedItem: any;
   let selectedBrand: string;
+  let tags: any = [];
+  let selectedTagGroups: string;
 
     let productDetails: any = {
       id: '',
@@ -113,6 +115,21 @@
     selectedItem = event.value;
     console.log(selectedItem);
   }
+
+  async function fetchTags() {
+    try {
+      const res = await API.get("/masterdata/tag/");
+      tags = res.data.results;
+    } catch (error) {
+      console.log("category:fetch-tags:", error);
+    }
+  }
+
+  function handleTagChange(selectedTags: { value: number }) {
+    selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
+    productDetails.tags.push(selectedTagGroups.id);
+  }
+
   function toggleDisabled() {
     productDetails.is_active = !productDetails.is_active;
   }
@@ -134,7 +151,7 @@
        form.append("hsn_code", productDetails.hsn_code);
        form.append("rating", productDetails.rating);
        form.append("noOfReviews", productDetails.noOfReviews);
-      //  form.append("tags", productDetails.tags);
+       form.append("tags", productDetails.tags);
       //  form.append("dimension", productDetails.dimension);
        form.append("image", productDetails.image);
 
@@ -166,6 +183,9 @@
       cancelModel();
     }
   }
+    onMount(async () => {
+    await fetchTags();
+  });
 
   onMount(() => {
     const timeout = setTimeout(() => {
@@ -321,6 +341,29 @@
                             <Input id="area" placeholder="SKU" bind:value={productDetails.sku} />
                         </div>
                     </div>
+                                <div class="items-center gap-2 mb-3">
+              <Select.Root>
+                <Select.Trigger class="input capitalize"
+                  >{selectedTagGroups
+                    ? selectedTagGroups.name
+                    : "Select a Tag"}</Select.Trigger
+                >
+                <Select.Content>
+                  <Select.Group>
+                    {#each tags as tag}
+                      <Select.Item
+                        value={tag.id}
+                        label={tag.name}
+                        class="capitalize card"
+                        on:click={() => handleTagChange({ value: tag.id })}
+                      >
+                        {tag.name}
+                      </Select.Item>
+                    {/each}
+                  </Select.Group>
+                </Select.Content>
+              </Select.Root>
+            </div>
                     <div class="grid grid-cols-1 gap-4">
                         <div class="grid gap-2">
                             <Label for="area">Display Image</Label>
