@@ -101,6 +101,8 @@
  
   async function closemodal() {
     showModal = false
+    editForm = false
+    editData = null
   }
 
 </script>

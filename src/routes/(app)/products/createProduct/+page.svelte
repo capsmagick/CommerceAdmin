@@ -27,8 +27,8 @@
       short_description: '',
       description: '',
       sku: '',
-      price: 0,
-      selling_price: 0,
+      price: '',
+      selling_price: '',
       condition: '',
       categories: [],
       brand: '',
@@ -136,25 +136,6 @@
   }
 
   function cancelModel() {
-    productDetails = {
-      id: '',
-      name: '',
-      image: '',
-      short_description: '',
-      description: '',
-      sku: '',
-      price: 0,
-      selling_price: 0,
-      condition: '',
-      categories: [],
-      brand: '',
-      isDisabled: false,
-      hsn_code: '',
-      rating: 0,
-      noOfReviews: 0,
-      tags: [],
-      dimension: '',
-    };
     dispatch("cancel");
   }
   function handleClickOutside(event) {
@@ -288,21 +269,21 @@
                         </div>
                         <div class="grid gap-2">
                             <Label for="area">Selling Price</Label>
-                           <Input id="area" placeholder="name" bind:value={productDetails.selling_price} />
+                           <Input id="area" placeholder="Selling Price" bind:value={productDetails.selling_price} />
                         </div>
                         <div class="grid gap-2">
                             <Label for="area">Price</Label>
-                           <Input id="area" placeholder="name" bind:value={productDetails.price} />
+                           <Input id="area" placeholder="Price" bind:value={productDetails.price} />
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="grid gap-2">
                             <Label for="area">HSN</Label>
-                           <Input id="area" placeholder="name" bind:value={productDetails.hsn_code} />
+                           <Input id="area" placeholder="HSN Code" bind:value={productDetails.hsn_code} />
                         </div>
                         <div class="grid gap-2">
                             <Label for="security-level">SKU</Label>
-                            <Input id="area" placeholder="name" bind:value={productDetails.sku} />
+                            <Input id="area" placeholder="SKU" bind:value={productDetails.sku} />
                         </div>
                     </div>
                     <div class="grid grid-cols-1 gap-4">
