@@ -9,6 +9,7 @@
   import * as Select from "$lib/components/ui/select";
   import { Label } from "$lib/components/ui/label";
   import * as Card from "$lib/components/ui/card";
+  import { Toggle } from "$lib/components/ui/toggle/index.js";
   import { writable } from "svelte/store";
   import { toast } from "svelte-sonner";
   import { Value } from "svelte-radix";
@@ -16,7 +17,6 @@
   const dispatch = createEventDispatcher();
 
   export let editForm: boolean;
-  export let showModal;
   export let editData;
   let selectedItem: any;
   let selectedBrand: string;
@@ -32,12 +32,13 @@
       condition: '',
       categories: [],
       brand: '',
-      isDisabled: false,
+      is_active: false,
       hsn_code: '',
       rating: 0,
       noOfReviews: 0,
       tags: [],
       dimension: '',
+      image: '',
     };
 
     if (editForm) {
@@ -112,21 +113,43 @@
     selectedItem = event.value;
     console.log(selectedItem);
   }
+  function toggleDisabled() {
+    productDetails.is_active = !productDetails.is_active;
+  }
 
   async function createProduct() {
     try {
+      const form = new FormData();
+
+       form.append("name", productDetails.name);
+       form.append("short_description", productDetails.short_description);
+       form.append("description", productDetails.description);
+       form.append("sku", productDetails.sku);
+       form.append("price", productDetails.price);
+       form.append("selling_price", productDetails.selling_price);
+       form.append("condition", productDetails.condition);
+       form.append("categories", productDetails.categories);
+       form.append("brand", productDetails.brand);
+       form.append("is_active", productDetails.is_active);
+       form.append("hsn_code", productDetails.hsn_code);
+       form.append("rating", productDetails.rating);
+       form.append("noOfReviews", productDetails.noOfReviews);
+      //  form.append("tags", productDetails.tags);
+      //  form.append("dimension", productDetails.dimension);
+       form.append("image", productDetails.image);
+
+
       const url = editForm
         ? `/products/product/${productDetails.id}/update_record/`
         : "/products/product/create_record/";
 
       if (editForm) {
-        await API.put(url, productDetails);
+        await API.put(url, form);
       } else {
-        await API.post(url, productDetails);
+        await API.post(url, form);
       }
 
       dispatch("newProduct");
-      showModal = false;
 
       const action = editForm ? "Product Updated" : "Product Created";
       toast(`${action} successfully!`);
@@ -267,6 +290,18 @@
                               <Select.Input name="selectedCondition" bind:value={selectedItem} />
                             </Select.Root>
                         </div>
+                        {#if editForm}
+                        <div class="grid gap-2">
+                          <Label for="area">Status</Label>
+                          <Toggle aria-label="Toggle italic"
+                          class="{!productDetails.is_active ? 'bg-lime-600' : 'bg-gray-300'}"
+                          bind:value={productDetails.is_active}
+                          on:click={toggleDisabled}>
+                          {productDetails.is_active? "Inactive":"Active"}
+                          </Toggle>
+                        </div>
+                        {/if}
+                       
                         <div class="grid gap-2">
                             <Label for="area">Selling Price</Label>
                            <Input id="area" placeholder="Selling Price" bind:value={productDetails.selling_price} />
