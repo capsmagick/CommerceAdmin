@@ -87,8 +87,8 @@ onMount(() => {
    <div class="flex items-center justify-center">
        <div class="glow-border">
            <div class="card glow-border-content bg-background text-foreground overflow-y-auto" style="max-height:90vh;">
-                <Card.Root class="bg-white p-6 rounded-lg">
-                    <Card.Header class="font-bold mb-5" style="color: black">
+                <Card.Root >
+                    <Card.Header class="font-bold mb-5">
                         <Card.Title>{editForm ? 'Update Variant' : 'New Variant'}</Card.Title>
                     </Card.Header>
                     <Card.Content>
