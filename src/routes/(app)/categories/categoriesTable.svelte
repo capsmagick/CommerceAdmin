@@ -39,6 +39,8 @@
     updated_at: string;
     created_by: string;
     updated_by: string;
+    parent_category: string;
+    second_parent_category: string;
   };
 
   let next: any;
@@ -155,7 +157,14 @@
         `<img src="${value}" alt="Featured Image" class="h-10 w-10 rounded-full">`,
       plugins: { filter: { exclude: true } },
     }),
-
+    table.column({
+      header: "Parent category",
+      accessor: "parent_category",
+    }),
+    table.column({
+      header: "Second parent category",
+      accessor: "second_parent_category",
+    }),
     table.column({
       header: "Description",
       accessor: "description",
@@ -235,6 +244,8 @@
     "attributes",
     "created_by",
     "updated_by",
+    "parent_category",
+    "second_parent_category",
   ];
 
   $: hideForId = Object.fromEntries(
@@ -258,6 +269,8 @@
     "tags",
     "created_by",
     "updated_by",
+    "parent_category",
+    "second_parent_category",
   ];
 </script>
 
@@ -305,11 +318,8 @@
                                         {#if cell.id === "name"}
                                             <Button variant="ghost" on:click={props.sort.toggle}>
                                                 <Render of={cell.render()}/>
-                                                <CaretSort
-                                                        class={cn(
-                              $sortKeys[0]?.id === cell.id && "text-foreground",
-                              "ml-2 h-4 w-4"
-                            )}/>
+                                                <CaretSort 
+                                                class={cn($sortKeys[0]?.id === cell.id && "text-foreground","ml-2 h-4 w-4")}/>
                                             </Button>
                                         {:else}
                                             <Render of={cell.render()}/>
