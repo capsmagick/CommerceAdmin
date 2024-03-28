@@ -18,6 +18,10 @@
     function handleAddVariant() {
         dispatch('addVariant')
     }
+
+    function handleViewVariant() {
+        dispatch('viewVariant')
+    }
   </script>
    
   <DropdownMenu.Root>
@@ -38,6 +42,7 @@
           <DropdownMenu.Item on:click={handleDelete}><i class="fa fa-trash sm mr-2" style="color:red"></i>Delete
           </DropdownMenu.Item>
           <DropdownMenu.Item on:click={handleAddVariant}>Add Variant</DropdownMenu.Item>
+          <DropdownMenu.Item on:click={handleViewVariant}>View Variant</DropdownMenu.Item>
           <DropdownMenu.Item>Change status</DropdownMenu.Item>
     </DropdownMenu.Content>
   </DropdownMenu.Root>

@@ -23,10 +23,18 @@
     import DataTableCheckbox from "./variantTableCheckbox.svelte";
     import API from "$lib/services/api";
     import {createEventDispatcher} from "svelte";
+    import { productIdStore } from '../../../../lib/stores/data';
+
 
     const dispatch = createEventDispatcher();
-    import type {ActionsEvents} from './Actions.svelte';
     
+
+    let productId;
+
+productIdStore.subscribe(value => {
+    productId = value;
+});
+
   type Variant = {
   id: string;
   name: string;
@@ -106,11 +114,11 @@
         header: "Actions",
         accessor: ({ id }) => id,
         cell: (item) => {
-          return createRender(Actions, {item: item})
-            .on('edit', (event: ActionsEvents['edit']) => {
+          return createRender(Actions)
+            .on('edit', (event: Actions['edit']) => {
                 dispatch('edit', {item})
             })
-            .on('delete', (event: ActionsEvents['delete']) => {
+            .on('delete', (event: Actions['delete']) => {
                 dispatch('delete', {item})
             });
         },
