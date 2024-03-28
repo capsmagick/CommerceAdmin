@@ -328,4 +328,23 @@
   .card::-webkit-scrollbar {
     display: none;
   }
+  /* .input, .textarea, .select, .btn {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    box-sizing: border-box;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.375rem; /* 6px 
+  } */
+
+  /* .btn {
+    background-color: #4f46e5; /* Indigo 
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .btn:hover {
+    background-color: #4338ca; /* Darker Indigo 
+  } */
 </style>

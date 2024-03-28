@@ -7,15 +7,16 @@
     import AttributeTable from "./attributeTable.svelte";
 
     import CreditAttribute from "./createattributes/+page.svelte";
-    import AttributeCRUD from "./attributeCrud.svelte";
+    //import AttributeCRUD from "./attributeCRUD.svelte";
     import * as Sheet from "$lib/components/ui/sheet/index";
     import {refreshtable} from '$lib/Functions/CRUD';
     import {toast} from "svelte-sonner";
-
-   let showDeleteModal = false;
+    import type { Writable } from 'svelte/store';
+    let showDeleteModal = false;
     let deletingAttribute: any;
-    let refreshTable;
-    let editData;
+
+    let refreshTable: any;
+    let editData: { [key: string]: any } | null;
     let showForm: boolean = false;
     let editForm: boolean = false;
 
@@ -25,13 +26,13 @@
     }
 
     // Edit Attribute
-    async function onEditAttribute(eventData) {
+    async function onEditAttribute(eventData:any) {
         editData = eventData.original;
         showForm = true;
         editForm = true;
     }
 
-    async function onDeleteAttribute(eventData) {
+    async function onDeleteAttribute(eventData:any) {
         deletingAttribute = eventData.original;
         showDeleteModal = true;
     }
