@@ -84,13 +84,10 @@
       formData.append("name", categoryDetails.name);
       formData.append("description", categoryDetails.description);
       formData.append("handle", categoryDetails.handle);
-      if (categoryDetails.parent_category.length > 1)
-        formData.append("parent_category", categoryDetails.parent_category);
-      if (categoryDetails.second_parent_category.length > 1)
-        formData.append(
-          "second_parent_category",
-          categoryDetails.second_parent_category
-        );
+      if (categoryDetails.parent_category)
+            formData.append("parent_category", categoryDetails.parent_category);
+      if (categoryDetails.second_parent_category)
+            formData.append("second_parent_category", categoryDetails.second_parent_category);
       if (categoryDetails.attribute_group.length > 0)
         formData.append("attribute_group", categoryDetails.attribute_group);
       if (categoryDetails.tags.length > 0)
