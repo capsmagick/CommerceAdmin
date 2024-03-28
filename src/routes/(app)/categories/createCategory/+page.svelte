@@ -78,20 +78,16 @@
   }
 
   async function createCategory() {
-    debugger;
     try {
       const formData = new FormData();
 
       formData.append("name", categoryDetails.name);
       formData.append("description", categoryDetails.description);
       formData.append("handle", categoryDetails.handle);
-      if (categoryDetails.parent_category.length > 1)
-        formData.append("parent_category", categoryDetails.parent_category);
-      if (categoryDetails.second_parent_category.length > 1)
-        formData.append(
-          "second_parent_category",
-          categoryDetails.second_parent_category
-        );
+      if (categoryDetails.parent_category)
+            formData.append("parent_category", categoryDetails.parent_category);
+      if (categoryDetails.second_parent_category)
+            formData.append("second_parent_category", categoryDetails.second_parent_category);
       if (categoryDetails.attribute_group.length > 0)
         formData.append("attribute_group", categoryDetails.attribute_group);
       if (categoryDetails.tags.length > 0)
@@ -175,20 +171,19 @@
 
   onMount(() => {
     const timeout = setTimeout(() => {
-      document.addEventListener("click", handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }, 100);
 
     return () => {
       clearTimeout(timeout);
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   });
 </script>
 
 <div
   class="fixed bg-background inset-0 flex items-center justify-center"
-  style="background-color: rgba(0, 0, 0, 0.5);"
->
+  style="background-color: rgba(0, 0, 0, 0.5);">
   <div class="flex items-center justify-center">
     <div class="glow-border">
       <div class="card glow-border-content bg-background text-foreground">
@@ -210,8 +205,7 @@
               <Textarea
                 bind:value={categoryDetails.description}
                 placeholder="Description"
-                class="textarea"
-              />
+                class="textarea"/>
             </div>
 
             <div class="grid grid-cols-2 gap-4 mb-3">
@@ -220,8 +214,8 @@
                 placeholder="Handle"
                 class="input"/>
               <Select.Root>
-                <Select.Trigger class="input capitalize"
-                  >{selectedAttributeGroup
+                <Select.Trigger class="input capitalize">
+                  {selectedAttributeGroup
                     ? selectedAttributeGroup
                     : "Select a Attribute Group"}</Select.Trigger>
                 <Select.Content>
@@ -243,9 +237,7 @@
             <div class="grid grid-cols-2 gap-4 mb-3">
               <Select.Root>
                 <Select.Trigger class="input capitalize">
-                  {parent_category
-                    ? parent_category
-                    : "Select Parent Category"}
+                  {parent_category ? parent_category : "Select Parent Category"}
                 </Select.Trigger>
                 <Select.Content>
                   <Select.Group>
@@ -274,7 +266,9 @@
                         value={category.id}
                         label={category.name}
                         class="capitalize card"
-                        on:click={() => handleSecondaryParentCat({ value: category.id })}>
+                        on:click={() =>
+                          handleSecondaryParentCat({ value: category.id })}
+                      >
                         {category.name}
                       </Select.Item>
                     {/each}
@@ -285,11 +279,10 @@
 
             <div class="items-center gap-2 mb-3">
               <Select.Root>
-                <Select.Trigger class="input capitalize"
-                  >{selectedTagGroups
+                <Select.Trigger class="input capitalize">
+                  {selectedTagGroups
                     ? selectedTagGroups.name
-                    : "Select a Tag"}</Select.Trigger
-                >
+                    : "Select a Tag"}</Select.Trigger>
                 <Select.Content>
                   <Select.Group>
                     {#each tags as tag}
@@ -297,8 +290,7 @@
                         value={tag.id}
                         label={tag.name}
                         class="capitalize card"
-                        on:click={() => handleTagChange({ value: tag.id })}
-                      >
+                        on:click={() => handleTagChange({ value: tag.id })}>
                         {tag.name}
                       </Select.Item>
                     {/each}
