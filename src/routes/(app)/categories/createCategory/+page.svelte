@@ -25,6 +25,15 @@
   };
 
   let id = "";
+  let tags: any = [];
+  let selectedTagGroups: string;
+  let attributeGroups: any = [];
+  let selectedAttributeGroup: string;
+  let parent_category: string = "";
+  let second_parent_category: string;
+  let categories: any[] = [];
+  let imageUpload: any;
+  let selected_parent_category: string;
 
   if (editForm) {
     categoryDetails = {
@@ -38,16 +47,18 @@
       tags: editData.tags,
     };
     id = editData.id;
+    console.log("parent_category:", categoryDetails.parent_category);
+    console.log("name:", categoryDetails.name);
+    updateSelectionName();
   }
 
-  let tags: any = [];
-  let selectedTagGroups: string;
-  let attributeGroups: any = [];
-  let selectedAttributeGroup: string;
-  let parent_category: string;
-  let second_parent_category: string;
-  let categories: any[] = [];
-  let imageUpload: any;
+  async function updateSelectionName(){
+    if (categoryDetails.parent_category){
+      await fetchCategories();
+      selected_parent_category = categories.find(cat => cat.id === categoryDetails.parent_category)?.name;
+      console.log('parent_category_name:', selected_parent_category);
+    }
+  }
 
   async function fetchCategories() {
     try {
@@ -109,6 +120,11 @@
 
       dispatch("newCategory");
       const action = editForm ? "Category Updated" : "Category Created";
+          // Logging individual fields
+        console.log('name:', categoryDetails.name);
+        console.log('parent_category:', categoryDetails.parent_category);
+        console.log('second_parent_category:', categoryDetails.second_parent_category);
+        // Log more fields if needed
       toast(`${action} successfully!`);
     } catch (error) {
       const action = editForm ? "Update Category" : "Create Category";
@@ -133,7 +149,19 @@
     parent_category = categories.find(
       (g: any) => g.id == selectedCat.value
     ).name;
+    console.log("Parent category name:", parent_category);
+    updateSelectionName();
   }
+  // function handleParentCat(selectedCat: { value: number }) {
+  //   categoryDetails.parent_category = selectedCat.value;
+  //   console.log("Selected parent category ID:", selectedCat.value);
+  //   const selectedCategory = categories.find(
+  //     (g: any) => g.id == selectedCat.value
+  //   );
+  //   console.log("Selected category:", selectedCategory);
+  //   parent_category = selectedCategory ? selectedCategory.name : "";
+  //   console.log("Parent category:", parent_category);
+  // }
 
   function handleSecondaryParentCat(selectedCat: { value: number }) {
     categoryDetails.second_parent_category = selectedCat.value;
@@ -237,7 +265,7 @@
             <div class="grid grid-cols-2 gap-4 mb-3">
               <Select.Root>
                 <Select.Trigger class="input capitalize">
-                  {parent_category ? parent_category : "Select Parent Category"}
+                  {selected_parent_category ? selected_parent_category : "Select Parent Category"}
                 </Select.Trigger>
                 <Select.Content>
                   <Select.Group>
