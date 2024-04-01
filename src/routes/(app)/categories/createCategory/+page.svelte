@@ -33,7 +33,7 @@
   let second_parent_category: string;
   let categories: any[] = [];
   let imageUpload: any;
-  let selected_parent_category: string;
+  let tagNames: string[] = [];
 
   if (editForm) {
     categoryDetails = {
@@ -47,16 +47,27 @@
       tags: editData.tags,
     };
     id = editData.id;
-    console.log("parent_category:", categoryDetails.parent_category);
-    console.log("name:", categoryDetails.name);
     updateSelectionName();
   }
 
   async function updateSelectionName(){
     if (categoryDetails.parent_category){
       await fetchCategories();
-      selected_parent_category = categories.find(cat => cat.id === categoryDetails.parent_category)?.name;
-      console.log('parent_category_name:', selected_parent_category);
+      parent_category = categories.find(cat => cat.id === categoryDetails.parent_category)?.name;
+    }
+    if (categoryDetails.second_parent_category) {
+      await fetchCategories();
+      second_parent_category = categories.find(cat => cat.id === categoryDetails.second_parent_category)?.name;
+    }
+
+    if (categoryDetails.attribute_group) {
+      await fetchAttributeGroups();
+      selectedAttributeGroup = attributeGroups.find(group => group.id === categoryDetails.attribute_group)?.name;
+    }
+
+    if (categoryDetails.tags && categoryDetails.tags.length > 0) {
+      await fetchTags(); 
+      tagNames = categoryDetails.tags.map(tag => tag.name);
     }
   }
 
@@ -120,11 +131,6 @@
 
       dispatch("newCategory");
       const action = editForm ? "Category Updated" : "Category Created";
-          // Logging individual fields
-        console.log('name:', categoryDetails.name);
-        console.log('parent_category:', categoryDetails.parent_category);
-        console.log('second_parent_category:', categoryDetails.second_parent_category);
-        // Log more fields if needed
       toast(`${action} successfully!`);
     } catch (error) {
       const action = editForm ? "Update Category" : "Create Category";
@@ -138,10 +144,12 @@
     selectedAttributeGroup = attributeGroups.find(
       (g: any) => g.id == selectedGroup.value
     ).name;
+    updateSelectionName();
   }
   function handleTagChange(selectedTags: { value: number }) {
     selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
     categoryDetails.tags.push(selectedTagGroups.id);
+    updateSelectionName();
   }
 
   function handleParentCat(selectedCat: { value: number }) {
@@ -152,22 +160,13 @@
     console.log("Parent category name:", parent_category);
     updateSelectionName();
   }
-  // function handleParentCat(selectedCat: { value: number }) {
-  //   categoryDetails.parent_category = selectedCat.value;
-  //   console.log("Selected parent category ID:", selectedCat.value);
-  //   const selectedCategory = categories.find(
-  //     (g: any) => g.id == selectedCat.value
-  //   );
-  //   console.log("Selected category:", selectedCategory);
-  //   parent_category = selectedCategory ? selectedCategory.name : "";
-  //   console.log("Parent category:", parent_category);
-  // }
 
   function handleSecondaryParentCat(selectedCat: { value: number }) {
     categoryDetails.second_parent_category = selectedCat.value;
     second_parent_category = categories.find(
       (g: any) => g.id == selectedCat.value
     ).name;
+    updateSelectionName();
   }
 
   //   Logo upload
@@ -265,7 +264,7 @@
             <div class="grid grid-cols-2 gap-4 mb-3">
               <Select.Root>
                 <Select.Trigger class="input capitalize">
-                  {selected_parent_category ? selected_parent_category : "Select Parent Category"}
+                  {parent_category ? parent_category : "Select Parent Category"}
                 </Select.Trigger>
                 <Select.Content>
                   <Select.Group>
@@ -308,8 +307,8 @@
             <div class="items-center gap-2 mb-3">
               <Select.Root>
                 <Select.Trigger class="input capitalize">
-                  {selectedTagGroups
-                    ? selectedTagGroups.name
+                  {tagNames
+                    ? tagNames
                     : "Select a Tag"}</Select.Trigger>
                 <Select.Content>
                   <Select.Group>
