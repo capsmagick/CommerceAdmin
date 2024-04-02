@@ -8,17 +8,7 @@
 
     onMount(() => {
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch(registrationError => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
-            });
-        }
+   
         localStorage.setItem("lastVisitedRoute", window.location.pathname);
         let unsubscribe: () => void; // Declare unsubscribe outside to ensure it's accessible for cleanup
 
