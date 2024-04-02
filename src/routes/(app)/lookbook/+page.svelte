@@ -75,11 +75,11 @@
       <div class="glow-border mr-4">
         <Button variant="outline" class="glow-border-content">Export</Button>
       </div>
-      <div class="glow-border mr-4">
+      <!-- <div class="glow-border mr-4">
         <Button variant="outline"  class="text-xs flex items-center gap-2  px-4 py-1.5" on:click={() => toggleForm()}>
         <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
         Add Lookbook</Button>
-        </div>
+        </div> -->
   </div>
   <LookbookTable on:newLookBook={() => toggleForm()}
                 on:edit={(event) => onEditLookbook(event.detail.item.row)}

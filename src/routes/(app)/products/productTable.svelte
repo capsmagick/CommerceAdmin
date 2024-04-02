@@ -181,7 +181,7 @@
     table.column({
       header: "Tags",
       accessor: "tags",
-      cell: ({ value }) => value.join(", "),
+      cell: ({ value }) => value.map(i => i.name).join(", "),
       plugins: { filter: {} },
     }),
     table.column({
@@ -265,6 +265,9 @@
           })
           .on("viewVariant", (event: Actions["viewVariant"]) => {
             dispatch("viewVariant", { item });
+          })
+          .on("addLookbook", (event: Actions["addLookbook"]) => {
+            dispatch("addLookbook", { item });
           });
       },
       plugins: {

@@ -12,6 +12,7 @@
 
   export let editData;
   export let editForm: boolean;
+  let updateImage: boolean = false
 
   let categoryDetails: any = {
     name: "",
@@ -34,6 +35,7 @@
   let categories: any[] = [];
   let imageUpload: any;
   let tagNames: string[] = [];
+  let tagChange: boolean = false
 
   if (editForm) {
     categoryDetails = {
@@ -102,7 +104,7 @@
   async function createCategory() {
     try {
       const formData = new FormData();
-
+      
       formData.append("name", categoryDetails.name);
       formData.append("description", categoryDetails.description);
       formData.append("handle", categoryDetails.handle);
@@ -112,13 +114,13 @@
             formData.append("second_parent_category", categoryDetails.second_parent_category);
       if (categoryDetails.attribute_group.length > 0)
         formData.append("attribute_group", categoryDetails.attribute_group);
-      if (categoryDetails.tags.length > 0)
+      if (tagChange) {
         formData.append("tags", categoryDetails.tags);
+        }
       formData.append("attribute_group", categoryDetails.attribute_group);
-      if (categoryDetails.tags.length)
-        formData.append("tags", categoryDetails.tags);
+      if (updateImage){
       formData.append("image", categoryDetails.image);
-
+      }
       const url = editForm
         ? `/masterdata/category/${id}/update_record/`
         : "/masterdata/category/create_record/";
@@ -147,8 +149,9 @@
     updateSelectionName();
   }
   function handleTagChange(selectedTags: { value: number }) {
+    tagChange = true
     selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
-    categoryDetails.tags.push(selectedTagGroups.id);
+    categoryDetails.tags = selectedTagGroups.id;
     updateSelectionName();
   }
 
@@ -175,9 +178,8 @@
   }
 
   async function uploadAvatar() {
+    updateImage = true;
     categoryDetails.image = imageUpload.files[0];
-    const img: any = document.getElementById("selected-logo");
-    img.src = window.URL.createObjectURL(categoryDetails.image);
   }
 
   // Mount
@@ -188,6 +190,7 @@
   });
 
   function cancelModel() {
+    tagChange = false
     dispatch("cancel");
   }
   function handleClickOutside(event) {
@@ -336,6 +339,7 @@
                 id="selected-logo"
                 alt=""
                 class={categoryDetails.image ? "showImg" : "hideImg"}
+                src={updateImage ? window.URL.createObjectURL(categoryDetails.image) : categoryDetails.image}
               />
               <input
                 type="file"

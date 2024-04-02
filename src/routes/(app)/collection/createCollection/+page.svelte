@@ -2,7 +2,7 @@
     import {Input} from "$lib/components/ui/input";
     import { Label } from "$lib/components/ui/label";
     import {Textarea} from "$lib/components/ui/textarea";
-    import {Select} from "$lib/components/ui/select";
+    import * as Select from "$lib/components/ui/select";
     import {Button} from "$lib/components/ui/button";
     import API from "$lib/services/api";
     import {createEventDispatcher, onMount} from "svelte";
@@ -13,13 +13,15 @@
 
     export let editData;
     export let editForm;
+    let tags: any = [];
+    let selectedTagGroups: string; 
 
     let collectionDetails = {
         name: "",
         feature_image: "",
         description: "",
         collections: "",
-        tags: "",
+        tags: [],
     };
     let id = "";
 
@@ -33,6 +35,20 @@
         };
         id = editData.id;
     }
+
+    async function fetchTags() {
+        try {
+        const res = await API.get("/masterdata/tag/");
+        tags = res.data.results;
+        } catch (error) {
+        console.log("category:fetch-tags:", error);
+        }
+    }
+
+    function handleTagChange(selectedTags: { value: number }) {
+        selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
+        collectionDetails.tags.push(selectedTagGroups.id);
+     }
 
     let imageUpload: HTMLInputElement;
 
@@ -85,7 +101,10 @@
       cancelModel();
     }
   }
-  
+
+onMount(async () => {
+    await fetchTags();
+  });
 onMount(() => {
   const timeout = setTimeout(() => {
     document.addEventListener('mousedown', handleClickOutside);
@@ -121,12 +140,32 @@ onMount(() => {
                                 <Label for="collections">Collections</Label>
                                 <Input id="collections" bind:value={collectionDetails.collections} placeholder="Collections" class="input"/>
                             </div>
-
-                            <div class="mb-3">
-                                <Label for="tags">Tags</Label>
-                                <Input id="tags" bind:value={collectionDetails.tags} placeholder="Tags" class="input"/>
-                            </div>
                            
+                            <div class="items-center gap-2 mb-3">
+                                <Label for="description">Tag</Label>
+                                <Select.Root>
+                                    <Select.Trigger class="input capitalize"
+                                    >{selectedTagGroups
+                                        ? selectedTagGroups.name
+                                        : "Select a Tag"}</Select.Trigger
+                                    >
+                                    <Select.Content>
+                                    <Select.Group>
+                                        {#each tags as tag}
+                                        <Select.Item
+                                            value={tag.id}
+                                            label={tag.name}
+                                            class="capitalize card"
+                                            on:click={() => handleTagChange({ value: tag.id })}
+                                        >
+                                            {tag.name}
+                                        </Select.Item>
+                                        {/each}
+                                    </Select.Group>
+                                    </Select.Content>
+                                </Select.Root>
+                            </div>
+
                             <div class="flex items-center gap-2">
                                 <Button type="button"  variant ="outline"
                                         on:click={pickAvatar}>
