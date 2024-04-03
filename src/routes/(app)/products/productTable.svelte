@@ -268,6 +268,9 @@
           })
           .on("addLookbook", (event: Actions["addLookbook"]) => {
             dispatch("addLookbook", { item });
+          })
+          .on("status", (event: Actions["status"]) => {
+            dispatch("status", { item });
           });
       },
       plugins: {

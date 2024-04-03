@@ -23,17 +23,26 @@
     let lookbookModalForm: boolean = false
 
     function toggleForm() {
-        console.log(showForm)
-        showForm = !showForm
+      showForm = !showForm
     }
 
     // Edit Attribute
     async function onEditProduct(eventData:any) {
         editData = eventData.original;
+        console.log(editData);
         showModal = true;
-        editForm = true;
-        // console.log(productDetails);
-                
+        editForm = true;                
+    }
+    async function onChangeStatus(eventData: any) {
+      let status = eventData.original.is_disabled;
+      let url = !status ? `/products/product/${eventData.original.id}/enable/` : `/products/product/${eventData.original.id}/disable/`;
+      
+      API.post(url).then(()=>{
+        toast.success("Product status updated successfully");
+        refreshTable.refreshTable();
+      }).catch((error:any)=>{
+        console.log(error)
+      })
     }
 
     async function onDeleteProduct(eventData: any) {
@@ -68,7 +77,6 @@
         // goto(`lookbook/createLookbook`)
         lookbookModalForm = true
     }
-
 
 
     function confirmDelete() {
@@ -162,6 +170,7 @@
                      on:addVariant={(event) => onCreateVariant(event.detail.item.row)}
                      on:viewVariant={(event) => viewVariantTable(event.detail.item.row)}
                      on:addLookbook={(event) => addLookbook(event.detail.item.row)}
+                     on:status={(event) => onChangeStatus(event.detail.item.row)}
                      bind:this={refreshTable}/>
   </div>
   </div>
