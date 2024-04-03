@@ -13,7 +13,7 @@
 
     const dispatch = createEventDispatcher();
 
-    export let editData: any;
+    export let editData;
     export let editForm: boolean;
     let productId: any;
     let selectedVariant: string;

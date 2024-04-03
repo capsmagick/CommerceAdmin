@@ -22,6 +22,9 @@
     function handleViewVariant() {
         dispatch('viewVariant')
     }
+    function handleLookbook() {
+        dispatch('addLookbook')
+    }
   </script>
    
   <DropdownMenu.Root>
@@ -43,6 +46,7 @@
           </DropdownMenu.Item>
           <DropdownMenu.Item on:click={handleAddVariant}>Add Variant</DropdownMenu.Item>
           <DropdownMenu.Item on:click={handleViewVariant}>View Variant</DropdownMenu.Item>
+          <DropdownMenu.Item on:click={handleLookbook}>Add Lookbook</DropdownMenu.Item>
           <DropdownMenu.Item>Change status</DropdownMenu.Item>
     </DropdownMenu.Content>
   </DropdownMenu.Root>

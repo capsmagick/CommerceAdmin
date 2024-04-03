@@ -9,6 +9,7 @@
   import ProductModal from "./createProduct/+page.svelte"
   import {toast} from "svelte-sonner";
   import { productIdStore } from '../../../lib/stores/data';
+  import AddToLookbook from './addToLookbook/+page.svelte'
 
 
     let showDeleteModal = false;
@@ -19,6 +20,7 @@
     let editForm: boolean = false;
     let editData:any;
     let showModal = false;
+    let lookbookModalForm: boolean = false
 
     function toggleForm() {
         console.log(showForm)
@@ -59,6 +61,12 @@
     async function viewVariantTable(eventData: any) {
         productIdStore.set(eventData.original.id);
         goto(`products/variant/`)
+    }
+
+        async function addLookbook(eventData: any) {
+        productIdStore.set(eventData.original.id);
+        // goto(`lookbook/createLookbook`)
+        lookbookModalForm = true
     }
 
 
@@ -116,6 +124,15 @@
 </div>
 
 <div>
+    {#if lookbookModalForm}
+        <AddToLookbook {editData}
+                {editForm} on:newLookbook={()=>{lookbookModalForm = false}}
+                            on:cancel={()=>{lookbookModalForm = false}}
+                            />
+    {/if}
+</div>
+
+<div>
     {#if showVariantForm}
         <CreateVariant 
                 {editData}
@@ -144,6 +161,7 @@
                      on:delete={(event) => onDeleteProduct(event.detail.item.row)}
                      on:addVariant={(event) => onCreateVariant(event.detail.item.row)}
                      on:viewVariant={(event) => viewVariantTable(event.detail.item.row)}
+                     on:addLookbook={(event) => addLookbook(event.detail.item.row)}
                      bind:this={refreshTable}/>
   </div>
   </div>
