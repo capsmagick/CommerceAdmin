@@ -2,41 +2,72 @@
     import {Input} from "$lib/components/ui/input";
     import { Label } from "$lib/components/ui/label";
     import {Textarea} from "$lib/components/ui/textarea";
-    import {Select} from "$lib/components/ui/select";
+    import * as Select from "$lib/components/ui/select";
     import {Button} from "$lib/components/ui/button";
     import API from "$lib/services/api";
     import {createEventDispatcher, onMount} from "svelte";
     import {toast} from "svelte-sonner";
     import * as Card from "$lib/components/ui/card";
+    import { productIdStore } from '../../../../../lib/stores/data';
 
     const dispatch = createEventDispatcher();
 
     export let editData;
-    export let editForm;
+    export let editForm:boolean;
+    let attributes: number[] = [];
+    let attribute: any[] = [];
+    let selectedAttributes: number[] = [];
+    let selectedAttributeNames: string[] = [];
 
-    let variantDetails = {
+    let variantDetails: any = {
+        id: "",
         name: "",
         stock: "",
         selling_price: "",
-        attributes: "",
+        attributes: [],
         product:""
     };
-    let id = "";
 
+    productIdStore.subscribe(value => {
+    variantDetails.product = value;
+    
+    });
     if (editForm) {
-        variantDetails = {
-            name: editData.name,
-            stock: editData.stock,
-            selling_price: editData.selling_price,
-            attributes: editData.attributes,
-            product: editData.product,
-        };
-        id = editData.id;
+        variantDetails = editData
+        
     }
 
+    async function updateSelectedAttributeNames() {
+        if(!attribute.length) await fetchAttribute()
+        selectedAttributeNames = attribute.filter(attr => selectedAttributes.includes(attr.id)).map(attr => attr.name);
+        console.log("att", selectedAttributeNames, attribute, selectedAttributes)
+    }
+
+    async function fetchAttribute() {
+        try {
+            const res = await API.get("/masterdata/attribute/");
+            attribute = res.data.results;
+        } catch (error) {
+            console.log("category:fetch-attribute-group:", error);
+        }
+    }
+
+    function handleAttributeChange(selectedAttribute: { value: number }) {
+        const index = selectedAttributes.indexOf(selectedAttribute.value);
+        if (index === -1) {
+            selectedAttributes = [...selectedAttributes, selectedAttribute.value];
+        } else {
+            selectedAttributes.splice(index, 1);
+        }
+        variantDetails.attributes = selectedAttributes;
+        console.log(variantDetails.attributes);
+        
+        updateSelectedAttributeNames();
+    }
 
     async function createVariant() {
         try {
+            console.log("variantDetails", variantDetails);
             const form = new FormData();
             form.append("stock", variantDetails.stock);
             form.append("name", variantDetails.name);
@@ -44,7 +75,7 @@
             form.append("attributes", variantDetails.attributes);
             form.append("product", variantDetails.product);
 
-            const url = editForm ? `/products/variant/${id}/update_record/` : "/products/variant/create_record/";
+            const url = editForm ? `/products/variant/${variantDetails.id}/update_record/` : "/products/variant/create_record/";
 
             if (editForm) {
                 await API.put(url, form);
@@ -65,11 +96,15 @@
         function cancelModel() {
     dispatch('close');
   }
-    function handleClickOutside(event) {
+    function handleClickOutside(event: any) {
     if (!event.target.closest('.card')) {
       cancelModel();
     }
   }
+
+onMount(async () => {
+    await fetchAttribute();
+});
   
 onMount(() => {
   const timeout = setTimeout(() => {
@@ -107,15 +142,33 @@ onMount(() => {
                                 <Textarea id="selling_price" bind:value={variantDetails.selling_price} placeholder="Selling Price" class="textarea"/>
                             </div>
 
-                            <div class="mb-3">
-                                <Label for="attributes">Attributes</Label>
-                                <Textarea id="attributes" bind:value={variantDetails.attributes} placeholder="Attributes" class="textarea"/>
+                                                        <div class="mt-2">
+                                <Select.Root>
+                                    <Select.Trigger class="input capitalize">
+                                        {selectedAttributeNames.length >0
+                                        ? selectedAttributeNames
+                                        : "Select an Attribute"}
+                                    </Select.Trigger>
+                                    <Select.Content>
+                                        <Select.Group>
+                                            {#each attribute as a}
+                                                <Select.Item
+                                                        value={a.id}
+                                                        label={a.name}
+                                                        class="capitalize card"
+                                                        on:click={() => handleAttributeChange({ value: a.id })}>
+                                                    {a.name}
+                                                </Select.Item>
+                                            {/each}
+                                        </Select.Group>
+                                    </Select.Content>
+                                </Select.Root>
                             </div>
 
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <Label for="product">Product</Label>
-                                <Textarea id="product" bind:value={variantDetails.product} placeholder="Product" class="textarea"/>
-                            </div>
+                                <Textarea disabled id="product" bind:value={variantDetails.product} placeholder="Product" class="textarea"/>
+                            </div> -->
 
                     </Card.Content>
                     <Card.Footer  class="justify-between space-x-2">

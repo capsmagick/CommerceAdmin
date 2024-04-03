@@ -17,11 +17,14 @@
   const dispatch = createEventDispatcher();
 
   export let editForm: boolean;
-  export let editData;
+  export let editData: any;
   let selectedItem: any;
   let selectedBrand: string;
   let tags: any = [];
   let selectedTagGroups: string;
+  let editBrand: boolean = false;
+  let editCategory: boolean = false;
+  let editTag: boolean = false;
 
     let productDetails: any = {
       id: '',
@@ -34,7 +37,7 @@
       condition: '',
       categories: [],
       brand: '',
-      is_active: false,
+      is_disabled: false,
       hsn_code: '',
       rating: 0,
       noOfReviews: 0,
@@ -44,7 +47,7 @@
     };
 
     if (editForm) {
-      productDetails = editData
+      productDetails = editData      
   }
 
   type Brand = {
@@ -126,18 +129,21 @@
   }
 
   function handleTagChange(selectedTags: { value: number }) {
+    editTag = true;
     selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
-    productDetails.tags.push(selectedTagGroups.id);
+    productDetails.tags = selectedTagGroups.id;
   }
 
   function toggleDisabled() {
-    productDetails.is_active = !productDetails.is_active;
+    productDetails.is_disabled = !productDetails.is_disabled;
   }
 
-  async function createProduct() {
+  async function createProduct() {    
     try {
-      const form = new FormData();
-
+      const form = new FormData();      
+       if(!editBrand){
+          productDetails.brand = productDetails.brand.id;              
+        } 
        form.append("name", productDetails.name);
        form.append("short_description", productDetails.short_description);
        form.append("description", productDetails.description);
@@ -147,11 +153,13 @@
        form.append("condition", productDetails.condition);
        form.append("categories", productDetails.categories);
        form.append("brand", productDetails.brand);
-       form.append("is_active", productDetails.is_active);
+       form.append("is_disabled", productDetails.is_disabled);
        form.append("hsn_code", productDetails.hsn_code);
        form.append("rating", productDetails.rating);
        form.append("noOfReviews", productDetails.noOfReviews);
-       form.append("tags", productDetails.tags);
+       if(editTag){
+        form.append("tags", productDetails.tags);
+       } 
       //  form.append("dimension", productDetails.dimension);
        form.append("image", productDetails.image);
 
@@ -176,6 +184,9 @@
   }
 
   function cancelModel() {
+    editBrand = false;
+    editCategory = false;
+    editCategory = false
     dispatch("cancel");
   }
   function handleClickOutside(event) {
@@ -217,6 +228,7 @@
     }
   }
   function handleBrandChange(selectedBrandId: string) {
+    editBrand = true;
     const brandsArray = $brands;
     productDetails.brand = selectedBrandId;
     const foundBrand  = brandsArray.find((g: any) => g.id == selectedBrandId);
@@ -314,10 +326,10 @@
                         <div class="grid gap-2">
                           <Label for="area">Status</Label>
                           <Toggle aria-label="Toggle italic"
-                          class="{!productDetails.is_active ? 'bg-lime-600' : 'bg-gray-300'}"
-                          bind:value={productDetails.is_active}
+                          class="{!productDetails.is_disabled ? 'bg-lime-600' : 'bg-gray-300'}"
+                          bind:value={productDetails.is_disabled}
                           on:click={toggleDisabled}>
-                          {productDetails.is_active? "Inactive":"Active"}
+                          {productDetails.is_disabled? "Inactive":"Active"}
                           </Toggle>
                         </div>
                         {/if}

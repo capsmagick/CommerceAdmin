@@ -22,6 +22,13 @@
     function handleViewVariant() {
         dispatch('viewVariant')
     }
+    function handleLookbook() {
+        dispatch('addLookbook')
+    }
+    function handleStatus() {
+        dispatch('status')
+    }
+    
   </script>
    
   <DropdownMenu.Root>
@@ -43,6 +50,8 @@
           </DropdownMenu.Item>
           <DropdownMenu.Item on:click={handleAddVariant}>Add Variant</DropdownMenu.Item>
           <DropdownMenu.Item on:click={handleViewVariant}>View Variant</DropdownMenu.Item>
-          <DropdownMenu.Item>Change status</DropdownMenu.Item>
+          <DropdownMenu.Item on:click={handleLookbook}>Add Lookbook</DropdownMenu.Item>
+          <!-- <DropdownMenu.Item class="{status? "bg-green-600" : "bg-red-600"}">{status? "Active" : "Inactive"}</DropdownMenu.Item> -->
+          <DropdownMenu.Item on:click={handleStatus}>Change Status</DropdownMenu.Item>
     </DropdownMenu.Content>
   </DropdownMenu.Root>

@@ -33,12 +33,12 @@
       <DropdownMenu.Item
         class="text-gray-700"
         on:click={handleEdit}>
-          <i class="fa-solid fa-pencil"></i>
+          <i class="fa-solid fa-pencil mr-2"></i>Edit
       </DropdownMenu.Item>
       <DropdownMenu.Item
         class="text-red-500"
         on:click={handleDelete}>
-          <i class="fa-solid fa-trash"></i>
+          <i class="fa-solid fa-trash mr-2"></i>Delete
       </DropdownMenu.Item>
     </DropdownMenu.Content>
   </DropdownMenu.Root>

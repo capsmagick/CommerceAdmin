@@ -12,6 +12,7 @@
 
   export let editData;
   export let editForm: boolean;
+  let updateImage: boolean = false
 
   let categoryDetails: any = {
     name: "",
@@ -25,6 +26,16 @@
   };
 
   let id = "";
+  let tags: any = [];
+  let selectedTagGroups: string;
+  let attributeGroups: any = [];
+  let selectedAttributeGroup: string;
+  let parent_category: string = "";
+  let second_parent_category: string;
+  let categories: any[] = [];
+  let imageUpload: any;
+  let tagNames: string[] = [];
+  let tagChange: boolean = false
 
   if (editForm) {
     categoryDetails = {
@@ -38,16 +49,29 @@
       tags: editData.tags,
     };
     id = editData.id;
+    updateSelectionName();
   }
 
-  let tags: any = [];
-  let selectedTagGroups: string;
-  let attributeGroups: any = [];
-  let selectedAttributeGroup: string;
-  let parent_category: string;
-  let second_parent_category: string;
-  let categories: any[] = [];
-  let imageUpload: any;
+  async function updateSelectionName(){
+    if (categoryDetails.parent_category){
+      await fetchCategories();
+      parent_category = categories.find(cat => cat.id === categoryDetails.parent_category)?.name;
+    }
+    if (categoryDetails.second_parent_category) {
+      await fetchCategories();
+      second_parent_category = categories.find(cat => cat.id === categoryDetails.second_parent_category)?.name;
+    }
+
+    if (categoryDetails.attribute_group) {
+      await fetchAttributeGroups();
+      selectedAttributeGroup = attributeGroups.find(group => group.id === categoryDetails.attribute_group)?.name;
+    }
+
+    if (categoryDetails.tags && categoryDetails.tags.length > 0) {
+      await fetchTags(); 
+      tagNames = categoryDetails.tags.map(tag => tag.name);
+    }
+  }
 
   async function fetchCategories() {
     try {
@@ -80,7 +104,7 @@
   async function createCategory() {
     try {
       const formData = new FormData();
-
+      
       formData.append("name", categoryDetails.name);
       formData.append("description", categoryDetails.description);
       formData.append("handle", categoryDetails.handle);
@@ -90,13 +114,13 @@
             formData.append("second_parent_category", categoryDetails.second_parent_category);
       if (categoryDetails.attribute_group.length > 0)
         formData.append("attribute_group", categoryDetails.attribute_group);
-      if (categoryDetails.tags.length > 0)
+      if (tagChange) {
         formData.append("tags", categoryDetails.tags);
+        }
       formData.append("attribute_group", categoryDetails.attribute_group);
-      if (categoryDetails.tags.length)
-        formData.append("tags", categoryDetails.tags);
+      if (updateImage){
       formData.append("image", categoryDetails.image);
-
+      }
       const url = editForm
         ? `/masterdata/category/${id}/update_record/`
         : "/masterdata/category/create_record/";
@@ -122,10 +146,13 @@
     selectedAttributeGroup = attributeGroups.find(
       (g: any) => g.id == selectedGroup.value
     ).name;
+    updateSelectionName();
   }
   function handleTagChange(selectedTags: { value: number }) {
+    tagChange = true
     selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
-    categoryDetails.tags.push(selectedTagGroups.id);
+    categoryDetails.tags = selectedTagGroups.id;
+    updateSelectionName();
   }
 
   function handleParentCat(selectedCat: { value: number }) {
@@ -133,6 +160,8 @@
     parent_category = categories.find(
       (g: any) => g.id == selectedCat.value
     ).name;
+    console.log("Parent category name:", parent_category);
+    updateSelectionName();
   }
 
   function handleSecondaryParentCat(selectedCat: { value: number }) {
@@ -140,6 +169,7 @@
     second_parent_category = categories.find(
       (g: any) => g.id == selectedCat.value
     ).name;
+    updateSelectionName();
   }
 
   //   Logo upload
@@ -148,9 +178,8 @@
   }
 
   async function uploadAvatar() {
+    updateImage = true;
     categoryDetails.image = imageUpload.files[0];
-    const img: any = document.getElementById("selected-logo");
-    img.src = window.URL.createObjectURL(categoryDetails.image);
   }
 
   // Mount
@@ -161,6 +190,7 @@
   });
 
   function cancelModel() {
+    tagChange = false
     dispatch("cancel");
   }
   function handleClickOutside(event) {
@@ -280,8 +310,8 @@
             <div class="items-center gap-2 mb-3">
               <Select.Root>
                 <Select.Trigger class="input capitalize">
-                  {selectedTagGroups
-                    ? selectedTagGroups.name
+                  {tagNames
+                    ? tagNames
                     : "Select a Tag"}</Select.Trigger>
                 <Select.Content>
                   <Select.Group>
@@ -309,6 +339,7 @@
                 id="selected-logo"
                 alt=""
                 class={categoryDetails.image ? "showImg" : "hideImg"}
+                src={updateImage ? window.URL.createObjectURL(categoryDetails.image) : categoryDetails.image}
               />
               <input
                 type="file"

@@ -29,10 +29,12 @@
     const dispatch = createEventDispatcher();
     
 
-    let productId;
+    let productId: any;
 
 productIdStore.subscribe(value => {
     productId = value;
+    console.log(productId);
+    
 });
 
   type Variant = {
@@ -40,6 +42,8 @@ productIdStore.subscribe(value => {
   name: string;
   product: string [];
   attributes: string [];
+  selling_price: string;
+  stock: number;
 };
 
     // Create a readable store for the data
@@ -60,8 +64,8 @@ productIdStore.subscribe(value => {
 
     async function getVariant() {
         try {
-        const res = await API.get("/products/variant/");
-        return res.data.results;
+        const res = await API.get(`/products/variant/?product=${productId}`);
+           return res.data.results;
         } catch (error) {
         console.error("fetch:brands:", error);
         return [];
@@ -107,8 +111,28 @@ productIdStore.subscribe(value => {
       table.column({
         header: "Name",
         accessor: "name",
-        cell: ({ value }) => new Date(value).toLocaleDateString(),
+        cell: ({ value }) => value,
         plugins: { sort: {}, filter: { exclude: true } }
+      }),
+      table.column({
+      header: "Product",
+      accessor: "product",
+      cell: ({ value }) => value.name,
+      }),
+      table.column({
+      header: "Attributes",
+      accessor: "attributes",
+      // cell: ({ value }) => value,
+      }),
+      table.column({
+      header: "Selling Price",
+      accessor: "selling_price",
+      cell: ({ value }) => value,
+      }),
+      table.column({
+      header: "Stock",
+      accessor: "stock",
+      cell: ({ value }) => value,
       }),
       table.column({
         header: "Actions",

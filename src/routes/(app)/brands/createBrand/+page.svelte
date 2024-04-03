@@ -12,7 +12,8 @@
     const dispatch = createEventDispatcher();
 
     export let editData;
-    export let editForm;
+    export let editForm: boolean;
+    let updateImage: boolean = false
 
     let brandDetails = {
         name: "",
@@ -38,18 +39,17 @@
 
     async function uploadAvatar() {
         if (imageUpload.files && imageUpload.files.length > 0) {
+            updateImage = true;
             brandDetails.logo = imageUpload.files[0];
-            const img: HTMLImageElement | null = document.getElementById("selected-logo") as HTMLImageElement;
-            if (img) {
-                img.src = window.URL.createObjectURL(brandDetails.logo);
-            }
         }
     }
 
     async function createBrand() {
         try {
             const form = new FormData();
-            form.append("logo", brandDetails.logo);
+            if(updateImage){
+                form.append("logo", brandDetails.logo);
+            }
             form.append("name", brandDetails.name);
             form.append("description", brandDetails.description);
 
@@ -73,6 +73,7 @@
 
       function cancelModel() {
     dispatch('cancel');
+    updateImage = false;
   }
     function handleClickOutside(event) {
     if (!event.target.closest('.card')) {
@@ -118,9 +119,9 @@ onMount(() => {
                                     <i class="fa-solid fa-image text-sm"></i>Upload Logo
                                 </Button>
             
-                                <img id="selected-logo" alt="" class:showImg={brandDetails.logo} class:hideImg={!brandDetails.logo} src=""/>
+                                <img id="selected-logo" alt="logo" class:showImg={brandDetails.logo} class:hideImg={!brandDetails.logo} src={updateImage ? window.URL.createObjectURL(brandDetails.logo) : brandDetails.logo} />
             
-                                <input type="file" id="file-input" bind:this={imageUpload} hidden accept="image/png, image/jpeg"
+                                <input type="file" id="file-input" bind:this={imageUpload} hidden accept="image/png, image/jpeg" 
                                        on:change={uploadAvatar}/>
                             </div>
                     </Card.Content>
