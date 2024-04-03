@@ -5,7 +5,11 @@ import API from "$lib/services/api";
 
 export const isAuthenticated = writable(false);
 
-import { browser } from '$app/environment'; // Import the browser variable
+import { browser } from '$app/environment'; 
+
+isAuthenticated.subscribe(async () => {
+    await checkAuthentication();
+});
 
 async function checkAuthentication() {
     try {

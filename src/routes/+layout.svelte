@@ -6,26 +6,12 @@
     import LoadingIndicator from '$lib/components/LoadingIndicator.svelte';
     import {Toaster} from "$lib/components/ui/sonner";
 
+    let unsubscribe: () => void; 
     onMount(() => {
 
    
         localStorage.setItem("lastVisitedRoute", window.location.pathname);
-        let unsubscribe: () => void; // Declare unsubscribe outside to ensure it's accessible for cleanup
-
-        // Immediately invoked function expression (IIFE) to handle async logic
-        // (async () => {
-        //   const isAuthenticatedValue = await isAuthenticated;
-        //   if (isAuthenticatedValue) {
-        //     const lastVisitedRoute = localStorage.getItem("lastVisitedRoute");
-        //     if (lastVisitedRoute) {
-        //       goto(lastVisitedRoute);
-        //     } else {
-        //       goto("/dashboard");
-        //     }
-        //   } else {
-        //     goto("/login");
-        //   }
-        // })();
+     
         (async () => {
             const authStatus = await isAuthenticated; // Assuming isAuthenticated is a Promise
             if (authStatus) {
@@ -46,6 +32,7 @@
             if (unsubscribe) unsubscribe(); // Ensure unsubscribe is called if it's defined
         };
     });
+    
 </script>
 <div>
 

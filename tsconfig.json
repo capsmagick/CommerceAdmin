@@ -5,6 +5,8 @@
     //     "paths": {
     //         "$lib/*": ["src/lib/*"]
     //     },
+    "target": "es2015",
+    "module": "esnext",
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
     "checkJs": true,
@@ -12,12 +14,16 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
+    "jsx": "preserve",
     "sourceMap": true,
     "strict": true,
+    "lib": ["es2015", "dom"],
     "moduleResolution": "bundler",
-    "types": ["topojson-client"]
+    "types": ["topojson-client"],
+   
   },
-  "include": ["src/**/*", "static/script.js"]
+  "include": ["src/**/*", "static/script.js"],
+  "exclude": ["node_modules", "dist"]
   // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
   //
   // If you want to overwrite includes/excludes, make sure to copy over the relevant includes/excludes
