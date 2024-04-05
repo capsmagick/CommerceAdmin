@@ -12,9 +12,15 @@
 
   const dispatch = createEventDispatcher();
 
+  interface AttributeDetail {
+    name: string;
+    values: string[];
+  }
+
   export let editData;
   export let editForm: boolean;
   let attributes: number[] = [];
+  let attributegroup: any;
   let attribute: any[] = [];
   let selectedAttributes: number[] = [];
   let selectedAttributeNames: string[] = [];
@@ -26,14 +32,58 @@
     selling_price: "",
     attributes: [],
     product: "",
+    attribute_group: "",
   };
 
   productIdStore.subscribe((value) => {
     variantDetails.product = value;
+    console.log("product", variantDetails.product);
   });
+
   if (editForm) {
     variantDetails = editData;
   }
+
+  console.log("editdata here:", editData);
+  const categoriesArray = editData.categories;
+  const attribute_group = categoriesArray[0].attribute_group;
+  console.log("Attribute Group Id from cat:", attribute_group);
+
+  async function handleAttributeGroupData() {
+    try {
+      if (attribute_group) {
+        await fetchAttributegroup();
+        if (attributegroup) {
+          const matchedGroup = attributegroup.find((group: any) => group.id === attribute_group);
+          if (matchedGroup) {
+            const { name, attributes } = matchedGroup;
+            console.log("Attribute Group Name:", name);
+            console.log("Attributes:", attributes);
+            const attributeDetails: AttributeDetail[] = [];
+            attributes.forEach((attr: any) => {
+              console.log("Attribute Name:", attr.name);
+              if (attr.value && Array.isArray(attr.value) && attr.value.length > 0) {
+                const values = attr.value[0].split(",");
+                console.log("Attribute Values:", values);
+                attributeDetails.push({
+                  name: attr.name,
+                  values: values
+                });
+              } else {
+                console.log("Attribute Values:", "No values found or not an array");
+              }
+            });
+            console.log("Attribute Details:", attributeDetails);
+          }
+        }
+      }
+    } catch (error) {
+      console.log("handleAttributeGroupData:", error);
+    }
+  }
+
+
+
 
   async function updateSelectedAttributeNames() {
     if (!attribute.length) await fetchAttribute();
@@ -47,10 +97,25 @@
     try {
       const res = await API.get("/masterdata/attribute/");
       attribute = res.data.results;
+      console.log("attribute", attribute);
     } catch (error) {
       console.log("category:fetch-attribute-group:", error);
     }
   }
+
+  async function fetchAttributegroup() {
+    try {
+      const res = await API.get("/masterdata/attributegroup/");
+      attributegroup = res.data.results;
+      console.log("attributegroup", attributegroup);
+    } catch (error) {
+      console.log("category:fetch-attribute-group:", error);
+    }
+  }
+  onMount(async () => {
+    await fetchAttributegroup(); 
+    await handleAttributeGroupData();
+  });
 
   function handleAttributeChange(selectedAttribute: { value: number }) {
     const index = selectedAttributes.indexOf(selectedAttribute.value);
@@ -60,21 +125,22 @@
       selectedAttributes.splice(index, 1);
     }
     variantDetails.attributes = selectedAttributes;
-    console.log(variantDetails.attributes);
+    console.log("attribute", variantDetails.attributes);
 
     updateSelectedAttributeNames();
   }
 
   async function createVariant() {
     try {
-      console.log("variantDetails", variantDetails);
-      const form = new FormData();
-      form.append("stock", variantDetails.stock);
-      form.append("name", variantDetails.name);
-      form.append("selling_price", variantDetails.selling_price);
-      form.append("attributes", variantDetails.attributes);
-      form.append("product", variantDetails.product);
-
+        const form = new FormData();
+        form.append("product", variantDetails.product);
+        form.append("stock", variantDetails.stock);
+        form.append("selling_price", variantDetails.selling_price);
+        form.append("attributes", variantDetails.attributes);
+        form.append("categoryId", variantDetails.category);
+        
+        form.append("name", variantDetails.name);
+        console.log("variantDetails", variantDetails);
       const url = editForm
         ? `/products/variant/${variantDetails.id}/update_record/`
         : "/products/variant/create_record/";
@@ -122,31 +188,49 @@
 
 <div
   class="fixed bg-background inset-0 flex items-center justify-center"
-  style="background-color: rgba(0, 0, 0, 0.5);"
->
+  style="background-color: rgba(0, 0, 0, 0.5);">
   <div class="flex items-center justify-center">
     <div class="glow-border">
       <div
         class="card glow-border-content bg-background text-foreground overflow-y-auto"
-        style="max-height:90vh;"
-      >
+        style="max-height:90vh;">
         <Card.Root>
           <Card.Header class="font-bold mb-5">
-            <Card.Title
-              >{editForm ? "Update Variant" : "New Variant"}</Card.Title
-            >
+            <Card.Title>
+                {editForm ? "Update Variant" : "New Variant"}</Card.Title>
           </Card.Header>
           <Card.Content>
-            <div class="mb-3">
-              <Label for="name">Name</Label>
-              <Input
-                id="name"
-                bind:value={variantDetails.name}
-                placeholder="Name"
-                class="input"
-              />
+            <div class="flex justify-center">
+                <div class="mb-3">
+                    <Input
+                      id="attribute"
+                      bind:value={variantDetails.stock}
+                      placeholder="Attributes"
+                      class="textarea"/>
+                </div>
+                <div class="mb-3 pl-4">
+                  <Select.Root>
+                    <Select.Trigger class="input capitalize">
+                      {selectedAttributeNames.length > 0
+                        ? selectedAttributeNames
+                        : "Select an Attribute"}
+                    </Select.Trigger>
+                    <Select.Content>
+                      <Select.Group>
+                        {#each attribute as a}
+                          <Select.Item
+                            value={a.id}
+                            label={a.name}
+                            class="capitalize card"
+                            on:click={() => handleAttributeChange({ value: a.id })}>
+                            {a.name}
+                          </Select.Item>
+                        {/each}
+                      </Select.Group>
+                    </Select.Content>
+                  </Select.Root>
+                </div>
             </div>
-
             <div class="mb-3">
               <Label for="stock">Stock</Label>
               <Input
@@ -156,7 +240,6 @@
                 placeholder="Stock"
                 class="textarea"/>
             </div>
-
             <div class="mb-3">
               <Label for="selling_price">Selling Price</Label>
               <Input
@@ -166,41 +249,12 @@
                 placeholder="Selling Price"
                 class="textarea"/>
             </div>
-
-            <div class="mt-2">
-              <Select.Root>
-                <Select.Trigger class="input capitalize">
-                  {selectedAttributeNames.length > 0
-                    ? selectedAttributeNames
-                    : "Select an Attribute"}
-                </Select.Trigger>
-                <Select.Content>
-                  <Select.Group>
-                    {#each attribute as a}
-                      <Select.Item
-                        value={a.id}
-                        label={a.name}
-                        class="capitalize card"
-                        on:click={() => handleAttributeChange({ value: a.id })}>
-                        {a.name}
-                      </Select.Item>
-                    {/each}
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
-            </div>
-
-            <!-- <div class="mb-3">
-                                <Label for="product">Product</Label>
-                                <Textarea disabled id="product" bind:value={variantDetails.product} placeholder="Product" class="textarea"/>
-                            </div> -->
           </Card.Content>
           <Card.Footer class="justify-between space-x-2">
             <Button
               type="button"
               variant="ghost"
-              on:click={() => dispatch("close")}>Cancel</Button
-            >
+              on:click={() => dispatch("close")}>Cancel</Button>
             <Button type="submit" on:click={createVariant}>Save</Button>
           </Card.Footer>
         </Card.Root>
