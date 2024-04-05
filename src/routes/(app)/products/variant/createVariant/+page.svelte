@@ -24,6 +24,7 @@
   let attribute: any[] = [];
   let selectedAttributes: number[] = [];
   let selectedAttributeNames: string[] = [];
+  let attributeDetails: AttributeDetail[] = [];
 
   let variantDetails: any = {
     id: "",
@@ -37,17 +38,17 @@
 
   productIdStore.subscribe((value) => {
     variantDetails.product = value;
-    console.log("product", variantDetails.product);
+    // console.log("product", variantDetails.product);
   });
 
   if (editForm) {
     variantDetails = editData;
   }
 
-  console.log("editdata here:", editData);
+  // console.log("editdata here:", editData);
   const categoriesArray = editData.categories;
   const attribute_group = categoriesArray[0].attribute_group;
-  console.log("Attribute Group Id from cat:", attribute_group);
+  // console.log("Attribute Group Id from cat:", attribute_group);
 
   async function handleAttributeGroupData() {
     try {
@@ -58,8 +59,8 @@
           if (matchedGroup) {
             const { name, attributes } = matchedGroup;
             console.log("Attribute Group Name:", name);
-            console.log("Attributes:", attributes);
-            const attributeDetails: AttributeDetail[] = [];
+            // console.log("Attributes:", attributes);
+            attributeDetails = [];
             attributes.forEach((attr: any) => {
               console.log("Attribute Name:", attr.name);
               if (attr.value && Array.isArray(attr.value) && attr.value.length > 0) {
@@ -82,22 +83,19 @@
     }
   }
 
-
-
-
   async function updateSelectedAttributeNames() {
     if (!attribute.length) await fetchAttribute();
     selectedAttributeNames = attribute
       .filter((attr) => selectedAttributes.includes(attr.id))
       .map((attr) => attr.name);
-    console.log("att", selectedAttributeNames, attribute, selectedAttributes);
+    // console.log("att", selectedAttributeNames, attribute, selectedAttributes);
   }
 
   async function fetchAttribute() {
     try {
       const res = await API.get("/masterdata/attribute/");
       attribute = res.data.results;
-      console.log("attribute", attribute);
+      // console.log("attribute", attribute);
     } catch (error) {
       console.log("category:fetch-attribute-group:", error);
     }
@@ -107,7 +105,7 @@
     try {
       const res = await API.get("/masterdata/attributegroup/");
       attributegroup = res.data.results;
-      console.log("attributegroup", attributegroup);
+      // console.log("attributegroup", attributegroup);
     } catch (error) {
       console.log("category:fetch-attribute-group:", error);
     }
@@ -200,13 +198,10 @@
                 {editForm ? "Update Variant" : "New Variant"}</Card.Title>
           </Card.Header>
           <Card.Content>
+            {#each attributeDetails as detail}
             <div class="flex justify-center">
                 <div class="mb-3">
-                    <Input
-                      id="attribute"
-                      bind:value={variantDetails.stock}
-                      placeholder="Attributes"
-                      class="textarea"/>
+                  <Label>{detail.name}</Label>
                 </div>
                 <div class="mb-3 pl-4">
                   <Select.Root>
@@ -217,13 +212,13 @@
                     </Select.Trigger>
                     <Select.Content>
                       <Select.Group>
-                        {#each attribute as a}
+                        {#each detail.values as value}
                           <Select.Item
-                            value={a.id}
-                            label={a.name}
+                            value={value}
+                            label={value}
                             class="capitalize card"
                             on:click={() => handleAttributeChange({ value: a.id })}>
-                            {a.name}
+                            {value}
                           </Select.Item>
                         {/each}
                       </Select.Group>
@@ -231,6 +226,7 @@
                   </Select.Root>
                 </div>
             </div>
+            {/each}
             <div class="mb-3">
               <Label for="stock">Stock</Label>
               <Input
