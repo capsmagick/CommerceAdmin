@@ -3,6 +3,7 @@
   import LookbookTable from "./lookbookTable.svelte";
   import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
   import API from "$lib/services/api";
+  import { goto } from "$app/navigation"
   import {toast} from "svelte-sonner";
 
 
@@ -38,6 +39,10 @@
         refreshTable.refreshTable();
     }
 
+      function goBack() {
+    goto("/lookbook");
+  }
+
 </script>
 <div>
     {#if showDeleteModal}
@@ -55,7 +60,13 @@
   <LookbookTable    on:edit={(event) => onEditLookbook(event.detail.item.row)}
                     on:delete={(event) => onDeleteLookbook(event.detail.item.row)}
                     bind:this={refreshTable}/>
+
+<div class="flex justify-end">
+    <Button class="text-end"
+    on:click={goBack}>Go Back</Button>
 </div>
+</div>
+
 
 
 
