@@ -40,14 +40,10 @@
     updated_by: string;
   };
 
-  let next: any;
-  let nextPage = false;
-  let previous: any;
-  let previousPage = false;
-
   const lookbook = writable<Lookbook[]>([], (set) => {
     getLookbookData().then((data) => {
       set(data);
+      console.log(data);
     });
   });
 
@@ -56,34 +52,19 @@
   async function getLookbookData() {
     try {
       let lookbookId = await lookbookDetailsStore.set;
-      let res;
-      if (nextPage) {
-        res = await API.get(next);
-      } else if (previousPage) {
-        res = await API.get(previous);
-      } else {
-        res = await API.get(`/products/look-book/${lookbookId}/`);
+      let res = await API.get(`/products/look-book/${lookbookId}/`);
+      let variants = res.data.variants;
+      let varDetails: any[] = [];
+
+      for(let i = 0; i <variants.length; i++){
+        let response = await API.get(`/products/variant/${variants[i]}`);
+        varDetails.push(response.data)
       }
-      next = res.data.next;
-      previous = res.data.previous;
-      return res.data.results.variants;
+      return varDetails;
+      
     } catch (error) {
       console.error("fetch:brands:", error);
     }
-  }
-
-  async function getNextPage() {
-    nextPage = true;
-    previousPage = false;
-    const newData = await getLookbookData();
-    lookbook.set(newData);
-  }
-
-  async function getPreviousPage() {
-    nextPage = false;
-    previousPage = true;
-    const newData = await getLookbookData();
-    lookbook.set(newData);
   }
 
   const table = createTable(lookbook, {
@@ -293,9 +274,10 @@
     <Button
       variant="outline"
       size="sm"
-      on:click={getPreviousPage}
-      disabled={!previous}>Previous</Button>
-    <Button variant="outline" size="sm" disabled={!next} on:click={getNextPage}>
+      on:click={() => ($pageIndex = $pageIndex - 1)}
+        disabled={!$hasPreviousPage}>Previous</Button>
+    <Button variant="outline" size="sm" disabled={!$hasNextPage}
+        on:click={() => ($pageIndex = $pageIndex + 1)}>
       Next</Button>
   </div>
 </div>

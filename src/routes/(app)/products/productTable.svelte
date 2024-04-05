@@ -142,10 +142,10 @@
       header: "Images",
       accessor: "images",
       cell: ({ value }) => {
+        console.log(value)
         return `<img src="${value}" alt="Profile Photo" class="h-10 w-10 rounded-full">`;
       },
     }),
-
     table.column({
       header: "Product Name",
       accessor: "name",
