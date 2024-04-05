@@ -14,7 +14,7 @@
       addSelectedRows,
       addHiddenColumns
     } from "svelte-headless-table/plugins";
-    import { readable } from "svelte/store";
+    import { writable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
     import Actions from "./orderTableActions.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
@@ -22,72 +22,68 @@
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
     import DataTableCheckbox from "./orederTableCheckbox.svelte";
+    import API from "$lib/services/api";
+
    
-    type Payment = {
-      orderId: string;
-      customerName: string;
-      orderDate: string;
-      orderStatus: "Pending" | "Processing" | "Success" | "Failed";
-      amount: number;
+    type Order = {
+      id: string;
+      order_id: string;
+      user: string;
+      created_at: string;
+      status: "Pending" | "Processing" | "Success" | "Failed";
+      total_amount: string;
       paymentStatus: "Pending" | "Success" | "Failed";
       paymentMethod: "Cash" | "Credit Card" | "Debit Card" | "Paypal" | "Other";
       email: string;
     };
-   
-    const data: Payment[] = [
-      {
-        orderId: "m5gr84i9",
-        customerName: "Manoj Kumar",
-        orderDate: "2021-08-10",
-        amount: 316,
-        orderStatus: "Success",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "ken99@yahoo.com"
-      },
-      {
-        orderId: "3u1reuv4",
-        customerName: "Kudumon Potty",
-        orderDate: "2021-08-10",
-        amount: 242,
-        orderStatus: "Success",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "Abe45@gmail.com"
-      },
-      {
-        orderId: "derv1ws0",
-        customerName: "Suresh Gopi",
-        orderDate: "2021-08-10",
-        amount: 837,
-        orderStatus: "Processing",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "Monserrat44@gmail.com"
-      },
-      {
-        orderId: "5kma53ae",
-        customerName: "Vimala Rajedran",
-        orderDate: "2021-08-10",
-        amount: 874,
-        orderStatus: "Success",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "Silas22@gmail.com"
-      },
-      {
-        orderId: "bhqecj4p",
-        customerName: "Kunjilakshmi Ammal",
-        orderDate: "2021-08-10",
-        amount: 721,
-        orderStatus: "Failed",
-        paymentStatus: "Pending",
-        paymentMethod: "Cash",
-        email: "carmella@hotmail.com"
+
+    let next: any;
+    let nextPage = false;
+    let previous: any;
+    let previousPage = false;
+
+    const data = writable<Order[]>([], (set) => {
+    getCategory().then((data) => {
+      set(data);
+      console.log(data);
+      
+    });
+    });
+
+      async function getCategory() {
+    try {
+      let res;
+      if (nextPage) {
+        res = await API.get(next);
+      } else if (previousPage) {
+        res = await API.get(previous);
+      } else {
+        res = await API.get("/orders/order/");
       }
-    ];
+      next = res.data.next;
+      previous = res.data.previous;
+      return res.data.results;
+    } catch (error) {
+      console.error("fetch:category:", error);
+      return [];
+    }
+  }
+
+  async function getNextPage() {
+    nextPage = true;
+    previousPage = false;
+    const newData = await getCategory();
+    data.set(newData);
+  }
+
+  async function getPreviousPage() {
+    nextPage = false;
+    previousPage = true;
+    const newData = await getCategory();
+    data.set(newData);
+  }
    
-    const table = createTable(readable(data), {
+    const table = createTable(data, {
       sort: addSortBy({ disableMultiSort: true }),
       page: addPagination(),
       filter: addTableFilter({
@@ -105,7 +101,7 @@
             checked: allPageRowsSelected
           });
         },
-        accessor: "orderId",
+        accessor: "id",
         cell: ({ row }, { pluginStates }) => {
           const { getRowState } = pluginStates.select;
           const { isSelected } = getRowState(row);
@@ -125,12 +121,12 @@
       }),
       table.column({
         header: "Order ID",
-        accessor: ({ orderId }) => orderId,
+        accessor: ({ order_id }) => order_id,
         plugins: { sort: { disable: true }, filter: { exclude: true } }
       }),
       table.column({
         header: "Customer Name",
-        accessor: "customerName",
+        accessor: "user",
         cell: ({ value }) => value.toLowerCase(),
         plugins: {
           filter: {
@@ -142,12 +138,12 @@
       }),
       table.column({
         header: "Order Date",
-        accessor: "orderDate",
+        accessor: "created_at",
         plugins: { sort: { disable: true }, filter: { exclude: true } }
       }),
       table.column({
         header: "Order Status",
-        accessor: "orderStatus",
+        accessor: "status",
         plugins: { sort: { disable: true }, filter: { exclude: true } }
       }),
       table.column({
@@ -181,7 +177,7 @@
       }),
       table.column({
         header: "",
-        accessor: ({ orderId }) => orderId,
+        accessor: ({ id }) => id,
         cell: (item) => {
           return createRender(Actions, { id: item.value });
         },
@@ -218,7 +214,7 @@
    
     const { selectedDataIds } = pluginStates.select;
    
-    const hideableCols = ["orderStatus", "orderDate", "customerName", "amount", "paymentStatus", "paymentMethod"];
+    const hideableCols = ["status", "created_at", "user", "amount", "paymentStatus", "paymentMethod"];
   </script>
    
   <div class="w-full p-4 bg-background text-foreground">
@@ -267,7 +263,7 @@
                         <div class="text-right">
                           <Render of={cell.render()} />
                         </div>
-                      {:else if cell.id === "customerName"}
+                      {:else if cell.id === "user"}
                         <Button variant="ghost" on:click={props.sort.toggle}>
                           <Render of={cell.render()} />
                           <CaretSort
@@ -321,14 +317,13 @@
       <Button
         variant="outline"
         size="sm"
-        on:click={() => ($pageIndex = $pageIndex - 1)}
-        disabled={!$hasPreviousPage}>Previous</Button
+        on:click={getPreviousPage}
+        disabled={!previous}>Previous</Button
       >
       <Button
         variant="outline"
         size="sm"
-        disabled={!$hasNextPage}
-        on:click={() => ($pageIndex = $pageIndex + 1)}>Next</Button
+        disabled={!next} on:click={getNextPage}>Next</Button
       >
     </div>
   </div>
