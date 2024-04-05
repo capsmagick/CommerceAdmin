@@ -43,7 +43,7 @@
       noOfReviews: 0,
       tags: [],
       dimension: '',
-      image: '',
+      images: '',
     };
 
     if (editForm) {
@@ -161,8 +161,8 @@
         form.append("tags", productDetails.tags);
        } 
       //  form.append("dimension", productDetails.dimension);
-       form.append("image", productDetails.image);
-
+       form.append("images", productDetails.images);
+       
 
       const url = editForm
         ? `/products/product/${productDetails.id}/update_record/`
@@ -218,7 +218,7 @@
 
   async function uploadAvatar() {
     if (imageUpload.files && imageUpload.files.length > 0) {
-      productDetails.image = imageUpload.files[0];
+      productDetails.images = imageUpload.files[0];
       const img: HTMLImageElement | null = document.getElementById(
         "selected-logo"
       ) as HTMLImageElement;

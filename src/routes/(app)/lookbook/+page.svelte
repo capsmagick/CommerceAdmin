@@ -5,12 +5,14 @@
   import CreateLookbook from "./createLookbook/+page.svelte";
   import API from "$lib/services/api";
   import {toast} from "svelte-sonner";
+  import { goto } from '$app/navigation';
+  import { lookbookDetailsStore } from "$lib/stores/data";
 
 
     let showDeleteModal = false;
     let deletingLookbook: any;
-    let refreshTable;
-    let editData;
+    let refreshTable: any;
+    let editData: any;
     let showForm: boolean = false;
     let editForm: boolean = false;
 
@@ -27,13 +29,18 @@
     }
 
         // Edit Attribute
-    async function onEditLookbook(eventData) {
+    async function onEditLookbook(eventData: any) {
         editData = eventData.original;
         showForm = true;
         editForm = true;
     }
 
-    async function onDeleteLookbook(eventData) {
+        async function onViewLookbook(eventData: any) {
+        lookbookDetailsStore.set = eventData.original.id;
+        goto('lookbook/lookbookDetails')
+    }
+
+    async function onDeleteLookbook(eventData: any) {
         deletingLookbook = eventData.original;
         showDeleteModal = true;
     }
@@ -71,7 +78,7 @@
 </div>
 <div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
   <div class="flex items-center ">
-      <h4 class="text-3xl font-bold tracking-tight  text-gray-800 dark:text-gray-200 flex-1">Lookboook</h4>
+      <h4 class="text-3xl font-bold tracking-tight  text-gray-800 dark:text-gray-200 flex-1">Lookbook</h4>
       <div class="glow-border mr-4">
         <Button variant="outline" class="glow-border-content">Export</Button>
       </div>
@@ -82,6 +89,7 @@
         </div> -->
   </div>
   <LookbookTable on:newLookBook={() => toggleForm()}
+                on:view={(event) => onViewLookbook(event.detail.item.row)}
                 on:edit={(event) => onEditLookbook(event.detail.item.row)}
                 on:delete={(event) => onDeleteLookbook(event.detail.item.row)}
                 bind:this={refreshTable}/>

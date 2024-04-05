@@ -38,7 +38,7 @@
     categories: string[];
     hsn_code: string;
     tags: string[];
-    images: string;
+    images:  string[];
     rating: number;
     no_of_reviews: number;
     is_disabled: boolean;
