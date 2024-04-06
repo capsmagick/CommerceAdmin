@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
-  import { Textarea } from "$lib/components/ui/textarea";
   import * as Select from "$lib/components/ui/select";
   import { Button } from "$lib/components/ui/button";
   import API from "$lib/services/api";
@@ -20,11 +19,9 @@
 
   export let editData;
   export let editForm: boolean;
-  let attributes: number[] = [];
   let attributegroup: any;
   let attribute: any[] = [];
   let selectedAttributes: string[] = [];
-  let selectedAttributeNames: string[] = [];
   let attributeDetails: AttributeDetail[] = [];
   let selectedAttributeValues = new Map();
 
@@ -33,49 +30,55 @@
     attributes: [],
     stock: "",
     selling_price: "",
-    images: []
+    images: [],
   };
 
   productIdStore.subscribe((value) => {
     variantDetails.product = value;
-    // console.log("product", variantDetails.product);
   });
 
   if (editForm) {
     variantDetails = editData;
   }
 
-  console.log("editdata here:", editData);
+  // console.log("editdata here:", editData);
   const categoriesArray = editData.categories;
   const attribute_group = categoriesArray[0].attribute_group;
-  // console.log("Attribute Group Id from cat:", attribute_group);
 
   async function handleAttributeGroupData() {
     try {
       if (attribute_group) {
         await fetchAttributegroup();
         if (attributegroup) {
-          const matchedGroup = attributegroup.find((group: any) => group.id === attribute_group);
+          const matchedGroup = attributegroup.find(
+            (group: any) => group.id === attribute_group
+          );
           if (matchedGroup) {
             const { name, attributes } = matchedGroup;
-            console.log("Attribute Group Name:", name);
-            // console.log("Attributes:", attributes);
+            // console.log("Attribute Group Name:", name);
             attributeDetails = [];
             attributes.forEach((attr: any) => {
-              console.log("Attribute Name:", attr.name);
-              if (attr.value && Array.isArray(attr.value) && attr.value.length > 0) {
+              // console.log("Attribute Name:", attr.name);
+              if (
+                attr.value &&
+                Array.isArray(attr.value) &&
+                attr.value.length > 0
+              ) {
                 const values = attr.value[0].split(",");
-                console.log("Attribute Values:", values);
+                // console.log("Attribute Values:", values);
                 attributeDetails.push({
                   attributes: attr.id,
                   name: attr.name,
-                  values: values
+                  values: values,
                 });
               } else {
-                console.log("Attribute Values:", "No values found or not an array");
+                console.log(
+                  "Attribute Values:",
+                  "No values found or not an array"
+                );
               }
             });
-            console.log("Attribute Details:", attributeDetails);
+            // console.log("Attribute Details:", attributeDetails);
           }
         }
       }
@@ -84,49 +87,14 @@
     }
   }
 
-  // async function updateSelectedAttributeNames() {
-  //   if (!attribute.length) await fetchAttribute();
-  //   selectedAttributeNames = attribute
-  //     .filter((attr) => selectedAttributes.includes(attr.id))
-  //     .map((attr) => attr.name);
-  //   // console.log("att", selectedAttributeNames, attribute, selectedAttributes);
-  // }
-  // async function fetchAttribute() {
-  //   try {
-  //     const res = await API.get("/masterdata/attribute/");
-  //     attribute = res.data.results;
-  //     // console.log("attribute", attribute);
-  //   } catch (error) {
-  //     console.log("category:fetch-attribute-group:", error);
-  //   }
-  // }
-  // function handleAttributeChange(selectedAttribute: { value: number }) {
-  //   const index = selectedAttributes.indexOf(selectedAttribute.value);
-  //   if (index === -1) {
-  //     selectedAttributes = [...selectedAttributes, selectedAttribute.value];
-  //   } else {
-  //     selectedAttributes.splice(index, 1);
-  //   }
-  //   variantDetails.attributes = selectedAttributes;
-  //   console.log("attribute", variantDetails.attributes);
-    
-  //   updateSelectedAttributeNames();
-  // }
-
-  // function handleAttributeValueChange(attributeName: string, value: string) {
-  //   if (!selectedAttributes.includes(attributeName)) {
-  //     selectedAttributes.push(attributeName);
-  //   }
-  //   variantDetails[attributeName] = value;
-  //   console.log("Selected Attributes:", selectedAttributes);
-  // }
-
-  function handleAttributeValueChange(attributeId: number, attributeName: string, value: string) {
-    // variantDetails.attributes[attributeName] = value;
+  function handleAttributeValueChange(
+    attributeId: number,
+    attributeName: string,
+    value: string
+  ) {
     selectedAttributeValues.set(attributeName, value);
     selectedAttributeValues = new Map(selectedAttributeValues);
     variantDetails.attributes.push({ attributes: attributeId, value: value });
-    console.log("Variant Details:", variantDetails);
   }
 
   async function fetchAttributegroup() {
@@ -137,20 +105,16 @@
       console.log("category:fetch-attribute-group:", error);
     }
   }
-  
-  
+
   async function createVariant() {
     try {
-      console.log("Selected Attributes:", selectedAttributes);
+      // console.log("Selected Attributes:", selectedAttributes);
       const form = new FormData();
       form.append("product", variantDetails.product);
       form.append("stock", variantDetails.stock);
       form.append("selling_price", variantDetails.selling_price);
       form.append("attributes", JSON.stringify(variantDetails.attributes));
-      
-      console.log("attributes", attribute);
-      console.log("variantDetails", variantDetails);
-      console.log("Form Data:", form);
+
       const url = editForm
         ? `/products/variant/${variantDetails.id}/update_record/`
         : "/products/variant/create_record/";
@@ -160,7 +124,7 @@
       } else {
         await API.post(url, form);
       }
-      
+
       dispatch("newVariant");
       const action = editForm ? "Variant Updated" : "Variant Created";
       toast(`${action} successfully!`);
@@ -170,7 +134,7 @@
       toast(`Failed to ${action}`);
     }
   }
-  
+
   function cancelModel() {
     dispatch("close");
   }
@@ -179,13 +143,12 @@
       cancelModel();
     }
   }
-  
+
   onMount(async () => {
-    // await fetchAttribute();
-    await fetchAttributegroup(); 
+    await fetchAttributegroup();
     await handleAttributeGroupData();
   });
-  
+
   onMount(() => {
     const timeout = setTimeout(() => {
       document.addEventListener("mousedown", handleClickOutside);
@@ -200,20 +163,23 @@
 
 <div
   class="fixed bg-background inset-0 flex items-center justify-center"
-  style="background-color: rgba(0, 0, 0, 0.5);">
+  style="background-color: rgba(0, 0, 0, 0.5);"
+>
   <div class="flex items-center justify-center">
     <div class="glow-border">
       <div
         class="card glow-border-content bg-background text-foreground overflow-y-auto"
-        style="max-height:90vh;">
+        style="max-height:90vh;"
+      >
         <Card.Root>
           <Card.Header class="font-bold mb-5">
             <Card.Title>
-                {editForm ? "Update Variant" : "New Variant"}</Card.Title>
+              {editForm ? "Update Variant" : "New Variant"}</Card.Title
+            >
           </Card.Header>
           <Card.Content>
             {#each attributeDetails as detail}
-            <div class="flex justify-center">
+              <div class="flex justify-center">
                 <div class="mb-3">
                   <Label>{detail.name}</Label>
                 </div>
@@ -233,7 +199,13 @@
                             value={index}
                             label={value}
                             class="capitalize card"
-                            on:click={() => handleAttributeValueChange(detail.attributes, detail.name, value)}>
+                            on:click={() =>
+                              handleAttributeValueChange(
+                                detail.attributes,
+                                detail.name,
+                                value
+                              )}
+                          >
                             {value}
                           </Select.Item>
                         {/each}
@@ -241,7 +213,7 @@
                     </Select.Content>
                   </Select.Root>
                 </div>
-            </div>
+              </div>
             {/each}
             <div class="mb-3">
               <Label for="stock">Stock</Label>
@@ -250,7 +222,8 @@
                 type="number"
                 bind:value={variantDetails.stock}
                 placeholder="Stock"
-                class="textarea"/>
+                class="textarea"
+              />
             </div>
             <div class="mb-3">
               <Label for="selling_price">Selling Price</Label>
@@ -259,14 +232,16 @@
                 type="number"
                 bind:value={variantDetails.selling_price}
                 placeholder="Selling Price"
-                class="textarea"/>
+                class="textarea"
+              />
             </div>
           </Card.Content>
           <Card.Footer class="justify-between space-x-2">
             <Button
               type="button"
               variant="ghost"
-              on:click={() => dispatch("close")}>Cancel</Button>
+              on:click={() => dispatch("close")}>Cancel</Button
+            >
             <Button type="submit" on:click={createVariant}>Save</Button>
           </Card.Footer>
         </Card.Root>
