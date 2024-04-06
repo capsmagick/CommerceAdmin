@@ -109,13 +109,7 @@ productIdStore.subscribe(value => {
         }
       }),
       table.column({
-        header: "Name",
-        accessor: "name",
-        cell: ({ value }) => value,
-        plugins: { sort: {}, filter: { exclude: true } }
-      }),
-      table.column({
-      header: "Product",
+      header: "Product Name",
       accessor: "product",
       cell: ({ value }) => value.name,
       }),

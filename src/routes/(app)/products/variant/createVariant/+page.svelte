@@ -13,6 +13,7 @@
   const dispatch = createEventDispatcher();
 
   interface AttributeDetail {
+    attributes: number;
     name: string;
     values: string[];
   }
@@ -22,18 +23,17 @@
   let attributes: number[] = [];
   let attributegroup: any;
   let attribute: any[] = [];
-  let selectedAttributes: number[] = [];
+  let selectedAttributes: string[] = [];
   let selectedAttributeNames: string[] = [];
   let attributeDetails: AttributeDetail[] = [];
+  let selectedAttributeValues = new Map();
 
   let variantDetails: any = {
-    id: "",
-    name: "",
+    product: "",
+    attributes: [],
     stock: "",
     selling_price: "",
-    attributes: [],
-    product: "",
-    attribute_group: "",
+    images: []
   };
 
   productIdStore.subscribe((value) => {
@@ -45,7 +45,7 @@
     variantDetails = editData;
   }
 
-  // console.log("editdata here:", editData);
+  console.log("editdata here:", editData);
   const categoriesArray = editData.categories;
   const attribute_group = categoriesArray[0].attribute_group;
   // console.log("Attribute Group Id from cat:", attribute_group);
@@ -67,6 +67,7 @@
                 const values = attr.value[0].split(",");
                 console.log("Attribute Values:", values);
                 attributeDetails.push({
+                  attributes: attr.id,
                   name: attr.name,
                   values: values
                 });
@@ -83,62 +84,73 @@
     }
   }
 
-  async function updateSelectedAttributeNames() {
-    if (!attribute.length) await fetchAttribute();
-    selectedAttributeNames = attribute
-      .filter((attr) => selectedAttributes.includes(attr.id))
-      .map((attr) => attr.name);
-    // console.log("att", selectedAttributeNames, attribute, selectedAttributes);
-  }
+  // async function updateSelectedAttributeNames() {
+  //   if (!attribute.length) await fetchAttribute();
+  //   selectedAttributeNames = attribute
+  //     .filter((attr) => selectedAttributes.includes(attr.id))
+  //     .map((attr) => attr.name);
+  //   // console.log("att", selectedAttributeNames, attribute, selectedAttributes);
+  // }
+  // async function fetchAttribute() {
+  //   try {
+  //     const res = await API.get("/masterdata/attribute/");
+  //     attribute = res.data.results;
+  //     // console.log("attribute", attribute);
+  //   } catch (error) {
+  //     console.log("category:fetch-attribute-group:", error);
+  //   }
+  // }
+  // function handleAttributeChange(selectedAttribute: { value: number }) {
+  //   const index = selectedAttributes.indexOf(selectedAttribute.value);
+  //   if (index === -1) {
+  //     selectedAttributes = [...selectedAttributes, selectedAttribute.value];
+  //   } else {
+  //     selectedAttributes.splice(index, 1);
+  //   }
+  //   variantDetails.attributes = selectedAttributes;
+  //   console.log("attribute", variantDetails.attributes);
+    
+  //   updateSelectedAttributeNames();
+  // }
 
-  async function fetchAttribute() {
-    try {
-      const res = await API.get("/masterdata/attribute/");
-      attribute = res.data.results;
-      // console.log("attribute", attribute);
-    } catch (error) {
-      console.log("category:fetch-attribute-group:", error);
-    }
+  // function handleAttributeValueChange(attributeName: string, value: string) {
+  //   if (!selectedAttributes.includes(attributeName)) {
+  //     selectedAttributes.push(attributeName);
+  //   }
+  //   variantDetails[attributeName] = value;
+  //   console.log("Selected Attributes:", selectedAttributes);
+  // }
+
+  function handleAttributeValueChange(attributeId: number, attributeName: string, value: string) {
+    // variantDetails.attributes[attributeName] = value;
+    selectedAttributeValues.set(attributeName, value);
+    selectedAttributeValues = new Map(selectedAttributeValues);
+    variantDetails.attributes.push({ attributes: attributeId, value: value });
+    console.log("Variant Details:", variantDetails);
   }
 
   async function fetchAttributegroup() {
     try {
       const res = await API.get("/masterdata/attributegroup/");
       attributegroup = res.data.results;
-      // console.log("attributegroup", attributegroup);
     } catch (error) {
       console.log("category:fetch-attribute-group:", error);
     }
   }
-  onMount(async () => {
-    await fetchAttributegroup(); 
-    await handleAttributeGroupData();
-  });
-
-  function handleAttributeChange(selectedAttribute: { value: number }) {
-    const index = selectedAttributes.indexOf(selectedAttribute.value);
-    if (index === -1) {
-      selectedAttributes = [...selectedAttributes, selectedAttribute.value];
-    } else {
-      selectedAttributes.splice(index, 1);
-    }
-    variantDetails.attributes = selectedAttributes;
-    console.log("attribute", variantDetails.attributes);
-
-    updateSelectedAttributeNames();
-  }
-
+  
+  
   async function createVariant() {
     try {
-        const form = new FormData();
-        form.append("product", variantDetails.product);
-        form.append("stock", variantDetails.stock);
-        form.append("selling_price", variantDetails.selling_price);
-        form.append("attributes", variantDetails.attributes);
-        form.append("categoryId", variantDetails.category);
-        
-        form.append("name", variantDetails.name);
-        console.log("variantDetails", variantDetails);
+      console.log("Selected Attributes:", selectedAttributes);
+      const form = new FormData();
+      form.append("product", variantDetails.product);
+      form.append("stock", variantDetails.stock);
+      form.append("selling_price", variantDetails.selling_price);
+      form.append("attributes", JSON.stringify(variantDetails.attributes));
+      
+      console.log("attributes", attribute);
+      console.log("variantDetails", variantDetails);
+      console.log("Form Data:", form);
       const url = editForm
         ? `/products/variant/${variantDetails.id}/update_record/`
         : "/products/variant/create_record/";
@@ -148,7 +160,7 @@
       } else {
         await API.post(url, form);
       }
-
+      
       dispatch("newVariant");
       const action = editForm ? "Variant Updated" : "Variant Created";
       toast(`${action} successfully!`);
@@ -158,7 +170,7 @@
       toast(`Failed to ${action}`);
     }
   }
-
+  
   function cancelModel() {
     dispatch("close");
   }
@@ -167,11 +179,13 @@
       cancelModel();
     }
   }
-
+  
   onMount(async () => {
-    await fetchAttribute();
+    // await fetchAttribute();
+    await fetchAttributegroup(); 
+    await handleAttributeGroupData();
   });
-
+  
   onMount(() => {
     const timeout = setTimeout(() => {
       document.addEventListener("mousedown", handleClickOutside);
@@ -206,18 +220,20 @@
                 <div class="mb-3 pl-4">
                   <Select.Root>
                     <Select.Trigger class="input capitalize">
-                      {selectedAttributeNames.length > 0
-                        ? selectedAttributeNames
-                        : "Select an Attribute"}
+                      {#if selectedAttributeValues.has(detail.name)}
+                        {selectedAttributeValues.get(detail.name)}
+                      {:else}
+                        Select an Attribute
+                      {/if}
                     </Select.Trigger>
                     <Select.Content>
                       <Select.Group>
-                        {#each detail.values as value}
+                        {#each detail.values as value, index}
                           <Select.Item
-                            value={value}
+                            value={index}
                             label={value}
                             class="capitalize card"
-                            on:click={() => handleAttributeChange({ value: a.id })}>
+                            on:click={() => handleAttributeValueChange(detail.attributes, detail.name, value)}>
                             {value}
                           </Select.Item>
                         {/each}
