@@ -13,6 +13,7 @@ import Users from "lucide-svelte/icons/users";
 		UserNav
 		
 	} from "$lib/components/dashboardui/index";
+	import Line from "$lib/components/charts/line.svelte";
 
 </script>
 <div>
@@ -71,7 +72,7 @@ import Users from "lucide-svelte/icons/users";
 							<Card.Title>Overview</Card.Title>
 						</Card.Header>
 						<Card.Content>
-							<Overview />
+							<Line />
 						</Card.Content>
 					</Card.Root>
 					<Card.Root class="col-span-3">

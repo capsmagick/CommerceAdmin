@@ -103,5 +103,15 @@ import Users from "lucide-svelte/icons/users";
 						</Card.Content>
 					</Card.Root>
 				</div>
+				<div  class="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+					<Card.Root class="col-span-4">
+						<Card.Header>
+							<Card.Title>Trends and Insights </Card.Title>
+						</Card.Header>
+						<Card.Content>
+							<RecentSales />
+						</Card.Content>
+					</Card.Root>
+				</div>
 			</Tabs.Content>
 </div>
