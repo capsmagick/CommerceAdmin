@@ -17,7 +17,7 @@
     "jsx": "preserve",
     "sourceMap": true,
     "strict": true,
-    "lib": ["es2015", "dom"],
+    "lib": ["esnext", "dom"],//I have changed es2015 to esnext, because it is not supported by svelte-kit
     "moduleResolution": "bundler",
     "types": ["topojson-client"],
    
