@@ -11,4 +11,6 @@ type Attribute = {
 export const UserStore = writable({})
 export const attributeDataStore = writable<Attribute[]>([]);
 export const productIdStore = writable(null);
+export const lookbookDetailsStore = writable({});
+
 

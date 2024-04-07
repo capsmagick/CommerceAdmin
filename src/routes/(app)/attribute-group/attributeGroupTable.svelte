@@ -30,7 +30,7 @@
   type AttributeGroup = {
     id: string;
     name: string;
-    attributes: string;
+    attributes: string[];
   };
 
   let next: any;
@@ -129,7 +129,7 @@
     table.column({
       header: "Name",
       accessor: "name",
-      cell: ({ value }) => value.toLowerCase(),
+      cell: ({ value }) => value,
       plugins: {
         filter: {
           getFilterValue(value) {
@@ -141,6 +141,7 @@
     table.column({
       header: "Attributes",
       accessor: "attributes",
+      cell: ({ value }) => value.map((i) => i.name).join(", "),
       plugins: { sort: { disable: true }, filter: { exclude: true } },
     }),
     table.column({

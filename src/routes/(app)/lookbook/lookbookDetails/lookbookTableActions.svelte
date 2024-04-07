@@ -14,9 +14,6 @@
     function handleDelete() {
         dispatch('delete')
     }
-    function handleView() {
-        dispatch('view')
-    }
 
   </script>
    
@@ -33,11 +30,6 @@
       </Button>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content>
-        <DropdownMenu.Item
-        class="text-gray-700"
-        on:click={handleView}>
-          <i class="fa-solid fa-eye mr-2"></i>View
-      </DropdownMenu.Item>
       <DropdownMenu.Item
         class="text-gray-700"
         on:click={handleEdit}>

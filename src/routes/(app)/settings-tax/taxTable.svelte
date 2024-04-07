@@ -14,43 +14,44 @@
       addSelectedRows,
       addHiddenColumns
     } from "svelte-headless-table/plugins";
-    import { writable } from "svelte/store";
+    import { readable } from "svelte/store";
     import * as Table from "$lib/components/ui/table/index.js";
-    import Actions from "./orderTableActions.svelte";
+    import Actions from "./taxTableActions.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { cn } from "$lib/utils.js";
     import { Input } from "$lib/components/ui/input/index.js";
-    import DataTableCheckbox from "./orederTableCheckbox.svelte";
+    import DataTableCheckbox from "./taxTableCheckbox.svelte";
     import API from "$lib/services/api";
+    import { createEventDispatcher } from "svelte";
+    import { writable } from "svelte/store";
 
+
+  const dispatch = createEventDispatcher();
    
-    type Order = {
+    type Product = {
       id: string;
-      order_id: string;
-      user: string;
-      created_at: string;
-      status: "Pending" | "Processing" | "Success" | "Failed";
-      total_amount: string;
-      paymentStatus: "Pending" | "Success" | "Failed";
-      paymentMethod: "Cash" | "Credit Card" | "Debit Card" | "Paypal" | "Other";
-      email: string;
+      name: string;
+      slab: string;
     };
+   
+      let next: any;
+  let nextPage = false;
+  let previous: any;
+  let previousPage = false;
 
-    let next: any;
-    let nextPage = false;
-    let previous: any;
-    let previousPage = false;
-
-    const data = writable<Order[]>([], (set) => {
-    getCategory().then((data) => {
+  // Create a readable store for the data
+  const data = writable<Product[]>([], (set) => {
+    getProducts().then((data) => {
       set(data);
-      console.log(data);
-      
     });
-    });
+  });
 
-      async function getCategory() {
+    export async function refreshTable() {
+    location.reload();
+  }
+
+  async function getProducts() {
     try {
       let res;
       if (nextPage) {
@@ -58,13 +59,13 @@
       } else if (previousPage) {
         res = await API.get(previous);
       } else {
-        res = await API.get("/orders/order/");
+        res = await API.get("/inventory/tax/");
       }
       next = res.data.next;
       previous = res.data.previous;
       return res.data.results;
     } catch (error) {
-      console.error("fetch:category:", error);
+      console.error("fetch:Tax:", error);
       return [];
     }
   }
@@ -72,14 +73,14 @@
   async function getNextPage() {
     nextPage = true;
     previousPage = false;
-    const newData = await getCategory();
+    const newData = await getProducts();
     data.set(newData);
   }
 
   async function getPreviousPage() {
     nextPage = false;
     previousPage = true;
-    const newData = await getCategory();
+    const newData = await getProducts();
     data.set(newData);
   }
    
@@ -120,14 +121,9 @@
         }
       }),
       table.column({
-        header: "Order ID",
-        accessor: ({ order_id }) => order_id,
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
-      }),
-      table.column({
-        header: "Customer Name",
-        accessor: "user",
-        cell: ({ value }) => value.toLowerCase(),
+        header: "Tax Name",
+        accessor: "name",
+        cell: ({ value }) => value,
         plugins: {
           filter: {
             getFilterValue(value) {
@@ -137,49 +133,21 @@
         }
       }),
       table.column({
-        header: "Order Date",
-        accessor: "created_at",
+        header: "Slab Rate",
+        accessor: "slab",
         plugins: { sort: { disable: true }, filter: { exclude: true } }
       }),
       table.column({
-        header: "Order Status",
-        accessor: "status",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
-      }),
-      table.column({
-        header: "Payment Status",
-        accessor: "paymentStatus",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
-      }),
-      table.column({
-        header: "Payment Method",
-        accessor: "paymentMethod",
-        plugins: { sort: { disable: true }, filter: { exclude: true } }
-      }),
-      table.column({
-        header: "Total Amount",
-        accessor: "amount",
-        cell: ({ value }) => {
-          const formatted = new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "INR"
-          }).format(value);
-          return formatted;
-        },
-        plugins: {
-          sort: {
-            disable: true
-          },
-          filter: {
-            exclude: true
-          }
-        }
-      }),
-      table.column({
-        header: "",
+        header: "Action",
         accessor: ({ id }) => id,
         cell: (item) => {
-          return createRender(Actions, { id: item.value });
+          return createRender(Actions) 
+            .on("edit", (event: Actions["edit"]) => {
+            dispatch("edit", { item });
+          })
+          .on("delete", (event: Actions["delete"]) => {
+            dispatch("delete", { item });
+          });
         },
         plugins: {
           sort: {
@@ -214,14 +182,14 @@
    
     const { selectedDataIds } = pluginStates.select;
    
-    const hideableCols = ["status", "created_at", "user", "amount", "paymentStatus", "paymentMethod"];
+    const hideableCols = ["slab"];
   </script>
    
   <div class="w-full p-4 bg-background text-foreground">
     <div class="mb-4 flex items-center gap-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter Orders..."
+        placeholder="Filter Tax Configuration..."
         type="text"
         bind:value={$filterValue}
       />
@@ -263,7 +231,7 @@
                         <div class="text-right">
                           <Render of={cell.render()} />
                         </div>
-                      {:else if cell.id === "user"}
+                      {:else if cell.id === "customerName"}
                         <Button variant="ghost" on:click={props.sort.toggle}>
                           <Render of={cell.render()} />
                           <CaretSort
@@ -318,7 +286,7 @@
         variant="outline"
         size="sm"
         on:click={getPreviousPage}
-        disabled={!previous}>Previous</Button
+      disabled={!previous}>Previous</Button
       >
       <Button
         variant="outline"

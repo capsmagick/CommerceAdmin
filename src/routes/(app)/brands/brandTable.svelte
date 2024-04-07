@@ -145,7 +145,7 @@
     table.column({
       header: "Name",
       accessor: "name",
-      cell: ({ value }) => value.toLowerCase(),
+      cell: ({ value }) => value,
       plugins: {
         filter: {
           getFilterValue(value) {

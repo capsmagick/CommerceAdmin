@@ -5,19 +5,16 @@
     import { Button } from "$lib/components/ui/button";
     import {createEventDispatcher} from "svelte";
 
+   
     const dispatch = createEventDispatcher();
 
-    function handleEdit() {
+        function handleEdit() {
         dispatch('edit')
     }
 
     function handleDelete() {
         dispatch('delete')
     }
-    function handleView() {
-        dispatch('view')
-    }
-
   </script>
    
   <DropdownMenu.Root>
@@ -33,12 +30,7 @@
       </Button>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content>
-        <DropdownMenu.Item
-        class="text-gray-700"
-        on:click={handleView}>
-          <i class="fa-solid fa-eye mr-2"></i>View
-      </DropdownMenu.Item>
-      <DropdownMenu.Item
+           <DropdownMenu.Item
         class="text-gray-700"
         on:click={handleEdit}>
           <i class="fa-solid fa-pencil mr-2"></i>Edit

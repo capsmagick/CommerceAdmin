@@ -20,66 +20,51 @@
   import Actions from "./lookbookTableActions.svelte";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+  import Label from "$lib/components/ui/label/label.svelte";
   import { cn } from "$lib/utils.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import DataTableCheckbox from "./lookbookTableCheckbox.svelte";
   import API from "$lib/services/api";
-  import { createEventDispatcher } from "svelte";
-
+  import { createEventDispatcher, onMount } from "svelte";
+  import { lookbookDetailsStore } from "$lib/stores/data";
   const dispatch = createEventDispatcher();
 
   type Lookbook = {
     id: string;
-    name: string;
-    variant: [];
+    product: object;
+    selling_price: string;
+    stock: number;
     created_at: string;
     updated_at: string;
     created_by: string;
     updated_by: string;
   };
 
-  let next: any;
-  let nextPage = false;
-  let previous: any;
-  let previousPage = false;
-
   const lookbook = writable<Lookbook[]>([], (set) => {
-    getLookbook().then((data) => {
+    getLookbookData().then((data) => {
       set(data);
+      console.log(data);
     });
   });
 
-  async function getLookbook() {
+
+ 
+  async function getLookbookData() {
     try {
-      let res;
-      if (nextPage) {
-        res = await API.get(next);
-      } else if (previousPage) {
-        res = await API.get(previous);
-      } else {
-        res = await API.get("/products/look-book/");
+      let lookbookId = await lookbookDetailsStore.set;
+      let res = await API.get(`/products/look-book/${lookbookId}/`);
+      let variants = res.data.variants;
+      let varDetails: any[] = [];
+
+      for(let i = 0; i <variants.length; i++){
+        let response = await API.get(`/products/variant/${variants[i]}`);
+        varDetails.push(response.data)
       }
-      next = res.data.next;
-      previous = res.data.previous;
-      return res.data.results;
+      return varDetails;
+      
     } catch (error) {
       console.error("fetch:brands:", error);
-      return [];
     }
-  }
-
-  async function getNextPage() {
-    nextPage = true;
-    previousPage = false;
-    const newData = await getLookbook();
-    lookbook.set(newData);
-  }
-
-  async function getPreviousPage() {
-    nextPage = false;
-    previousPage = true;
-    const newData = await getLookbook();
-    lookbook.set(newData);
   }
 
   const table = createTable(lookbook, {
@@ -118,55 +103,34 @@
         },
       },
     }),
+    // table.column({
+    //   header: "Name",
+    //   accessor: "product",
+    //   cell: ({ value }) => value.name,
+    //   plugins: {
+    //     filter: {
+    //       getFilterValue(value) {
+    //         return value;
+    //       },
+    //     },
+    //   },
+    // }),
     table.column({
-      header: "Name",
-      accessor: "name",
-      cell: ({ value }) => value,
-      plugins: {
-        filter: {
-          getFilterValue(value) {
-            return value;
-          },
-        },
-      },
-    }),
-    table.column({
-      header: "Variant",
-      accessor: "variant",
+      header: "Selling Price",
+      accessor: "selling_price",
       plugins: { sort: {}, filter: { exclude: true } },
     }),
-    table.column({
-      header: "Created At",
-      accessor: "created_at",
-      cell: ({ value }) => new Date(value).toLocaleDateString(),
+      table.column({
+      header: "Stock",
+      accessor: "stock",
       plugins: { sort: {}, filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Updated At",
-      accessor: "updated_at",
-      cell: ({ value }) => new Date(value).toLocaleDateString(),
-      plugins: { sort: {}, filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Created By",
-      accessor: "created_by",
-      cell: ({ value }) => value,
-      plugins: { filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Updated By",
-      accessor: "updated_by",
-      cell: ({ value }) => value,
-      plugins: { filter: { exclude: true } },
     }),
     table.column({
       header: "Actions",
       accessor: ({ id }) => id,
       cell: (item) => {
         return createRender(Actions)
-          .on("view", (event: Actions["view"]) => {
-            dispatch("view", { item });
-          }).on("edit", (event: Actions["edit"]) => {
+          .on("edit", (event: Actions["edit"]) => {
             dispatch("edit", { item });
           })
           .on("delete", (event: Actions["delete"]) => {
@@ -219,13 +183,15 @@
     "created_by",
     "updated_by",
   ];
+
+
 </script>
 
 <div class="w-full">
   <div class="mb-4 p-4 flex items-center gap-4">
     <Input
       class="max-w-sm"
-      placeholder="Filter Lookbook..."
+      placeholder="Filter Lookboook..."
       type="text"
       bind:value={$filterValue}
     />
@@ -246,6 +212,8 @@
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   </div>
+    <!-- <div class="flex justify-center my-3"><Label class="text-center text-xl">{lookbookData ? lookbookData.name : ''}</Label></div> -->
+
   <div class="rounded-md border">
     <Table.Root {...$tableAttrs}>
       <Table.Header>
@@ -306,9 +274,10 @@
     <Button
       variant="outline"
       size="sm"
-      on:click={getPreviousPage}
-      disabled={!previous}>Previous</Button>
-    <Button variant="outline" size="sm" disabled={!next} on:click={getNextPage}>
+      on:click={() => ($pageIndex = $pageIndex - 1)}
+        disabled={!$hasPreviousPage}>Previous</Button>
+    <Button variant="outline" size="sm" disabled={!$hasNextPage}
+        on:click={() => ($pageIndex = $pageIndex + 1)}>
       Next</Button>
   </div>
 </div>

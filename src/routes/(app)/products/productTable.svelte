@@ -38,7 +38,7 @@
     categories: string[];
     hsn_code: string;
     tags: string[];
-    images: string;
+    images:  string[];
     rating: number;
     no_of_reviews: number;
     is_disabled: boolean;
@@ -142,10 +142,10 @@
       header: "Images",
       accessor: "images",
       cell: ({ value }) => {
+        console.log(value)
         return `<img src="${value}" alt="Profile Photo" class="h-10 w-10 rounded-full">`;
       },
     }),
-
     table.column({
       header: "Product Name",
       accessor: "name",
