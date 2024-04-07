@@ -2,6 +2,7 @@
 node_modules
 /build
 /.svelte-kit
+dist
 /package
 .env
 .env.*
@@ -9,3 +10,38 @@ node_modules
 !.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# SvelteKit
+.svelte-kit/
+.svelte-kit/output/
+.svelte-kit/node_modules/
+.svelte-kit/types/
+.svelte-kit/kit.config.cjs
+.svelte-kit/kit.config.mjs
+.svelte-kit/kit.config.js
+.svelte-kit/kit.config.ts
+.svelte-kit/kit.config.json
+
+# Tailwind CSS
+.tailwindcss/
+tailwind.config.cjs
+tailwind.config.mjs
+tailwind.config.js
+tailwind.config.ts
+tailwind.config.json
+
+# TypeScript
+*.tsbuildinfo
+
+# IDE/Editor
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
