@@ -120,7 +120,7 @@ onMount(() => {
 <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
    <div class="flex items-center justify-center">
        <div class="glow-border">
-           <div class="card glow-border-content bg-background text-foreground">
+           <div class="card glow-border-content bg-background text-foreground overflow-y-auto"  style="max-height:90vh;">
                 <Card.Root class="p-6 rounded-lg">
                     <Card.Header class="font-bold mb-5">
                         <Card.Title>{editForm ? 'Update Collection' : 'New Collection'}</Card.Title>
@@ -128,18 +128,18 @@ onMount(() => {
                     <Card.Content>
                             <div class="mb-3">
                                 <Label for="name">Name</Label>
-                                <Input id="name" bind:value={collectionDetails.name} placeholder="Name" class="input"/>
+                                <Input id="name" bind:value={collectionDetails.name} placeholder="Name" class="input" type="text"/>
                             </div>
                            
                             <div class="mb-3">
                                 <Label for="description">Description</Label>
-                                <Textarea id="description" bind:value={collectionDetails.description} placeholder="Description" class="textarea"/>
+                                <Textarea id="description" bind:value={collectionDetails.description} placeholder="Description" class="textarea" type="text"/>
                             </div>
 
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <Label for="collections">Collections</Label>
                                 <Input id="collections" bind:value={collectionDetails.collections} placeholder="Collections" class="input"/>
-                            </div>
+                            </div> -->
                            
                             <div class="items-center gap-2 mb-3">
                                 <Label for="description">Tag</Label>
@@ -199,5 +199,8 @@ onMount(() => {
         width: 6rem;
         border-radius: 20px;
         object-fit: cover;
+    }
+    .card::-webkit-scrollbar {
+    display: none;
     }
 </style>

@@ -229,20 +229,25 @@
                 bind:value={categoryDetails.name}
                 placeholder="Name"
                 class="input"
+                type="text"
               />
             </div>
             <div class="mb-3">
               <Textarea
                 bind:value={categoryDetails.description}
                 placeholder="Description"
-                class="textarea"/>
+                class="textarea"
+                type="text"
+                />
             </div>
 
             <div class="grid grid-cols-2 gap-4 mb-3">
               <Input
                 bind:value={categoryDetails.handle}
                 placeholder="Handle"
-                class="input"/>
+                class="input"
+                type="text"
+                />
               <Select.Root>
                 <Select.Trigger class="input capitalize">
                   {selectedAttributeGroup

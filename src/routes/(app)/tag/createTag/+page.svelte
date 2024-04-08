@@ -81,7 +81,7 @@ onMount(() => {
                     <Card.Content>
                             <div class="mb-3">
                                 <Label for="name">Name</Label>
-                                <Input id="name" bind:value={tagDetails.name} placeholder="Name" class="input"/>
+                                <Input id="name" bind:value={tagDetails.name} placeholder="Name" class="input" type="text"/>
                             </div>
                     </Card.Content>
                     <Card.Footer  class="justify-between space-x-2">
