@@ -49,7 +49,7 @@
     try {
       const res = await API.get(`/products/product/${productId}`);
       productDetails = res.data;
-      console.log( productDetails );
+      // console.log( productDetails );
 
     } catch (error) {
       console.log("Product:", error);
@@ -69,7 +69,6 @@
     try {
       const res = await API.get(`/products/product-image/?product=${productId}`);
       image = res.data.results;
-      console.log("image: ", image);
     } catch (error) {
       console.log("Product: Variant:", error);
     }
@@ -169,6 +168,10 @@
 
                           {#if category}
                           <p class="mx-1">Category: {category.name}</p>
+                          {/if}
+
+                          {#if variant}
+                          <p class="mx-1">{variant.map(item => item.attributes.map(i => i.attributes.name))}: {variant.map(item => item.attributes.map(i => i.attributes.value)).join(' ,')}</p>
                           {/if}
                       </div>
                     </div>
