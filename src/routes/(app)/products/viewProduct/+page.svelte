@@ -131,9 +131,8 @@
         <div class="card glow-border-content bg-background text-foreground overflow-y-auto" style="max-height:90vh;">
             <Card.Root>
                {#if image}
+               <Card.Header></Card.Header>
                 <Card.Content>
-                 
-                  
                     <div class="grid grid-cols-2 gap-6 p-3">
                       <div class="grid-cols-1">
                           <Carousel.Root class="w-full max-w-xs">
