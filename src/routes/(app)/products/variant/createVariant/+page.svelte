@@ -7,12 +7,11 @@
   import { createEventDispatcher, onMount } from "svelte";
   import { toast } from "svelte-sonner";
   import * as Card from "$lib/components/ui/card";
-  import { productIdStore } from "../../../../../lib/stores/data";
 
   const dispatch = createEventDispatcher();
 
   interface AttributeDetail {
-    attributes: number;
+    id: number;
     name: string;
     values: string[];
   }
@@ -20,8 +19,6 @@
   export let editData;
   export let editForm: boolean;
   let attributegroup: any;
-  let attribute: any[] = [];
-  let selectedAttributes: string[] = [];
   let attributeDetails: AttributeDetail[] = [];
   let selectedAttributeValues = new Map();
 
@@ -33,15 +30,15 @@
     images: [],
   };
 
-  productIdStore.subscribe((value) => {
-    variantDetails.product = value;
-  });
+  if (editData) {
+    variantDetails.product = editData.id; //this is wrong way to give product value
+  }
 
   if (editForm) {
     variantDetails = editData;
   }
 
-  // console.log("editdata here:", editData);
+  console.log("editdata here:", editData);
   const categoriesArray = editData.categories;
   const attribute_group = categoriesArray[0].attribute_group;
 
@@ -67,7 +64,7 @@
                 const values = attr.value[0].split(",");
                 // console.log("Attribute Values:", values);
                 attributeDetails.push({
-                  attributes: attr.id,
+                  id: attr.id,
                   name: attr.name,
                   values: values,
                 });
@@ -87,14 +84,10 @@
     }
   }
 
-  function handleAttributeValueChange(
-    attributeId: number,
-    attributeName: string,
-    value: string
-  ) {
+  function handleAttributeValueChange(attributeId: number, attributeName: string, value: string) {
     selectedAttributeValues.set(attributeName, value);
     selectedAttributeValues = new Map(selectedAttributeValues);
-    variantDetails.attributes.push({ attributes: attributeId, value: value });
+    variantDetails.attributes.push({ attribute: attributeId, value: value });
   }
 
   async function fetchAttributegroup() {
@@ -201,11 +194,10 @@
                             class="capitalize card"
                             on:click={() =>
                               handleAttributeValueChange(
-                                detail.attributes,
+                                detail.id,
                                 detail.name,
                                 value
-                              )}
-                          >
+                              )}>
                             {value}
                           </Select.Item>
                         {/each}
