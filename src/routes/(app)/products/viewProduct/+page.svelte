@@ -130,8 +130,9 @@
         <div class="glow-border" >
         <div class="card glow-border-content bg-background text-foreground overflow-y-auto" style="max-height:90vh;">
             <Card.Root>
+               {#if image}
                 <Card.Content>
-                  {#if image}
+                 
                   
                     <div class="grid grid-cols-2 gap-6 p-3">
                       <div class="grid-cols-1">
@@ -172,14 +173,15 @@
                           {/if}
                       </div>
                     </div>
-                    {:else}
-                    <div class="grid-cols-2 gap-6 flex justify-center align-items-center p-3"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
-                    {/if}
+                   
           </Card.Content>
           <Card.Footer class="justify-end space-x-2">
-            <Button variant="ghost" on:click={() => cancelModel()}
+            <Button variant="destructive" on:click={() => cancelModel()}
               >Cancel</Button>
           </Card.Footer>
+        {:else}
+              <div class="grid-cols-2 gap-6 flex justify-center align-items-center p-3"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+        {/if}
         </Card.Root>
       </div>
     </div>
