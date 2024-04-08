@@ -19,8 +19,9 @@
     description: "",
     handle: "",
     image: "",
+    is_main_menu: false,
+    is_top_category: false,
     parent_category: 0,
-    second_parent_category: 0,
     attribute_group: 0,
     tags: [],
   };
@@ -43,7 +44,8 @@
       description: editData.description,
       handle: editData.handle,
       parent_category: editData.parent_category,
-      second_parent_category: editData.second_parent_category,
+      is_main_menu: editData.is_main_menu,
+      is_top_category: editData.is_top_category,
       image: editData.image,
       attribute_group: editData.attribute_group,
       tags: editData.tags,
@@ -108,10 +110,10 @@
       formData.append("name", categoryDetails.name);
       formData.append("description", categoryDetails.description);
       formData.append("handle", categoryDetails.handle);
+      formData.append("is_main_menu", categoryDetails.is_main_menu);
+      formData.append("is_top_category", categoryDetails.is_top_category);
       if (categoryDetails.parent_category)
             formData.append("parent_category", categoryDetails.parent_category);
-      if (categoryDetails.second_parent_category)
-            formData.append("second_parent_category", categoryDetails.second_parent_category);
       if (categoryDetails.attribute_group.length > 0)
         formData.append("attribute_group", categoryDetails.attribute_group);
       if (tagChange) {
@@ -193,7 +195,7 @@
     tagChange = false
     dispatch("cancel");
   }
-  function handleClickOutside(event) {
+  function handleClickOutside(event:any) {
     if (!event.target.closest(".card")) {
       cancelModel();
     }
@@ -237,7 +239,6 @@
                 bind:value={categoryDetails.description}
                 placeholder="Description"
                 class="textarea"
-                type="text"
                 />
             </div>
 
@@ -270,6 +271,8 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4 mb-3">
+              <div class="mb-3">
+              <label for="mainMenu">Parent Category</label>
               <Select.Root>
                 <Select.Trigger class="input capitalize">
                   {parent_category ? parent_category : "Select Parent Category"}
@@ -288,7 +291,8 @@
                   </Select.Group>
                 </Select.Content>
               </Select.Root>
-              <Select.Root>
+            </div>
+              <!-- <Select.Root>
                 <Select.Trigger class="input capitalize">
                   {second_parent_category
                     ? second_parent_category
@@ -309,11 +313,64 @@
                     {/each}
                   </Select.Group>
                 </Select.Content>
+              </Select.Root> -->
+            <div class="grid grid-cols-2 gap-4 mb-3">
+              <div class="mb-3">
+                <label for="mainMenu">Main Menu</label>
+              <Select.Root>
+                <Select.Trigger class="input capitalize">
+                  {categoryDetails.is_main_menu ? "Yes" : "No"}
+                </Select.Trigger>
+                <Select.Content>
+                  <Select.Group>
+                    <Select.Item
+                      value={true}
+                      label="Yes"
+                      class="capitalize card"
+                      on:click={() => categoryDetails.is_main_menu = true}>
+                      Yes
+                    </Select.Item>
+                    <Select.Item
+                      value={false}
+                      label="No"
+                      class="capitalize card"
+                      on:click={() => categoryDetails.is_main_menu = false}>
+                      No
+                    </Select.Item>
+                  </Select.Group>
+                </Select.Content>
               </Select.Root>
+            </div>
+            <div class="mb-3">
+              <label for="Topcategory">Top Category</label>
+            <Select.Root>
+              <Select.Trigger class="input capitalize">
+                {categoryDetails.is_top_category ? "Yes" : "No"}
+              </Select.Trigger>
+              <Select.Content>
+                <Select.Group>
+                  <Select.Item
+                    value={true}
+                    label="Yes"
+                    class="capitalize card"
+                    on:click={() => categoryDetails.is_top_category = true}>
+                    Yes
+                  </Select.Item>
+                  <Select.Item
+                    value={false}
+                    label="No"
+                    class="capitalize card"
+                    on:click={() => categoryDetails.is_top_category = false}>
+                    No
+                  </Select.Item>
+                </Select.Group>
+              </Select.Content>
+            </Select.Root>
+          </div>
             </div>
 
             <div class="items-center gap-2 mb-3">
-              <Select.Root>
+              <!-- <Select.Root>
                 <Select.Trigger class="input capitalize">
                   {tagNames
                     ? tagNames
@@ -331,7 +388,7 @@
                     {/each}
                   </Select.Group>
                 </Select.Content>
-              </Select.Root>
+              </Select.Root> -->
             </div>
             <div class="flex items-center justify-evenly gap-2">
               <Button

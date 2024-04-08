@@ -19,13 +19,13 @@
     }
 
     // Edit Attribute
-    async function onEditAttributeGroup(eventData) {
+    async function onEditAttributeGroup(eventData:any) {
         editData = eventData.original;
         showForm = true;
         editForm = true;
     }
 
-    async function onDeleteAttributeGroup(eventData) {
+    async function onDeleteAttributeGroup(eventData:any) {
         deletingAttributeGroup = eventData.original;
         showDeleteModal = true;
     }
