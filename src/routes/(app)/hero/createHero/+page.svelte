@@ -16,20 +16,26 @@
     let updateImage: boolean = false
 
     let heroDetails = {
-        name: "",
-        image: "",
-        description: "",
-        quote: "",
-        ctaButton: "",
-        ctaLink: "",
-    };
-    let id = "";
+    name: "",
+    image: "",
+    description: "",
+    quote: "",
+    ctaButton: "",
+    ctaLink: "",
+};
+let id = "";
+
+const url = editForm ? `/masterdata/hero/${id}/update_record/` : "/masterdata/hero/create_record/";
+    
 
     if (editForm) {
         heroDetails = {
             name: editData.name,
             image: editData.image,
             description: editData.description,
+            quote: editData.quote,
+            ctaButton: editData.ctaButton,
+            ctaLink: editData.ctaLink,
         };
         id = editData.id;
     }
@@ -41,11 +47,17 @@
     }
 
     async function uploadAvatar() {
-        if (imageUpload.files && imageUpload.files.length > 0) {
-            updateImage = true;
-            heroDetails.image = imageUpload.files[0];
-        }
+    if (imageUpload.files && imageUpload.files.length > 0) {
+        updateImage = true;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            if (e.target) {
+        heroDetails.image = e.target.result as string;
     }
+        };
+        reader.readAsDataURL(imageUpload.files[0]);
+    }
+}
 
     async function createHero() {
         try {
@@ -139,9 +151,9 @@ onMount(() => {
                                         on:click={pickAvatar}>
                                     <i class="fa-solid fa-image text-sm"></i>Upload image
                                 </Button>
-            
-                                <img id="selected-image" alt="image" class:showImg={heroDetails.image} class:hideImg={!heroDetails.image} src={updateImage ? window.URL.createObjectURL(heroDetails.image) : heroDetails.image} />
-            
+                                <label for="file-input">
+                                <img src={heroDetails.image} alt="Avatar" class="showImg" />
+                                </label>
                                 <input type="file" id="file-input" bind:this={imageUpload} hidden accept="image/png, image/jpeg" 
                                        on:change={uploadAvatar}/>
                             </div>

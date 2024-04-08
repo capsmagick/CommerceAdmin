@@ -2,14 +2,14 @@
   import API from "$lib/services/api";
   import CreateHero from './createHero/+page.svelte';
   import { Button } from "$lib/components/ui/button";
-  import AttributeGroupTable from "./attributeGroupTable.svelte";
+  import HeroTable from "./heroTable.svelte";
   import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
   import {toast} from "svelte-sonner";
 
     let showDeleteModal = false;
     let deletingAttributeGroup: any;
-    let refreshTable;
-    let editData;
+    let refreshTable:any;
+    let editData:any;
     let showForm: boolean = false;
     let editForm: boolean = false;
 
@@ -82,7 +82,7 @@
             </Button>
         </div>
     </div>
-    <AttributeGroupTable on:newAttributeGroup={() => toggleForm()}
+    <HeroTable on:newAttributeGroup={() => toggleForm()}
                 on:edit={(event) => onEditAttributeGroup(event.detail.item.row)}
                 on:delete={(event) => onDeleteAttributeGroup(event.detail.item.row)}
                 bind:this={refreshTable}/>

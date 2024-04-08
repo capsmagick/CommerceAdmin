@@ -16,12 +16,12 @@
   import { writable } from "svelte/store";
   import * as Table from "$lib/components/ui/table/index.js";
   import ChevronDown from "svelte-radix/ChevronDown.svelte";
-  import Actions from "./attributeGroupTableActions.svelte";
+  import Actions from "./heroTableActions.svelte";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import { cn } from "$lib/utils.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import DataTableCheckbox from "./attributeGroupTableCheckbox.svelte";
+  import DataTableCheckbox from "./heroTableCheckbox.svelte";
   import { onMount } from "svelte";
   import API from "$lib/services/api";
   import { createEventDispatcher } from "svelte";
