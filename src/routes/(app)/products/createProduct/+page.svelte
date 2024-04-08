@@ -189,7 +189,7 @@
     editCategory = false
     dispatch("cancel");
   }
-  function handleClickOutside(event) {
+  function handleClickOutside(event: any) {
     if (!event.target.closest(".card")) {
       cancelModel();
     }

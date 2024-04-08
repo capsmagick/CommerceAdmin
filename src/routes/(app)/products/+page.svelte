@@ -203,7 +203,7 @@
     {#if viewProduct}
     <ViewProduct 
       {editData}
-      on:cancel = {() => (editData = null, viewProduct = false) }
+      on:cancel = {() => (editData = null, viewProduct = false, showModal = false, editForm= false) }
     />
     {/if}
   </div>
