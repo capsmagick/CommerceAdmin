@@ -51,6 +51,14 @@
         { name: "Review and Rating", page: "reviews" }
       ]
     },
+     {
+      name: "CMS",
+      icon: "fa-users-viewfinder",
+      
+      items: [
+	    	{ name: "Hero", page: "hero" },
+      ]
+    },
     // {
     //   name: "Inventory",
     //   icon: "fa-warehouse",
