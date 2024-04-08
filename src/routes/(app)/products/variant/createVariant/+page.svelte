@@ -29,7 +29,7 @@
     attributes: [],
     stock: "",
     selling_price: "",
-    images: [],
+    images: "",
   };
 
   if (editData) {
@@ -104,15 +104,17 @@
   async function createVariant() {
     try {
       // console.log("Selected Attributes:", selectedAttributes);
+      console.log("Variant Details before API call:", variantDetails);
       const form = new FormData();
       form.append("product", variantDetails.product);
       form.append("stock", variantDetails.stock);
       form.append("selling_price", variantDetails.selling_price);
       form.append("attributes", JSON.stringify(variantDetails.attributes));
       if (updateImage){
-      form.append("image", variantDetails.image);
+      form.append("images", variantDetails.image);
       }
 
+      console.log("Variant Details:", variantDetails.image);
       const url = editForm
         ? `/products/variant/${variantDetails.id}/update_record/`
         : "/products/variant/create_record/";
@@ -122,6 +124,13 @@
       } else {
         await API.post(url, form);
       }
+
+      // Code to append form data and make API call...
+    const response = editForm
+      ? await API.put(url, form)
+      : await API.post(url, form);
+
+      console.log("API Response:", response);
 
       dispatch("newVariant");
       const action = editForm ? "Variant Updated" : "Variant Created";
