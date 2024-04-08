@@ -7,12 +7,11 @@
   import { createEventDispatcher, onMount } from "svelte";
   import { toast } from "svelte-sonner";
   import * as Card from "$lib/components/ui/card";
-  import { productIdStore } from "../../../../../lib/stores/data";
 
   const dispatch = createEventDispatcher();
 
   interface AttributeDetail {
-    attributes: number;
+    id: number;
     name: string;
     values: string[];
   }
@@ -20,28 +19,28 @@
   export let editData;
   export let editForm: boolean;
   let attributegroup: any;
-  let attribute: any[] = [];
-  let selectedAttributes: string[] = [];
   let attributeDetails: AttributeDetail[] = [];
   let selectedAttributeValues = new Map();
+  let imageUpload: any;
+  let updateImage: boolean = false
 
   let variantDetails: any = {
     product: "",
     attributes: [],
     stock: "",
     selling_price: "",
-    images: [],
+    images: "",
   };
 
-  productIdStore.subscribe((value) => {
-    variantDetails.product = value;
-  });
+  if (editData) {
+    variantDetails.product = editData.id; //this is wrong way to give product value
+  }
 
   if (editForm) {
     variantDetails = editData;
   }
 
-  // console.log("editdata here:", editData);
+  console.log("editdata here:", editData);
   const categoriesArray = editData.categories;
   const attribute_group = categoriesArray[0].attribute_group;
 
@@ -67,7 +66,7 @@
                 const values = attr.value[0].split(",");
                 // console.log("Attribute Values:", values);
                 attributeDetails.push({
-                  attributes: attr.id,
+                  id: attr.id,
                   name: attr.name,
                   values: values,
                 });
@@ -87,14 +86,10 @@
     }
   }
 
-  function handleAttributeValueChange(
-    attributeId: number,
-    attributeName: string,
-    value: string
-  ) {
+  function handleAttributeValueChange(attributeId: number, attributeName: string, value: string) {
     selectedAttributeValues.set(attributeName, value);
     selectedAttributeValues = new Map(selectedAttributeValues);
-    variantDetails.attributes.push({ attributes: attributeId, value: value });
+    variantDetails.attributes.push({ attribute: attributeId, value: value });
   }
 
   async function fetchAttributegroup() {
@@ -109,12 +104,17 @@
   async function createVariant() {
     try {
       // console.log("Selected Attributes:", selectedAttributes);
+      console.log("Variant Details before API call:", variantDetails);
       const form = new FormData();
       form.append("product", variantDetails.product);
       form.append("stock", variantDetails.stock);
       form.append("selling_price", variantDetails.selling_price);
       form.append("attributes", JSON.stringify(variantDetails.attributes));
+      if (updateImage){
+      form.append("images", variantDetails.image);
+      }
 
+      console.log("Variant Details:", variantDetails.image);
       const url = editForm
         ? `/products/variant/${variantDetails.id}/update_record/`
         : "/products/variant/create_record/";
@@ -125,6 +125,13 @@
         await API.post(url, form);
       }
 
+      // Code to append form data and make API call...
+    const response = editForm
+      ? await API.put(url, form)
+      : await API.post(url, form);
+
+      console.log("API Response:", response);
+
       dispatch("newVariant");
       const action = editForm ? "Variant Updated" : "Variant Created";
       toast(`${action} successfully!`);
@@ -133,6 +140,14 @@
       console.log(`${action}:`, error);
       toast(`Failed to ${action}`);
     }
+  }
+  function pickAvatar() {
+    imageUpload.click();
+  }
+
+  async function uploadAvatar() {
+    updateImage = true;
+    variantDetails.image = imageUpload.files[0];
   }
 
   function cancelModel() {
@@ -163,27 +178,24 @@
 
 <div
   class="fixed bg-background inset-0 flex items-center justify-center"
-  style="background-color: rgba(0, 0, 0, 0.5);"
->
+  style="background-color: rgba(0, 0, 0, 0.5);">
   <div class="flex items-center justify-center">
     <div class="glow-border">
       <div
         class="card glow-border-content bg-background text-foreground overflow-y-auto"
-        style="max-height:90vh;"
-      >
+        style="max-height:90vh;">
         <Card.Root>
           <Card.Header class="font-bold mb-5">
             <Card.Title>
-              {editForm ? "Update Variant" : "New Variant"}</Card.Title
-            >
+              {editForm ? "Update Variant" : "New Variant"}</Card.Title>
           </Card.Header>
           <Card.Content>
             {#each attributeDetails as detail}
               <div class="flex justify-center">
-                <div class="mb-3">
+                <div class="mb-3" style="min-width: 100px; max-width: 200px;">
                   <Label>{detail.name}</Label>
                 </div>
-                <div class="mb-3 pl-4">
+                <div class="mb-3 pl-4" style="min-width: 150px; max-width: 250px;">
                   <Select.Root>
                     <Select.Trigger class="input capitalize">
                       {#if selectedAttributeValues.has(detail.name)}
@@ -201,11 +213,10 @@
                             class="capitalize card"
                             on:click={() =>
                               handleAttributeValueChange(
-                                detail.attributes,
+                                detail.id,
                                 detail.name,
                                 value
-                              )}
-                          >
+                              )}>
                             {value}
                           </Select.Item>
                         {/each}
@@ -221,9 +232,7 @@
                 id="stock"
                 type="number"
                 bind:value={variantDetails.stock}
-                placeholder="Stock"
-                class="textarea"
-              />
+                placeholder="Stock"/>
             </div>
             <div class="mb-3">
               <Label for="selling_price">Selling Price</Label>
@@ -231,17 +240,35 @@
                 id="selling_price"
                 type="number"
                 bind:value={variantDetails.selling_price}
-                placeholder="Selling Price"
-                class="textarea"
-              />
+                placeholder="Selling Price"/>
+            </div>
+            <div class="flex items-center justify-evenly gap-2">
+              <Button
+                type="button"
+                class="btn flex gap-2 items-center bg-indigo-500 text-white text-xs"
+                on:click={pickAvatar}>
+                <i class="fa-solid fa-image text-sm"></i>
+                Upload Variant image
+              </Button>
+              <img
+                id="selected-logo"
+                alt=""
+                class={variantDetails.image ? "showImg" : "hideImg"}
+                src={updateImage ? window.URL.createObjectURL(variantDetails.image) : variantDetails.image}/>
+              <input
+                type="file"
+                id="file-input"
+                hidden
+                bind:this={imageUpload}
+                on:input={uploadAvatar}
+                accept="image/png, image/jpeg"/>
             </div>
           </Card.Content>
           <Card.Footer class="justify-between space-x-2">
             <Button
               type="button"
               variant="ghost"
-              on:click={() => dispatch("close")}>Cancel</Button
-            >
+              on:click={() => dispatch("close")}>Cancel</Button>
             <Button type="submit" on:click={createVariant}>Save</Button>
           </Card.Footer>
         </Card.Root>
@@ -253,5 +280,16 @@
 <style>
   .card::-webkit-scrollbar {
     display: none;
+  }
+  .hideImg {
+    visibility: hidden;
+  }
+  .showImg {
+    display: block;
+    height: 6rem;
+    width: 6rem;
+    flex: none;
+    border-radius: 20px;
+    object-fit: cover;
   }
 </style>
