@@ -27,10 +27,13 @@
 
   const dispatch = createEventDispatcher();
 
-  let productId: any;
+  let productId: any = localStorage.getItem('productId');
+
+  productIdStore.set(productId);
 
   productIdStore.subscribe((value) => {
     productId = value;
+    localStorage.setItem('productId', productId);
     console.log(productId);
   });
 
