@@ -105,12 +105,12 @@ onMount(() => {
                     <Card.Content>
                             <div class="mb-3">
                                 <Label for="name">Name</Label>
-                                <Input id="name" bind:value={brandDetails.name} placeholder="Name" class="input"/>
+                                <Input id="name" bind:value={brandDetails.name} placeholder="Name" class="input" type="text"/>
                             </div>
                            
                             <div class="mb-3">
                                 <Label for="description">Description</Label>
-                                <Textarea id="description" bind:value={brandDetails.description} placeholder="Description" class="textarea"/>
+                                <Textarea id="description" bind:value={brandDetails.description} placeholder="Description" class="textarea" type="text"/>
                             </div>
                            
                             <div class="flex items-center gap-2">

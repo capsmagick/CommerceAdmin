@@ -7,6 +7,10 @@
 
     const dispatch = createEventDispatcher();
 
+    function handleView() {
+        dispatch('view')
+    }
+
     function handleEdit() {
         dispatch('edit')
     }
@@ -44,10 +48,9 @@
       </Button>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content>
-          <DropdownMenu.Item on:click={handleEdit}><i class="fa fa-pencil sm mr-2"></i>Edit
-          </DropdownMenu.Item>
-          <DropdownMenu.Item on:click={handleDelete}><i class="fa fa-trash sm mr-2" style="color:red"></i>Delete
-          </DropdownMenu.Item>
+          <DropdownMenu.Item on:click={handleView}><i class="fa fa-eye sm mr-2"></i>View</DropdownMenu.Item>
+          <DropdownMenu.Item on:click={handleEdit}><i class="fa fa-pencil sm mr-2"></i>Edit</DropdownMenu.Item>
+          <DropdownMenu.Item on:click={handleDelete}><i class="fa fa-trash sm mr-2" style="color:red"></i>Delete</DropdownMenu.Item>
           <DropdownMenu.Item on:click={handleAddVariant}>Add Variant</DropdownMenu.Item>
           <DropdownMenu.Item on:click={handleViewVariant}>View Variant</DropdownMenu.Item>
           <DropdownMenu.Item on:click={handleLookbook}>Add Lookbook</DropdownMenu.Item>

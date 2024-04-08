@@ -10,6 +10,7 @@
   import {toast} from "svelte-sonner";
   import { productIdStore } from '../../../lib/stores/data';
   import AddToLookbook from './addToLookbook/+page.svelte'
+  import ViewProduct from './viewProduct/+page.svelte'
 
 
     let showDeleteModal = false;
@@ -20,12 +21,20 @@
     let editForm: boolean = false;
     let editData:any;
     let showModal = false;
+    let viewProduct = false
     let lookbookModalForm: boolean = false
 
     function toggleForm() {
       showForm = !showForm
     }
 
+      // View Product
+    async function onViewProduct(eventData:any) {
+        editData = eventData.original.id;
+        // console.log(editData);
+        viewProduct = true;
+        editForm = true;                
+    }
     // Edit Attribute
     async function onEditProduct(eventData:any) {
         editData = eventData.original;
@@ -165,6 +174,7 @@
       </div>
   </div>
   <ProductTable on:newCategory={() => toggleForm()}
+                     on:view={(event) => onViewProduct(event.detail.item.row)}
                      on:edit={(event) => onEditProduct(event.detail.item.row)}
                      on:delete={(event) => onDeleteProduct(event.detail.item.row)}
                      on:addVariant={(event) => onCreateVariant(event.detail.item.row)}
@@ -185,6 +195,15 @@
                             refreshTable.refreshTable();
                             showModal = false;
       }}
+    />
+    {/if}
+  </div>
+
+    <div>
+    {#if viewProduct}
+    <ViewProduct 
+      {editData}
+      on:cancel = {() => (editData = null, viewProduct = false) }
     />
     {/if}
   </div>

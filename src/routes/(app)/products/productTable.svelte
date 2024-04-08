@@ -142,7 +142,6 @@
       header: "Images",
       accessor: "images",
       cell: ({ value }) => {
-        console.log(value)
         return `<img src="${value}" alt="Profile Photo" class="h-10 w-10 rounded-full">`;
       },
     }),
@@ -254,6 +253,9 @@
       accessor: ({ id }) => id,
       cell: (item) => {
         return createRender(Actions)
+          .on("view", (event: Actions["view"]) => {
+            dispatch("view", { item });
+          })
           .on("edit", (event: Actions["edit"]) => {
             dispatch("edit", { item });
           })
