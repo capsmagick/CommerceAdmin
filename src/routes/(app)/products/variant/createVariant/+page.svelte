@@ -21,6 +21,8 @@
   let attributegroup: any;
   let attributeDetails: AttributeDetail[] = [];
   let selectedAttributeValues = new Map();
+  let imageUpload: any;
+  let updateImage: boolean = false
 
   let variantDetails: any = {
     product: "",
@@ -107,6 +109,9 @@
       form.append("stock", variantDetails.stock);
       form.append("selling_price", variantDetails.selling_price);
       form.append("attributes", JSON.stringify(variantDetails.attributes));
+      if (updateImage){
+      form.append("image", variantDetails.image);
+      }
 
       const url = editForm
         ? `/products/variant/${variantDetails.id}/update_record/`
@@ -126,6 +131,14 @@
       console.log(`${action}:`, error);
       toast(`Failed to ${action}`);
     }
+  }
+  function pickAvatar() {
+    imageUpload.click();
+  }
+
+  async function uploadAvatar() {
+    updateImage = true;
+    variantDetails.image = imageUpload.files[0];
   }
 
   function cancelModel() {
@@ -156,27 +169,24 @@
 
 <div
   class="fixed bg-background inset-0 flex items-center justify-center"
-  style="background-color: rgba(0, 0, 0, 0.5);"
->
+  style="background-color: rgba(0, 0, 0, 0.5);">
   <div class="flex items-center justify-center">
     <div class="glow-border">
       <div
         class="card glow-border-content bg-background text-foreground overflow-y-auto"
-        style="max-height:90vh;"
-      >
+        style="max-height:90vh;">
         <Card.Root>
           <Card.Header class="font-bold mb-5">
             <Card.Title>
-              {editForm ? "Update Variant" : "New Variant"}</Card.Title
-            >
+              {editForm ? "Update Variant" : "New Variant"}</Card.Title>
           </Card.Header>
           <Card.Content>
             {#each attributeDetails as detail}
               <div class="flex justify-center">
-                <div class="mb-3">
+                <div class="mb-3" style="min-width: 100px; max-width: 200px;">
                   <Label>{detail.name}</Label>
                 </div>
-                <div class="mb-3 pl-4">
+                <div class="mb-3 pl-4" style="min-width: 150px; max-width: 250px;">
                   <Select.Root>
                     <Select.Trigger class="input capitalize">
                       {#if selectedAttributeValues.has(detail.name)}
@@ -213,9 +223,7 @@
                 id="stock"
                 type="number"
                 bind:value={variantDetails.stock}
-                placeholder="Stock"
-                class="textarea"
-              />
+                placeholder="Stock"/>
             </div>
             <div class="mb-3">
               <Label for="selling_price">Selling Price</Label>
@@ -223,17 +231,35 @@
                 id="selling_price"
                 type="number"
                 bind:value={variantDetails.selling_price}
-                placeholder="Selling Price"
-                class="textarea"
-              />
+                placeholder="Selling Price"/>
+            </div>
+            <div class="flex items-center justify-evenly gap-2">
+              <Button
+                type="button"
+                class="btn flex gap-2 items-center bg-indigo-500 text-white text-xs"
+                on:click={pickAvatar}>
+                <i class="fa-solid fa-image text-sm"></i>
+                Upload Variant image
+              </Button>
+              <img
+                id="selected-logo"
+                alt=""
+                class={variantDetails.image ? "showImg" : "hideImg"}
+                src={updateImage ? window.URL.createObjectURL(variantDetails.image) : variantDetails.image}/>
+              <input
+                type="file"
+                id="file-input"
+                hidden
+                bind:this={imageUpload}
+                on:input={uploadAvatar}
+                accept="image/png, image/jpeg"/>
             </div>
           </Card.Content>
           <Card.Footer class="justify-between space-x-2">
             <Button
               type="button"
               variant="ghost"
-              on:click={() => dispatch("close")}>Cancel</Button
-            >
+              on:click={() => dispatch("close")}>Cancel</Button>
             <Button type="submit" on:click={createVariant}>Save</Button>
           </Card.Footer>
         </Card.Root>
@@ -245,5 +271,16 @@
 <style>
   .card::-webkit-scrollbar {
     display: none;
+  }
+  .hideImg {
+    visibility: hidden;
+  }
+  .showImg {
+    display: block;
+    height: 6rem;
+    width: 6rem;
+    flex: none;
+    border-radius: 20px;
+    object-fit: cover;
   }
 </style>
