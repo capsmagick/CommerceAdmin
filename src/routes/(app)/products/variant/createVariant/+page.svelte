@@ -7,6 +7,7 @@
   import { createEventDispatcher, onMount } from "svelte";
   import { toast } from "svelte-sonner";
   import * as Card from "$lib/components/ui/card";
+  import { productDetailsStore } from "$lib/stores/data";
 
   const dispatch = createEventDispatcher();
 
@@ -23,6 +24,10 @@
   let selectedAttributeValues = new Map();
   let imageUpload: any;
   let updateImage: boolean = false
+  let productData: any;
+  let categoriesArray: any;
+  let attribute_group: any;
+  let isSubscribed = false;
 
   let variantDetails: any = {
     product: "",
@@ -32,20 +37,29 @@
     images: "",
   };
 
-  if (editData) {
-    variantDetails.product = editData.id; //this is wrong way to give product value
-  }
-
   if (editForm) {
     variantDetails = editData;
   }
 
   console.log("editdata here:", editData);
-  const categoriesArray = editData.categories;
-  const attribute_group = categoriesArray[0].attribute_group;
+
+  // const categoriesArray = editData.categories;
+  // const attribute_group = categoriesArray[0].attribute_group;
+
+  productDetailsStore.subscribe((value) => {
+      productData = value;
+      variantDetails.product = productData.id;
+      categoriesArray = productData.categories;
+      attribute_group = categoriesArray[0].attribute_group;
+      console.log("product Data",productData);
+      console.log("productID",variantDetails.product);
+      console.log("catArray:", categoriesArray);
+      console.log("attribute_group:", attribute_group);
+    });
 
   async function handleAttributeGroupData() {
     try {
+      console.log("attrbuteGroup here:", attribute_group);
       if (attribute_group) {
         await fetchAttributegroup();
         if (attributegroup) {
@@ -103,6 +117,7 @@
 
   async function createVariant() {
     try {
+      debugger;
       // console.log("Selected Attributes:", selectedAttributes);
       console.log("Variant Details before API call:", variantDetails);
       const form = new FormData();
@@ -126,11 +141,11 @@
       }
 
       // Code to append form data and make API call...
-    const response = editForm
-      ? await API.put(url, form)
-      : await API.post(url, form);
+    // const response = editForm
+    //   ? await API.put(url, form)
+    //   : await API.post(url, form);
 
-      console.log("API Response:", response);
+    //   console.log("API Response:", response);
 
       dispatch("newVariant");
       const action = editForm ? "Variant Updated" : "Variant Created";

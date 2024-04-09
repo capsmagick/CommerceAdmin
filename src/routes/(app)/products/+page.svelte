@@ -9,6 +9,7 @@
   import ProductModal from "./createProduct/+page.svelte"
   import {toast} from "svelte-sonner";
   import { productIdStore } from '../../../lib/stores/data';
+  import { productDetailsStore } from "../../../lib/stores/data";
   import AddToLookbook from './addToLookbook/+page.svelte'
   import ViewProduct from './viewProduct/+page.svelte'
 
@@ -59,10 +60,10 @@
         showDeleteModal = true;
     }
 
-    // add variant
     async function onCreateVariant(eventData: any) {
-        editData = eventData.original;
-        showVariantForm = true;
+      productDetailsStore.set(eventData.original);
+      editData = eventData.original;
+      showVariantForm = true;
     }
 
     function closeVariantmodal() {
@@ -155,8 +156,7 @@
                 {editData}
                 {editForm}
                 on:close={() => closeVariantmodal()}
-                on:newVariant={() => addVariantData()}
-                />
+                on:newVariant={() => addVariantData()}/>
     {/if}
 </div>
 
