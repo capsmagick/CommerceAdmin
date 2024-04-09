@@ -30,13 +30,16 @@
 
   type Hero = {
     id: string;
-    name: string;
+    // name: string;
     image: string;
-    description: string;
+    short_description: string;
     quote: string;
-    ctaButton: string;
-    ctaLink: string;
-    attributes: string[];
+    cta_text: string;
+    link: string;
+    created_at: string;
+    updated_at: string;
+    created_by: string;
+    updated_by: string;
   };
 
   let next: any;
@@ -46,7 +49,7 @@
 
   // Create a readable store for the data
   const data = writable<Hero[]>([], (set) => {
-    getAttributes().then((data) => {
+    getHero().then((data) => {
       set(data);
     });
   });
@@ -59,7 +62,7 @@
     location.reload();
   }
 
-  async function getAttributes() {
+  async function getHero() {
     try {
       let res;
       if (nextPage) {
@@ -67,7 +70,7 @@
       } else if (previousPage) {
         res = await API.get(previous);
       } else {
-        // res = await API.get("/masterdata/attributegroup/");
+        res = await API.get("/cms/hero-section/");
       }
       next = res.data.next;
       previous = res.data.previous;
@@ -81,14 +84,14 @@
   async function getNextPage() {
     nextPage = true;
     previousPage = false;
-    const newData = await getAttributes();
+    const newData = await getHero();
     data.set(newData);
   }
 
   async function getPreviousPage() {
     nextPage = false;
     previousPage = true;
-    const newData = await getAttributes();
+    const newData = await getHero();
     data.set(newData);
   }
 
@@ -128,32 +131,28 @@
         },
       },
     }),
-    table.column({
-      header: "ID",
-      accessor: ({ id }) => id,
-      plugins: { sort: { disable: true }, filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Name",
-      accessor: "name",
-      cell: ({ value }) => value,
-      plugins: {
-        filter: {
-          getFilterValue(value) {
-            return value.toLowerCase();
-          },
-        },
-      },
-    }),
+    // table.column({
+    //   header: "Name",
+    //   accessor: "name",
+    //   cell: ({ value }) => value,
+    //   plugins: {
+    //     filter: {
+    //       getFilterValue(value) {
+    //         return value.toLowerCase();
+    //       },
+    //     },
+    //   },
+    // }),
     table.column({
       header: "Image",
       accessor: "image",
-      cell: ({ value }) => value,
-      plugins: { sort: { disable: true }, filter: { exclude: true } },
+      cell: ({ value }) => {
+        return `<img src="${value}" alt="Profile Photo" class="h-10 w-10 rounded-full">`;
+      },
     }),
     table.column({
       header: "Description",
-      accessor: "description",
+      accessor: "short_description",
       cell: ({ value }) => value,
       plugins: { sort: { disable: true }, filter: { exclude: true } },
     }),
@@ -164,16 +163,40 @@
       plugins: { sort: { disable: true }, filter: { exclude: true } },
     }),
     table.column({
-      header: "CTA Button",
-      accessor: "ctaButton",
+      header: "CTA Text",
+      accessor: "cta_text",
       cell: ({ value }) => value,
       plugins: { sort: { disable: true }, filter: { exclude: true } },
     }),
     table.column({
       header: "CTA Link",
-      accessor: "ctaLink",
+      accessor: "link",
       cell: ({ value }) => value,
       plugins: { sort: { disable: true }, filter: { exclude: true } },
+    }),
+    table.column({
+      header: "Created At",
+      accessor: "created_at",
+      cell: ({ value }) => new Date(value).toLocaleDateString(),
+      plugins: { sort: {}, filter: { exclude: true } },
+    }),
+    table.column({
+      header: "Updated At",
+      accessor: "updated_at",
+      cell: ({ value }) => new Date(value).toLocaleDateString(),
+      plugins: { sort: {}, filter: { exclude: true } },
+    }),
+    table.column({
+      header: "Created By",
+      accessor: "created_by",
+      cell: ({ value }) => value,
+      plugins: { filter: { exclude: true } },
+    }),
+    table.column({
+      header: "Updated By",
+      accessor: "updated_by",
+      cell: ({ value }) => value,
+      plugins: { filter: { exclude: true } },
     }),
     table.column({
       header: "Actions  ",
@@ -214,8 +237,12 @@
    let initialHiddenColumns = [
     "created_at",
     "updated_at",
-    "description",
+    "short_description",
     "quote",
+    "created_by",
+    "updated_by",
+    "created_at",
+    "updated_at",
   ];
 
   $: hideForId = Object.fromEntries(
@@ -231,7 +258,7 @@
 
   const { selectedDataIds } = pluginStates.select;
 
-  const hideableCols = ["name", 'image', 'description', 'quote', 'ctaButton', 'ctaLink'];
+  const hideableCols = ["name", 'image', 'short_description', 'quote', 'cta_text', 'link','created_at', 'updated_at', 'created_by', 'updated_by'];
 </script>
 
 <div class="w-full">
