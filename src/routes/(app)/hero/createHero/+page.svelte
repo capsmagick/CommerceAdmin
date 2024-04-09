@@ -2,7 +2,6 @@
     import {Input} from "$lib/components/ui/input";
     import { Label } from "$lib/components/ui/label";
     import {Textarea} from "$lib/components/ui/textarea";
-    import {Select} from "$lib/components/ui/select";
     import {Button} from "$lib/components/ui/button";
     import API from "$lib/services/api";
     import {createEventDispatcher, onMount} from "svelte";
@@ -16,28 +15,16 @@
     let updateImage: boolean = false
 
     let heroDetails = {
+    id: "",
     name: "",
+    cta_text: "",
     image: "",
-    description: "",
-    quote: "",
-    ctaButton: "",
-    ctaLink: "",
-};
-let id = "";
-
-const url = editForm ? `/masterdata/hero/${id}/update_record/` : "/masterdata/hero/create_record/";
-    
+    short_description: "",
+    link: "",
+};    
 
     if (editForm) {
-        heroDetails = {
-            name: editData.name,
-            image: editData.image,
-            description: editData.description,
-            quote: editData.quote,
-            ctaButton: editData.ctaButton,
-            ctaLink: editData.ctaLink,
-        };
-        id = editData.id;
+        heroDetails = editData
     }
 
     let imageUpload: HTMLInputElement;
@@ -49,13 +36,7 @@ const url = editForm ? `/masterdata/hero/${id}/update_record/` : "/masterdata/he
     async function uploadAvatar() {
     if (imageUpload.files && imageUpload.files.length > 0) {
         updateImage = true;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            if (e.target) {
-        heroDetails.image = e.target.result as string;
-    }
-        };
-        reader.readAsDataURL(imageUpload.files[0]);
+        heroDetails.image = imageUpload.files[0];
     }
 }
 
@@ -65,13 +46,13 @@ const url = editForm ? `/masterdata/hero/${id}/update_record/` : "/masterdata/he
             if(updateImage){
                 form.append("image", heroDetails.image);
             }
+            form.append("short_description", heroDetails.short_description);
             form.append("name", heroDetails.name);
-            form.append("description", heroDetails.description);
-            form.append("quote", heroDetails.quote);
-            form.append("ctaButton", heroDetails.description);
-            form.append("ctaLink", heroDetails.description);
+            form.append("cta_text", heroDetails.cta_text);
+            form.append("link", heroDetails.link);
+            // form.append("name", heroDetails.name);
 
-            // const url = editForm ? `/masterdata/brand/${id}/update_record/` : "/masterdata/brand/create_record/";
+            const url = editForm ? `/cms/hero-section/${heroDetails.id}/update_record/` : "/cms/hero-section/create_record/";
 
             if (editForm) {
                 await API.put(url, form);
@@ -120,30 +101,25 @@ onMount(() => {
                     <Card.Header class="font-bold mb-5">
                         <Card.Title>{editForm ? 'Update Hero' : 'New Hero'}</Card.Title>
                     </Card.Header>
-                    <Card.Content>
+                    <Card.Content>  
                             <div class="mb-3">
                                 <Label for="name">Name</Label>
-                                <Input id="name" bind:value={heroDetails.name} placeholder="Name" class="input"/>
-                            </div>
-                           
-                            <div class="mb-3">
-                                <Label for="description">Description</Label>
-                                <Textarea id="description" bind:value={heroDetails.description} placeholder="Description" class="textarea"/>
+                                <Input id="name" bind:value={heroDetails.name} placeholder="Name" class="textarea"/>
                             </div>
 
                             <div class="mb-3">
-                                <Label for="quote">Quote</Label>
-                                <Input id="quote" bind:value={heroDetails.description} placeholder="Quote" class="textarea"/>
+                                <Label for="short_description">Description</Label>
+                                <Textarea id="short_description" bind:value={heroDetails.short_description} placeholder="Description" class="textarea"/>
                             </div>
 
                             <div class="mb-3">
-                                <Label for="ctaButton">CTA Button Name</Label>
-                                <Input id="ctaButton" bind:value={heroDetails.description} placeholder="CTA Button Name" class="textarea"/>
+                                <Label for="cta_text">CTA Button Name</Label>
+                                <Input id="cta_text" bind:value={heroDetails.cta_text} placeholder="CTA Button Name" class="textarea"/>
                             </div>
 
                             <div class="mb-3">
-                                <Label for="ctaLink">CTA Link</Label>
-                                <Input id="ctaLink" bind:value={heroDetails.description} placeholder="CTA Link" class="textarea"/>
+                                <Label for="link">CTA Link</Label>
+                                <Input id="link" bind:value={heroDetails.link} placeholder="CTA Link" class="textarea"/>
                             </div>
                            
                             <div class="flex items-center gap-2">
@@ -152,9 +128,11 @@ onMount(() => {
                                     <i class="fa-solid fa-image text-sm"></i>Upload image
                                 </Button>
                                 <label for="file-input">
-                                <img src={heroDetails.image} alt="Avatar" class="showImg" />
+                                {#if heroDetails.image}
+                                    <img src={updateImage ? window.URL.createObjectURL(heroDetails.image) : heroDetails.image} alt="Avatar" class="showImg" />
+                                {/if}
                                 </label>
-                                <input type="file" id="file-input" bind:this={imageUpload} hidden accept="image/png, image/jpeg" 
+                                <input type="file" id="file-input" bind:this={imageUpload} hidden required={!imageUpload} accept="image/png, image/jpeg" 
                                        on:change={uploadAvatar}/>
                             </div>
                     </Card.Content>
@@ -169,9 +147,6 @@ onMount(() => {
 </div>
 
 <style>
-    .hideImg {
-        display: none;
-    }
 
     .showImg {
         display: block;

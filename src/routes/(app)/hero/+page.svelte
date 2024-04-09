@@ -14,7 +14,6 @@
     let editForm: boolean = false;
 
     function toggleForm() {
-        console.log(showForm)
         showForm = !showForm
     }
 
@@ -45,7 +44,7 @@
         refreshTable.refreshTable();
     }
 
-    function handleNewAttributeGroup() {
+    function handleNewHero() {
         editData = null;
         editForm = false;
         showForm = false;
@@ -67,7 +66,7 @@
                 {editData}
                 {editForm}
                 on:cancel={() => {editData = null;editForm = false;showForm = false;}}
-                on:newAttributeGroup={() => handleNewAttributeGroup()}/>
+                on:newHero={() => handleNewHero()}/>
     {/if}
 </div>
 
@@ -82,7 +81,7 @@
             </Button>
         </div>
     </div>
-    <HeroTable on:newAttributeGroup={() => toggleForm()}
+    <HeroTable
                 on:edit={(event) => onEditAttributeGroup(event.detail.item.row)}
                 on:delete={(event) => onDeleteAttributeGroup(event.detail.item.row)}
                 bind:this={refreshTable}/>
