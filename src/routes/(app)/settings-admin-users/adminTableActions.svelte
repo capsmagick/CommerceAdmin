@@ -1,12 +1,20 @@
 <script lang="ts">
-    // import MoreHorizontal from "lucide-svelte/icons/more-horizontal";
     import { MoreHorizontal } from "lucide-svelte";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
     import { Button } from "$lib/components/ui/button";
-   
-    export let id: string;
+    import {createEventDispatcher} from "svelte";
+
+    const dispatch = createEventDispatcher();
+
+    function handleEdit() {
+        dispatch('edit')
+    }
+
+    function handleDelete() {
+        dispatch('delete')
+    }
   </script>
-   
+ 
   <DropdownMenu.Root>
     <DropdownMenu.Trigger asChild let:builder>
       <Button
@@ -20,15 +28,9 @@
       </Button>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content>
-      <DropdownMenu.Group>
-        <DropdownMenu.Label>Actions</DropdownMenu.Label>
-        <DropdownMenu.Item on:click={() => navigator.clipboard.writeText(id)}>
-          Copy order ID
-        </DropdownMenu.Item>
-      </DropdownMenu.Group>
-      <DropdownMenu.Separator />
-      <DropdownMenu.Item>View customer</DropdownMenu.Item>
-      <DropdownMenu.Item>View order</DropdownMenu.Item>
-      <DropdownMenu.Item>Edit Details</DropdownMenu.Item>
+       <DropdownMenu.Item on:click={handleEdit}><i class="fa fa-pencil sm mr-2"></i>Edit
+       </DropdownMenu.Item>
+       <DropdownMenu.Item on:click={handleDelete}><i class="fa fa-trash sm mr-2" style="color:red"></i>Delete
+       </DropdownMenu.Item>
     </DropdownMenu.Content>
   </DropdownMenu.Root>

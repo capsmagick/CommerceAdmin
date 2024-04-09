@@ -3,8 +3,31 @@
     import { MoreHorizontal } from "lucide-svelte";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
     import { Button } from "$lib/components/ui/button";
-   
-    export let id: string;
+    import {createEventDispatcher} from "svelte";
+  import { item } from "@unovis/ts/components/bullet-legend/style";
+
+    const dispatch = createEventDispatcher();
+
+    function handleProcessing() {
+        dispatch('processing')
+    }
+
+    function handlePacking() {
+        dispatch('packing')
+    }
+
+    function handleReady() {
+        dispatch('ready')
+    }
+
+    function handleShipped() {
+        dispatch('shipped')
+    }
+
+    function handleDelivered() {
+        dispatch('delivered')
+    }
+
   </script>
    
   <DropdownMenu.Root>
@@ -20,15 +43,10 @@
       </Button>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content>
-      <DropdownMenu.Group>
-        <DropdownMenu.Label>Actions</DropdownMenu.Label>
-        <DropdownMenu.Item on:click={() => navigator.clipboard.writeText(id)}>
-          Copy order ID
-        </DropdownMenu.Item>
-      </DropdownMenu.Group>
-      <DropdownMenu.Separator />
-      <DropdownMenu.Item>View customer</DropdownMenu.Item>
-      <DropdownMenu.Item>View order</DropdownMenu.Item>
-      <DropdownMenu.Item>Edit Details</DropdownMenu.Item>
+      <DropdownMenu.Item on:click={handleProcessing}>Order Processing</DropdownMenu.Item>
+      <DropdownMenu.Item on:click={handlePacking}>Order Packing</DropdownMenu.Item>
+      <DropdownMenu.Item on:click={handleReady}>Order Ready for Dispatch</DropdownMenu.Item>
+      <DropdownMenu.Item on:click={handleShipped}>Order Shipped</DropdownMenu.Item>
+      <DropdownMenu.Item on:click={handleDelivered}>Order Delivered</DropdownMenu.Item>
     </DropdownMenu.Content>
   </DropdownMenu.Root>

@@ -41,7 +41,7 @@
     images:  string[];
     rating: number;
     no_of_reviews: number;
-    is_disabled: boolean;
+    is_disabled: boolean; 
     created_at: string;
     updated_at: string;
     created_by: string;
