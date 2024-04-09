@@ -1,4 +1,5 @@
 <script lang="ts">
+import * as Tabs from "$lib/components/ui/tabs/index.js";
 import Profile from "./profile/+page.svelte";
 import Admin from "./admin/+page.svelte";
 
@@ -19,25 +20,22 @@ function viewAdmin() {
 
 </script>
 <div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
-        <div class="flex h-screen mt-3">
-    <div class="flex-shrink-0 w-64 bg-gray-800 text-white rounded-lg">
-      <div class="flex flex-col h-full p-5 space-y-5">
-        <h2 class="text-xl font-semibold">Settings</h2>
-        <ul class="space-y-2 ">
-          <li><button on:click={viewProfile} type="button" class="block py-2 px-3 rounded transition duration-300 hover:bg-gray-700 w-full text-left {profile? "bg-gray-700": '' }">Profile Settings</button></li>
-          <li><button on:click={viewAdmin} type="button" class="block py-2 px-3 rounded transition duration-300 hover:bg-gray-700 w-full text-left {admin? "bg-gray-700": '' }">Admin Settings</button></li>
-        </ul>
-      </div>
-    </div>
-
- 
-    <div class="flex-1 px-10">
-      {#if profile}
-      <Profile />
-      {/if}
-      {#if admin}
-      <Admin />
-      {/if}
+  <div class="flex h-screen mt-3">
+    <div class="container justify-center">
+      <Tabs.Root align="center" justify="center">
+        <Tabs.List>
+          <Tabs.Trigger value="profile">Profile Settings</Tabs.Trigger>
+          <Tabs.Trigger value="admin">Admin Settings</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="profile">
+          <Profile />
+        </Tabs.Content>
+        <Tabs.Content value="admin">
+          <Admin />
+        </Tabs.Content>
+      </Tabs.Root>
     </div>
   </div>
 </div>
+
+
