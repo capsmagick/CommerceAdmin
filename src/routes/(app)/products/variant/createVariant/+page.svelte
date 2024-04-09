@@ -4,7 +4,7 @@
   import * as Select from "$lib/components/ui/select";
   import { Button } from "$lib/components/ui/button";
   import API from "$lib/services/api";
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher, onMount, onDestroy } from "svelte";
   import { toast } from "svelte-sonner";
   import * as Card from "$lib/components/ui/card";
   import { productDetailsStore } from "$lib/stores/data";
@@ -28,6 +28,7 @@
   let categoriesArray: any;
   let attribute_group: any;
   let isSubscribed = false;
+  let unsubscribe: () => void;
 
   let variantDetails: any = {
     product: "",
@@ -46,19 +47,26 @@
   // const categoriesArray = editData.categories;
   // const attribute_group = categoriesArray[0].attribute_group;
 
-  productDetailsStore.subscribe((value) => {
-      productData = value;
-      variantDetails.product = productData.id;
-      categoriesArray = productData.categories;
-      attribute_group = categoriesArray[0].attribute_group;
-      console.log("product Data",productData);
-      console.log("productID",variantDetails.product);
-      console.log("catArray:", categoriesArray);
-      console.log("attribute_group:", attribute_group);
-    });
+  onMount(() => {
+    if(!isSubscribed) {
+      unsubscribe = productDetailsStore.subscribe((value) => {
+        productData = value;
+        variantDetails.product = productData.id;
+        categoriesArray = productData.categories;
+        attribute_group = categoriesArray[0].attribute_group.id;
+        console.log("Product details received:", value);
+        console.log("product Data",productData);
+        console.log("productID",variantDetails.product);
+        console.log("catArray:", categoriesArray);
+        console.log("attribute_group:", attribute_group);
+      });
+    isSubscribed = true;
+    }
+  });
 
   async function handleAttributeGroupData() {
     try {
+      // debugger;
       console.log("attrbuteGroup here:", attribute_group);
       if (attribute_group) {
         await fetchAttributegroup();
@@ -117,8 +125,6 @@
 
   async function createVariant() {
     try {
-      debugger;
-      // console.log("Selected Attributes:", selectedAttributes);
       console.log("Variant Details before API call:", variantDetails);
       const form = new FormData();
       form.append("product", variantDetails.product);
@@ -140,13 +146,6 @@
         await API.post(url, form);
       }
 
-      // Code to append form data and make API call...
-    // const response = editForm
-    //   ? await API.put(url, form)
-    //   : await API.post(url, form);
-
-    //   console.log("API Response:", response);
-
       dispatch("newVariant");
       const action = editForm ? "Variant Updated" : "Variant Created";
       toast(`${action} successfully!`);
@@ -155,7 +154,11 @@
       console.log(`${action}:`, error);
       toast(`Failed to ${action}`);
     }
+    onDestroy(() => {
+        unsubscribe();
+      });
   }
+
   function pickAvatar() {
     imageUpload.click();
   }
