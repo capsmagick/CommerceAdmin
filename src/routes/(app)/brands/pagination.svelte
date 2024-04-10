@@ -4,11 +4,11 @@
   import * as Pagination from "$lib/components/ui/pagination/index.js";
  
  
-  let count = 20;
-  $: perPage =  8;
-  export let total_pages:number;
-  export let page:number;;
+export let totalItems:number;
+export let per_page:number;
 
+let count = totalItems;
+ $: perPage =  per_page;
 </script>
  
 <Pagination.Root {count} {perPage} let:pages let:currentPage>

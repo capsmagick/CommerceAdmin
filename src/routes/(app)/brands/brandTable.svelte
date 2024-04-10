@@ -45,19 +45,25 @@
   export let showForm: boolean = false;
   let total_pages: number;
   let page: number = 1;
+  let totalItems: number;
+  let per_page: number = 10;
   let tableData: any[] = [];
   let showDeleteModal = false;
   let deletingBrand: any;
   let editData: any;  
   let editForm: boolean = false;
   let sortData: boolean = true;
+  let sortField: string = "";
+  let searchData:string = "";
 
     async function getBrands() {
     try {
-      let res = await API.get(`/masterdata/brand/?page=${page}`);
+      let res = await API.get(`/masterdata/brand/?page=${page}&per_page=${per_page}&ordering=${sortField}&search=${searchData}`); 
+      // /&search=searchword 
       total_pages = res.data.total_pages;
+      totalItems = res.data.total;
       tableData = res.data.results;    
-      console.log(tableData);
+      console.log(totalItems);
       console.log(res.data);
       
     } catch (error) {
@@ -118,11 +124,24 @@
 
   function sortName() {
     if (sortData) {
-        tableData = tableData.sort((a, b) => a.name.localeCompare(b.name));
+        sortField = "name";
+        getBrands()
+        sortData = !sortData;
     } else {
-        tableData = tableData.sort((a, b) => b.name.localeCompare(a.name));
+        sortField = "-name";
+        getBrands()
+        sortData = !sortData;
     }
-    sortData = !sortData;
+  }
+
+  function searchName(event: any) {
+    searchData = event.target.value;
+    getBrands()
+  }
+
+  function pageLimit(event: any, value:any) {
+    per_page = value;
+    getBrands()
   }
 
 </script>
@@ -145,6 +164,29 @@
 </div>
 
 <div class="p-5">
+  <div class="my-2 flex justify-between">
+    <Input
+        class="max-w-sm"
+        placeholder="Filter Brands..."
+        type="text"
+        on:input={(event) => searchName(event)}
+        />
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            <Button variant="outline" size="sm">
+              {per_page}
+              <ChevronDown />
+            </Button>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item on:click={(event) => pageLimit(event, 10)}>10</DropdownMenu.Item>
+            <DropdownMenu.Item on:click={(event) => pageLimit(event, 20)}>20</DropdownMenu.Item>
+            <DropdownMenu.Item on:click={(event) => pageLimit(event, 25)}>25</DropdownMenu.Item>
+            <DropdownMenu.Item on:click={(event) => pageLimit(event, 50)}>50</DropdownMenu.Item>
+            <DropdownMenu.Item on:click={(event) => pageLimit(event, 100)}>100</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+  </div>
   <Table.Root>
     <Table.Header>
       <Table.Row>
@@ -190,6 +232,6 @@
       </Button>
     </div>
    <div>
-    <Pagination total_pages={total_pages} page={page} />
+    <Pagination totalItems={totalItems} per_page={per_page} />
    </div>
 </div>
