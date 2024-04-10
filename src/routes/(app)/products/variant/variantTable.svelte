@@ -27,15 +27,11 @@
 
   const dispatch = createEventDispatcher();
 
-  let productId: any = localStorage.getItem('productId');
+  let productId: any;
 
-  productIdStore.set(productId);
-
-  productIdStore.subscribe((value) => {
-    productId = value;
-    localStorage.setItem('productId', productId);
-    console.log(productId);
-  });
+  const urlParams = new URLSearchParams(window.location.search);
+  productId = urlParams.get('userId');
+  console.log("Product ID from URL:", productId);
 
   type Variant = {
     id: string;

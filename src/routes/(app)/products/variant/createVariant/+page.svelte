@@ -44,9 +44,6 @@
 
   console.log("editdata here:", editData);
 
-  // const categoriesArray = editData.categories;
-  // const attribute_group = categoriesArray[0].attribute_group;
-
   onMount(() => {
     if(!isSubscribed) {
       unsubscribe = productDetailsStore.subscribe((value) => {
