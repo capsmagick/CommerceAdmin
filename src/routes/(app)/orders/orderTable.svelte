@@ -23,6 +23,9 @@
     import { Input } from "$lib/components/ui/input/index.js";
     import DataTableCheckbox from "./orederTableCheckbox.svelte";
     import API from "$lib/services/api";
+    import { createEventDispatcher } from "svelte";
+
+  const dispatch = createEventDispatcher();
 
    
     type Order = {
@@ -43,14 +46,17 @@
     let previousPage = false;
 
     const data = writable<Order[]>([], (set) => {
-    getCategory().then((data) => {
+    getOrders().then((data) => {
       set(data);
       console.log(data);
       
     });
     });
+    export async function refreshTable() {
+    location.reload();
+  }
 
-      async function getCategory() {
+      async function getOrders() {
     try {
       let res;
       if (nextPage) {
@@ -72,14 +78,14 @@
   async function getNextPage() {
     nextPage = true;
     previousPage = false;
-    const newData = await getCategory();
+    const newData = await getOrders();
     data.set(newData);
   }
 
   async function getPreviousPage() {
     nextPage = false;
     previousPage = true;
-    const newData = await getCategory();
+    const newData = await getOrders();
     data.set(newData);
   }
    
@@ -158,7 +164,7 @@
       }),
       table.column({
         header: "Total Amount",
-        accessor: "amount",
+        accessor: "total_amount",
         cell: ({ value }) => {
           const formatted = new Intl.NumberFormat("en-US", {
             style: "currency",
@@ -176,10 +182,25 @@
         }
       }),
       table.column({
-        header: "",
+        header: "Actions",
         accessor: ({ id }) => id,
         cell: (item) => {
-          return createRender(Actions, { id: item.value });
+          return createRender(Actions)
+          .on("processing", (event: Actions["processing"]) => {
+            dispatch("processing", { item });
+          })
+          .on("packing", (event: Actions["packing"]) => {
+            dispatch("packing", { item });
+          })
+          .on("ready", (event: Actions["ready"]) => {
+            dispatch("ready", { item });
+          })
+          .on("shipped", (event: Actions["shipped"]) => {
+            dispatch("shipped", { item });
+          })
+          .on("delivered", (event: Actions["delivered"]) => {
+            dispatch("delivered", { item });
+          })
         },
         plugins: {
           sort: {
