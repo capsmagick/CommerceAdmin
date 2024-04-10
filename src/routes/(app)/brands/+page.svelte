@@ -5,72 +5,17 @@
     import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
     import {toast} from "svelte-sonner";
     import BrandTable from "./brandTable.svelte";
-    import {Button} from "$lib/components/ui/button";
+    import {Button} from "$lib/components/ui/button"; 
 
-    let showDeleteModal = false;
-    let deletingBrand: any;
-    let refreshTable;
-    let editData;
     let showForm: boolean = false;
-    let editForm: boolean = false;
+    let renderTable:boolean = false;
 
     function toggleForm() {
-        console.log(showForm)
         showForm = !showForm
-    }
-
-    // Edit Attribute
-    async function onEditBrand(eventData) {
-        editData = eventData.original;
-        showForm = true;
-        editForm = true;
-    }
-
-    async function onDeleteBrand(eventData) {
-        deletingBrand = eventData.original;
-        showDeleteModal = true;
-    }
-
-    function confirmDelete() {
-        API.delete(`/masterdata/brand/${deletingBrand.id}/delete_record/`).then(() => {
-            closeDeleteModal();
-            toast("Brand Deleted Successfully!");
-        }).catch((error) => {
-            console.error("Error deleting Brand:", error);
-            closeDeleteModal();
-        });
-    }
-
-    function closeDeleteModal() {
-        showDeleteModal = false;
-        refreshTable.refreshTable();
-    }
-
-    function handleNewBrand() {
-        editData = null;
-        editForm = false;
-        showForm = false;
-        refreshTable.refreshTable();
+        renderTable =!renderTable
     }
 
 </script>
-
-<div>
-    {#if showDeleteModal}
-        <ConfirmDeleteModal attribute={deletingBrand.name} on:confirm={confirmDelete}
-                            on:cancel={closeDeleteModal}/>
-    {/if}
-</div>
-
-<div class="abc">
-    {#if showForm}
-        <CreditBrand
-                {editData}
-                {editForm}
-                on:cancel={() => {editData = null;editForm = false;showForm = false;}}
-                on:newBrand={() => handleNewBrand()}/>
-    {/if}
-</div>
 
 <div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
     <div class="flex items-center ">
@@ -83,8 +28,5 @@
             </Button>
         </div>
     </div>
-    <BrandTable on:newBrand={() => toggleForm()}
-                on:edit={(event) => onEditBrand(event.detail.item.row)}
-                on:delete={(event) => onDeleteBrand(event.detail.item.row)}
-                bind:this={refreshTable}/>
+    <BrandTable {showForm} />
 </div>
