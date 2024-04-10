@@ -59,7 +59,6 @@
     async function getBrands() {
     try {
       let res = await API.get(`/masterdata/brand/?page=${page}&per_page=${per_page}&ordering=${sortField}&search=${searchData}`); 
-      // /&search=searchword 
       total_pages = res.data.total_pages;
       totalItems = res.data.total;
       tableData = res.data.results;    
