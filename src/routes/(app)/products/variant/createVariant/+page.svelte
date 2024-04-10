@@ -51,11 +51,6 @@
         variantDetails.product = productData.id;
         categoriesArray = productData.categories;
         attribute_group = categoriesArray[0].attribute_group.id;
-        console.log("Product details received:", value);
-        console.log("product Data",productData);
-        console.log("productID",variantDetails.product);
-        console.log("catArray:", categoriesArray);
-        console.log("attribute_group:", attribute_group);
       });
     isSubscribed = true;
     }

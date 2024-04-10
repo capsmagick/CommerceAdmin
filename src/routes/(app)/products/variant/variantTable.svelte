@@ -23,7 +23,6 @@
   import DataTableCheckbox from "./variantTableCheckbox.svelte";
   import API from "$lib/services/api";
   import { createEventDispatcher } from "svelte";
-  import { productIdStore } from "../../../../lib/stores/data";
 
   const dispatch = createEventDispatcher();
 
