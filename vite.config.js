@@ -9,10 +9,10 @@ export default defineConfig({
 			"SameSite": "Strict"
 		},
 		proxy:{
-			'/api/':{
+			'/api':{
 				target:"http://manage.signupcasuals.com:8080",
 				changeOrigin: true,
-				rewrite: path => path.replace(/^\/api/, ''),
+				rewrite: path => path.replace(/^\/api/, '/api/'),
 			}
 		},
 	}
