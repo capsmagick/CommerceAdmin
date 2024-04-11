@@ -216,15 +216,15 @@
   <Table.Root>
     <Table.Header>
       <Table.Row>
-        <Table.Head class="flex justify-between"
+        {#if hidableCoulumns[0].value}
+          <Table.Head>Logo</Table.Head>
+        {/if}
+        <Table.Head
           >Name
           <Button on:click={() => sortName()} variant="ghost"
             ><CaretSort class="w-4 h-4" /></Button
           >
         </Table.Head>
-        {#if hidableCoulumns[0].value}
-          <Table.Head>Logo</Table.Head>
-        {/if}
         {#if hidableCoulumns[1].value}
           <Table.Head>Description</Table.Head>
         {/if}
@@ -245,7 +245,6 @@
     </Table.Header>
     {#each tableData as data}
       <Table.Row>
-        <Table.Cell>{data.name}</Table.Cell>
         {#if hidableCoulumns[0].value}
           <Table.Cell>
             <img
@@ -255,6 +254,7 @@
             /></Table.Cell
           >
         {/if}
+        <Table.Cell>{data.name}</Table.Cell>
         {#if hidableCoulumns[1].value}
           <Table.Cell>{data.description}</Table.Cell>
         {/if}

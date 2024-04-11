@@ -190,7 +190,7 @@
   <Table.Root>
     <Table.Header>
       <Table.Row>
-        <Table.Head class="flex justify-between"
+        <Table.Head
           >Name
           <Button on:click={() => sortName()} variant="ghost"
             ><CaretSort class="w-4 h-4" /></Button
