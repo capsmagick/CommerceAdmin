@@ -27,7 +27,7 @@
   import {toast} from "svelte-sonner";
   import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
   import CreditBrand from "./createBrand/+page.svelte";
-  import Pagination from "./pagination.svelte"
+  import Pagination from "$lib/components/ui/table-pagination/pagination.svelte"
 
 
 
@@ -43,28 +43,27 @@
   //   tags: string[];
   // };
   export let showForm: boolean = false;
-  let total_pages: number;
+    // variables to handle pagination and table details
   let page: number = 1;
   let totalItems: number;
   let per_page: number = 10;
   let tableData: any[] = [];
-  let showDeleteModal = false;
-  let deletingBrand: any;
-  let editData: any;  
-  let editForm: boolean = false;
   let sortData: boolean = true;
   let sortField: string = "";
   let searchData:string = "";
 
+  let showDeleteModal = false;
+  let deletingBrand: any;
+
+  let editData: any;  
+  let editForm: boolean = false;
+
+
     async function getBrands() {
     try {
       let res = await API.get(`/masterdata/brand/?page=${page}&per_page=${per_page}&ordering=${sortField}&search=${searchData}`); 
-      total_pages = res.data.total_pages;
       totalItems = res.data.total;
-      tableData = res.data.results;    
-      console.log(totalItems);
-      console.log(res.data);
-      
+      tableData = res.data.results;
     } catch (error) {
       console.error("fetch:brands:", error);
       return [];
@@ -73,6 +72,11 @@
 
   async function getNextPage() {
     page += 1
+    await getBrands();
+  }
+
+  async function getPage (event: any) {
+    page = event.detail;
     await getBrands();
   }
 
@@ -218,19 +222,10 @@
       {/each}
     </Table.Root>
 
-    <div class="flex items-center justify-end space-x-2 py-4">
-      <Button
-      variant="outline"
-      size="sm"
-      on:click={getPreviousPage}
-      disabled={page === 1}
-      >Previous
-      </Button>
-      <Button variant="outline" size="sm" disabled={page == total_pages} on:click={getNextPage}
-        >Next
-      </Button>
-    </div>
-   <div>
-    <Pagination totalItems={totalItems} per_page={per_page} />
+   <div class = "d-flex justify-end align-items-end mt-3">
+    <Pagination totalItems={totalItems} per_page={per_page} 
+      on:prev ={getPreviousPage}
+      on:next={getNextPage}
+      on:page={(event) =>getPage(event)} />
    </div>
 </div>
