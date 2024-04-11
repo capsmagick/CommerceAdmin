@@ -154,7 +154,7 @@
     <div>
       <Input
         class="max-w-sm"
-        placeholder="Search Attribute Group..."
+        placeholder="Search Attribute..."
         type="text"
         on:input={(event) => searchName(event)}
       />
