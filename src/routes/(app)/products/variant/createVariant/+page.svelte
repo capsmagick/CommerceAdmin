@@ -47,12 +47,20 @@
   }
 
   onMount(() => {
+    const persistedAttributeGroup = localStorage.getItem("attribute_group");
+    if (persistedAttributeGroup) {
+        attribute_group = parseInt(persistedAttributeGroup);
+    }
+    
     if(!isSubscribed) {
       unsubscribe = productDetailsStore.subscribe((value) => {
         productData = value;
         categoriesArray = productData.categories;
-        attribute_group = categoriesArray[0].attribute_group.id;
-        console.log("product data:", productData);
+        // attribute_group = categoriesArray[0].attribute_group.id;
+        if (categoriesArray && categoriesArray.length > 0) {
+                attribute_group = categoriesArray[0].attribute_group.id;
+                localStorage.setItem("attribute_group", attribute_group);
+            }
       });
     isSubscribed = true;
     }

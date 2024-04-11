@@ -50,7 +50,7 @@
 
   const data = readable<Variant[]>([], (set) => {
     getVariant().then((data) => {
-      console.log(data);
+      // console.log(data);
       set(data);
     });
   });
@@ -115,7 +115,7 @@
       cell: ({ value }) =>{
       if (Array.isArray(value) && value.length > 0) {
         const imageUrl = value[0].image;
-        console.log("img:",imageUrl);
+        // console.log("img:",imageUrl);
         return `<img src="http://localhost:8000${imageUrl}" alt="Featured Image" class="h-10 w-10 rounded-full">`;//image api update backend 
       } else {
         return 'No Image';
