@@ -12,7 +12,7 @@ export default defineConfig({
 			'/api':{
 				target:"http://manage.signupcasuals.com:8080",
 				changeOrigin: true,
-				rewrite: path => path.replace(/^\/api/, '/api/'),
+				rewrite: path => path.replace(/^\/api/, ''),
 			}
 		},
 	}
