@@ -164,7 +164,7 @@
     <div>
       <Input
         class="max-w-sm"
-        placeholder="Search Brands..."
+        placeholder="Search Categories..."
         type="text"
         on:input={(event) => searchName(event)}
       />
