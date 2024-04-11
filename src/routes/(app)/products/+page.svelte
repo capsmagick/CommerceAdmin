@@ -79,7 +79,7 @@
 
     async function viewVariantTable(eventData: any) {
         productIdStore.set(eventData.original.id);
-        goto(`products/variant/`)
+        goto(`products/variant?userId=${eventData.original.id}`);
     }
 
         async function addLookbook(eventData: any) {
