@@ -24,6 +24,7 @@
     let showModal = false;
     let viewProduct = false
     let lookbookModalForm: boolean = false
+    let productID: any;
 
     function toggleForm() {
       showForm = !showForm
@@ -61,9 +62,14 @@
     }
 
     async function onCreateVariant(eventData: any) {
+      productID = eventData.original.id;
+      console.log("Product ID from export here:", productID);
       productDetailsStore.set(eventData.original);
-      editData = eventData.original;
+      console.log("To store:", eventData.original);
+      // editData = eventData.original;
       showVariantForm = true;
+      //pass product ID here
+      
     }
 
     function closeVariantmodal() {
@@ -78,8 +84,8 @@
     }
 
     async function viewVariantTable(eventData: any) {
-        productIdStore.set(eventData.original.id);
-        goto(`products/variant?userId=${eventData.original.id}`);
+        productDetailsStore.set(eventData.original);
+        goto(`products/variant?product=${eventData.original.id}`);
     }
 
         async function addLookbook(eventData: any) {
@@ -153,6 +159,7 @@
 <div>
     {#if showVariantForm}
         <CreateVariant 
+                {productID}
                 {editData}
                 {editForm}
                 on:close={() => closeVariantmodal()}
