@@ -17,6 +17,18 @@
   let deletingVariant: any;
   let refreshTable: any;
 
+  let productID: any;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  productID = urlParams.get('product');
+  console.log("Product ID from URL:", productID);
+
+  if (productID) {
+    sessionStorage.setItem('productId', productID);
+  } else {
+    productID = sessionStorage.getItem('productId');
+  }
+
   async function closemodal() {
     showModal = false
     editForm = false
@@ -24,6 +36,7 @@
   }
     async function onEditProduct(eventData:any) {
       editData = eventData.original;
+      console.log("On EDIt:", editData);
       showModal = true;
       editForm = true;
       // console.log(productDetails);
@@ -65,6 +78,7 @@
 <div>
   {#if showModal}
     <CreateVariant 
+        {productID}
         {editData}
         {editForm}
         on:close = {() => closemodal()}

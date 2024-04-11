@@ -17,8 +17,9 @@
     values: string[];
   }
 
-  export let editData;
+  export let editData: any;
   export let editForm: boolean;
+  export let productID: any;
   let attributegroup: any;
   let attributeDetails: AttributeDetail[] = [];
   let selectedAttributeValues = new Map();
@@ -41,24 +42,36 @@
   if (editForm) {
     variantDetails = editData;
   }
-
-  console.log("editdata here:", editData);
+  if (productID) {
+    variantDetails.product = productID;
+  }
 
   onMount(() => {
     if(!isSubscribed) {
       unsubscribe = productDetailsStore.subscribe((value) => {
         productData = value;
-        variantDetails.product = productData.id;
         categoriesArray = productData.categories;
         attribute_group = categoriesArray[0].attribute_group.id;
+        console.log("product data:", productData);
       });
     isSubscribed = true;
+    }
+
+    if (editData && editData.attributes) {
+      variantDetails.attributes = editData.attributes.map((attr: {
+        attributes: { id: number },
+        value: string,
+        id: number
+      }) => ({
+        attribute: attr.attributes.id,
+        value: attr.value,
+        id: attr.id
+      }));
     }
   });
 
   async function handleAttributeGroupData() {
     try {
-      // debugger;
       console.log("attrbuteGroup here:", attribute_group);
       if (attribute_group) {
         await fetchAttributegroup();
@@ -68,17 +81,14 @@
           );
           if (matchedGroup) {
             const { name, attributes } = matchedGroup;
-            // console.log("Attribute Group Name:", name);
             attributeDetails = [];
             attributes.forEach((attr: any) => {
-              // console.log("Attribute Name:", attr.name);
               if (
                 attr.value &&
                 Array.isArray(attr.value) &&
                 attr.value.length > 0
               ) {
                 const values = attr.value[0].split(",");
-                // console.log("Attribute Values:", values);
                 attributeDetails.push({
                   id: attr.id,
                   name: attr.name,
@@ -91,7 +101,6 @@
                 );
               }
             });
-            // console.log("Attribute Details:", attributeDetails);
           }
         }
       }
@@ -101,9 +110,18 @@
   }
 
   function handleAttributeValueChange(attributeId: number, attributeName: string, value: string) {
-    selectedAttributeValues.set(attributeName, value);
-    selectedAttributeValues = new Map(selectedAttributeValues);
-    variantDetails.attributes.push({ attribute: attributeId, value: value });
+      selectedAttributeValues.set(attributeName, value);
+      selectedAttributeValues = new Map(selectedAttributeValues);
+      const existingIndex = variantDetails.attributes.findIndex((attr: { attribute: number, value: string, id?: number }) => attr.attribute === attributeId);
+      if (existingIndex !== -1) {
+        if (editForm) {
+          variantDetails.attributes[existingIndex] = { attribute: attributeId, value: value, id: variantDetails.attributes[existingIndex].id };
+        } else {
+          variantDetails.attributes[existingIndex].value = value;
+        }
+      } else {
+        variantDetails.attributes.push({ attribute: attributeId, value: value });
+      }
   }
 
   async function fetchAttributegroup() {
@@ -117,17 +135,19 @@
 
   async function createVariant() {
     try {
+      debugger;
       console.log("Variant Details before API call:", variantDetails);
       const form = new FormData();
       form.append("product", variantDetails.product);
       form.append("stock", variantDetails.stock);
       form.append("selling_price", variantDetails.selling_price);
       form.append("attributes", JSON.stringify(variantDetails.attributes));
-      if (updateImage){
-      form.append("images", variantDetails.image);
+      if (updateImage && variantDetails.images){
+        form.append("images", variantDetails.images);
       }
 
-      console.log("Variant Details:", variantDetails.image);
+      console.log("image uploading:", variantDetails.images)
+      console.log("attributes:", variantDetails.attributes);
       const url = editForm
         ? `/products/variant/${variantDetails.id}/update_record/`
         : "/products/variant/create_record/";
@@ -141,6 +161,7 @@
       dispatch("newVariant");
       const action = editForm ? "Variant Updated" : "Variant Created";
       toast(`${action} successfully!`);
+      debugger;
     } catch (error) {
       const action = editForm ? "Update Variant" : "Create Variant";
       console.log(`${action}:`, error);
@@ -157,7 +178,8 @@
 
   async function uploadAvatar() {
     updateImage = true;
-    variantDetails.image = imageUpload.files[0];
+    variantDetails.images = imageUpload.files[0];
+    console.log("New image:", variantDetails.images);
   }
 
   function cancelModel() {
@@ -211,7 +233,7 @@
                       {#if selectedAttributeValues.has(detail.name)}
                         {selectedAttributeValues.get(detail.name)}
                       {:else}
-                        Select an Attribute
+                        {variantDetails.attributes.find(attr => attr.attribute === detail.id)?.value ?? 'Select an Attribute'}
                       {/if}
                     </Select.Trigger>
                     <Select.Content>
@@ -263,8 +285,8 @@
               <img
                 id="selected-logo"
                 alt=""
-                class={variantDetails.image ? "showImg" : "hideImg"}
-                src={updateImage ? window.URL.createObjectURL(variantDetails.image) : variantDetails.image}/>
+                class={variantDetails.images ? "showImg" : "hideImg"}
+                src={updateImage ? window.URL.createObjectURL(variantDetails.images) : variantDetails.images}/>
               <input
                 type="file"
                 id="file-input"

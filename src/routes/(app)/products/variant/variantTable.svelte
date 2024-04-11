@@ -28,9 +28,15 @@
 
   let productId: any;
 
-  const urlParams = new URLSearchParams(window.location.search);
-  productId = urlParams.get('userId');
-  console.log("Product ID from URL:", productId);
+    const urlParams = new URLSearchParams(window.location.search);
+    productId = urlParams.get('product');
+    console.log("Product ID from URL:", productId);
+
+    if (productId) {
+      sessionStorage.setItem('productId', productId);
+    } else {
+      productId = sessionStorage.getItem('productId');
+    }
 
   type Variant = {
     id: string;
@@ -57,7 +63,6 @@
     try {
       const res = await API.get(`/products/variant/?product=${productId}`);
       return res.data.results;
-      console.log("res", res);
     } catch (error) {
       console.error("fetch:brands:", error);
       return [];
@@ -105,7 +110,7 @@
       cell: ({ value }) => value.name,
     }),
     table.column({
-      header: "Image",
+      header: "Images",
       accessor: "images",
       cell: ({ value }) =>{
       if (Array.isArray(value) && value.length > 0) {
