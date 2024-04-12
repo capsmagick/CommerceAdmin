@@ -1,99 +1,20 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
   import LookbookTable from "./lookbookTable.svelte";
-  import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
-  import CreateLookbook from "./createLookbook/+page.svelte";
-  import API from "$lib/services/api";
-  import {toast} from "svelte-sonner";
-  import { goto } from '$app/navigation';
-  import { lookbookDetailsStore } from "$lib/stores/data";
 
-
-    let showDeleteModal = false;
-    let deletingLookbook: any;
-    let refreshTable: any;
-    let editData: any;
-    let showForm: boolean = false;
-    let editForm: boolean = false;
-
-    function toggleForm() {
-    console.log(showForm)
-    showForm = !showForm
-    }
-
-    function handleNewLookbook() {
-    editData = null;
-    editForm = false;
-    showForm = false;
-    refreshTable.refreshTable();
-    }
-
-        // Edit Attribute
-    async function onEditLookbook(eventData: any) {
-        editData = eventData.original;
-        showForm = true;
-        editForm = true;
-    }
-
-        async function onViewLookbook(eventData: any) {
-        lookbookDetailsStore.set = eventData.original.id;
-        goto('lookbook/lookbookDetails')
-    }
-
-    async function onDeleteLookbook(eventData: any) {
-        deletingLookbook = eventData.original;
-        showDeleteModal = true;
-    }
-
-        function confirmDelete() {
-        API.delete(`/products/look-book/${deletingLookbook.id}/delete_record/`).then(() => {
-            closeDeleteModal();
-            toast("Lookbook Deleted Successfully!");
-        }).catch((error) => {
-            console.error("Error deleting Lookbook:", error);
-            closeDeleteModal();
-        });
-    }
-
-    function closeDeleteModal() {
-        showDeleteModal = false;
-        refreshTable.refreshTable();
-    }
-
+  let showForm: boolean = false;
 </script>
-<div>
-    {#if showDeleteModal}
-        <ConfirmDeleteModal attribute={deletingLookbook.name} on:confirm={confirmDelete}
-          on:cancel={closeDeleteModal}/>
-    {/if}
-</div>
-<div class="abc">
-    {#if showForm}
-      <CreateLookbook
-      {editData}
-      {editForm}
-      on:cancel={() => {editData = null;editForm = false;showForm = false;}}
-      on:newLookbook={() => handleNewLookbook()}/>
-    {/if}
-</div>
+
 <div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
-  <div class="flex items-center ">
-      <h4 class="text-3xl font-bold tracking-tight  text-gray-800 dark:text-gray-200 flex-1">Lookbook</h4>
-      <div class="glow-border mr-4">
-        <Button variant="outline" class="glow-border-content">Export</Button>
-      </div>
-      <!-- <div class="glow-border mr-4">
-        <Button variant="outline"  class="text-xs flex items-center gap-2  px-4 py-1.5" on:click={() => toggleForm()}>
-        <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
-        Add Lookbook</Button>
-        </div> -->
+  <div class="flex items-center">
+    <h4
+      class="text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-200 flex-1"
+    >
+      Lookbook
+    </h4>
+    <div class="glow-border mr-4">
+      <Button variant="outline" class="glow-border-content">Export</Button>
+    </div>
   </div>
-  <LookbookTable on:newLookBook={() => toggleForm()}
-                on:view={(event) => onViewLookbook(event.detail.item.row)}
-                on:edit={(event) => onEditLookbook(event.detail.item.row)}
-                on:delete={(event) => onDeleteLookbook(event.detail.item.row)}
-                bind:this={refreshTable}/>
+  <LookbookTable {showForm} />
 </div>
-
-
-

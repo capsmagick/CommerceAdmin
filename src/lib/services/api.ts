@@ -26,7 +26,7 @@ const axiosAPI = axios.create({
   xsrfCookieName: "csrftoken",
   xsrfHeaderName: "X-CSRFToken",
   withCredentials: true,
-  baseURL: "http://localhost:8000",
+  baseURL: "http://manage.signupcasuals.com:8080",
 });
 
 // Adding request interceptor to attach CSRF token to outgoing requests

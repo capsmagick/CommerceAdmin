@@ -27,7 +27,7 @@
 	asChild
 	{...$$restProps}
 >
-	<nav {...builder} class={cn("mx-auto flex w-full flex-col items-center", className)}>
+	<nav {...builder} class={cn("mx-auto flex w-full flex-col items-end", className)}>
 		<slot {pages} {range} {currentPage} />
 	</nav>
 </PaginationPrimitive.Root>
