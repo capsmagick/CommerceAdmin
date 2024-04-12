@@ -122,11 +122,11 @@
 
   function sortName() {
     if (sortData) {
-      sortField = "name";
+      sortField = "user";
       getOrders();
       sortData = !sortData;
     } else {
-      sortField = "-name";
+      sortField = "-user";
       getOrders();
       sortData = !sortData;
     }
