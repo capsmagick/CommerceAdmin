@@ -231,7 +231,7 @@
         "selected-logo"
       ) as HTMLImageElement;
       if (img) {
-        img.src = window.URL.createObjectURL(productDetails.image);
+        img.src = window.URL.createObjectURL(productDetails.images);
       }
     }
   }
@@ -419,8 +419,8 @@
                     id="selected-logo"
                     style="height: 100px;"
                     alt=""
-                    class:showImg={productDetails.image}
-                    class:hideImg={!productDetails.image}
+                    class:showImg={productDetails.images}
+                    class:hideImg={!productDetails.images}
                     src=""/>
                 </div>
                 <input
