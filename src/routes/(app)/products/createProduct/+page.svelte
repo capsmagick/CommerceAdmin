@@ -181,7 +181,6 @@
         await API.post(url, form);
       }
 
-      debugger;
       dispatch("newProduct");
 
       const action = editForm ? "Product Updated" : "Product Created";
@@ -338,32 +337,34 @@
                   </Toggle>
                 </div>
               {/if}
-
-              <div class="grid gap-2">
-                <Label for="area">Selling Price</Label>
-                <div class="relative">
-                  <Input
-                  id="area"
-                  class="pl-8"
-                  type="number"
-                  placeholder="Selling Price"
-                  bind:value={productDetails.selling_price}/>
-                  <span class="absolute inset-y-0 left-0 flex items-center pl-2">&#x20B9;</span>
-                </div>
-              </div>
-              <div class="grid gap-2">
-                <Label for="area">MRP</Label>
-                <div class="relative">
-                  <Input
-                    id="area"
-                    class="pl-8" 
-                    type="number"
-                    placeholder="MRP"
-                    bind:value={productDetails.price}/>
-                  <span class="absolute inset-y-0 left-0 flex items-center pl-2">&#x20B9;</span>
-                </div>
-              </div>
             </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div class="grid gap-2">
+                  <Label for="area">Selling Price</Label>
+                  <div class="relative">
+                    <Input
+                    id="area"
+                    class="pl-8"
+                    type="number"
+                    placeholder="Selling Price"
+                    bind:value={productDetails.selling_price}/>
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-2">&#x20B9;</span>
+                  </div>
+                </div>
+                <div class="grid gap-2">
+                  <Label for="area">MRP</Label>
+                  <div class="relative">
+                    <Input
+                      id="area"
+                      class="pl-8" 
+                      type="number"
+                      placeholder="MRP"
+                      bind:value={productDetails.price}/>
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-2">&#x20B9;</span>
+                  </div>
+                </div>
+              </div>
             <div class="grid grid-cols-2 gap-4">
               <div class="grid gap-2">
                 <Label for="area">HSN</Label>
@@ -403,6 +404,7 @@
                 </Select.Content>
               </Select.Root>
             </div>
+            {#if !editForm}
             <div class="grid grid-cols-1 gap-4">
               <div class="grid gap-2">
                 <Label for="area">Display Image</Label>
@@ -414,14 +416,16 @@
                   Upload Image
                 </Button>
                 <div
-                  style="display:flex; justify-content: center; align-items: center; margin-top: 10px;">
+                style="display:flex; justify-content: center; align-items: center; margin-top: 10px;">
+                {#if productDetails.images}
                   <img
                     id="selected-logo"
                     style="height: 100px;"
                     alt=""
                     class:showImg={productDetails.images}
                     class:hideImg={!productDetails.images}
-                    src=""/>
+                    src={productDetails.images ? window.URL.createObjectURL(productDetails.images) : ''}/>
+                    {/if}
                 </div>
                 <input
                   type="file"
@@ -432,6 +436,7 @@
                   on:change={uploadAvatar}/>
               </div>
             </div>
+            {/if}
           </Card.Content>
           <Card.Footer class="justify-between space-x-2">
             <Button variant="ghost" on:click={() => cancelModel()}
