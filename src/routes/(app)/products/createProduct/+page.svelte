@@ -169,8 +169,8 @@
         form.append("tags", productDetails.tags);
       }
       //  form.append("dimension", productDetails.dimension);
-      // form.append("images", productDetails.images);
-
+      form.append("images", productDetails.images);
+      
       const url = editForm
         ? `/products/product/${productDetails.id}/update_record/`
         : "/products/product/create_record/";
@@ -181,6 +181,7 @@
         await API.post(url, form);
       }
 
+      debugger;
       dispatch("newProduct");
 
       const action = editForm ? "Product Updated" : "Product Created";
@@ -386,8 +387,7 @@
                 <Select.Trigger class="input capitalize"
                   >{selectedTagGroups
                     ? selectedTagGroups.name
-                    : "Select a Tag"}</Select.Trigger
-                >
+                    : "Select a Tag"}</Select.Trigger>
                 <Select.Content>
                   <Select.Group>
                     {#each tags as tag}
@@ -403,7 +403,7 @@
                 </Select.Content>
               </Select.Root>
             </div>
-            <!-- <div class="grid grid-cols-1 gap-4">
+            <div class="grid grid-cols-1 gap-4">
               <div class="grid gap-2">
                 <Label for="area">Display Image</Label>
                 <Button
@@ -413,7 +413,6 @@
                   on:click={pickAvatar}>
                   Upload Image
                 </Button>
-
                 <div
                   style="display:flex; justify-content: center; align-items: center; margin-top: 10px;">
                   <img
@@ -432,12 +431,11 @@
                   accept="image/png, image/jpeg"
                   on:change={uploadAvatar}/>
               </div>
-            </div> -->
+            </div>
           </Card.Content>
           <Card.Footer class="justify-between space-x-2">
             <Button variant="ghost" on:click={() => cancelModel()}
-              >Cancel</Button
-            >
+              >Cancel</Button>
             <Button on:click={() => createProduct()}>Save</Button>
           </Card.Footer>
         </Card.Root>
@@ -469,4 +467,15 @@
   .btn:hover {
     background-color: #4338ca; /* Darker Indigo 
   } */
+  .hideImg {
+    visibility: hidden;
+  }
+  .showImg {
+    display: block;
+    height: 6rem;
+    width: 6rem;
+    flex: none;
+    border-radius: 20px;
+    object-fit: cover;
+  }
 </style>
