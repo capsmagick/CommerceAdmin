@@ -59,6 +59,14 @@
 	    	{ name: "Hero", page: "hero" },
       ]
     },
+    {
+      name: "Temporary",
+      icon: "fa-users-viewfinder",
+      
+      items: [
+	    	{ name: "tablepages", page: "tablefix" },
+      ]
+    },
     // {
     //   name: "Inventory",
     //   icon: "fa-warehouse",

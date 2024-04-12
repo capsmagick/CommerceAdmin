@@ -4,14 +4,14 @@
   import { Button } from "$lib/components/ui/button";
   import { createEventDispatcher } from "svelte";
 
-  const dispatch = createEventDispatcher();
+ // const dispatch = createEventDispatcher();
 
   function handleEdit() {
-    dispatch("edit");
+   // dispatch("edit");
   }
 
   function handleDelete() {
-    dispatch("delete");
+   // dispatch("delete");
   }
 </script>
 
