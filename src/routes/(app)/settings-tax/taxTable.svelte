@@ -25,7 +25,7 @@
   let searchData: string = "";
 
   let showDeleteModal = false;
-  let deletingCategory: any;
+  let deletingTax: any;
 
   let editData: any;
   let editForm: boolean = false;
@@ -75,21 +75,21 @@
 
   function onDelete(id: any, name: any) {
     showDeleteModal = true;
-    deletingCategory = {
+    deletingTax = {
       id: id,
       name: name,
     };
   }
 
   function confirmDelete() {
-    API.delete(`/inventory/tax/${deletingCategory.id}/delete_record/`)
+    API.delete(`/inventory/tax/${deletingTax.id}/delete_record/`)
       .then(() => {
         closeDeleteModal();
         getTax();
         toast("Tax Deleted Successfully!");
       })
       .catch((error) => {
-        console.error("Error deleting Category:", error);
+        console.error("Error deleting Tax:", error);
         closeDeleteModal();
       });
   }
@@ -128,7 +128,7 @@
 <div>
   {#if showDeleteModal}
     <ConfirmDeleteModal
-      attribute={deletingCategory.name}
+      attribute={deletingTax.name}
       on:confirm={confirmDelete}
       on:cancel={closeDeleteModal}
     />
