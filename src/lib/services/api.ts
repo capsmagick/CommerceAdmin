@@ -24,7 +24,7 @@ const getTokenFromResponse = function () {
 function createAxiosInstance(serviceBaseUrl= 'https://localhost:8443/api/') {
 
     const axiosInstance = axios.create({
-        baseURL: serviceBaseUrl,
+        baseURL: serviceBaseUrlProd,
         withCredentials: true,
         xsrfHeaderName: 'X-CSRFToken', // Verify this matches the CSRF token header name used in your backend
         xsrfCookieName: 'csrftoken',   // Verify this matches the CSRF token cookie name used in your backend
