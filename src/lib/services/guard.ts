@@ -14,7 +14,6 @@ isAuthenticated.subscribe(async () => {
 async function checkAuthentication() {
     try {
         const response = await API.get('/account/user/me/');
-       // console.log('response:', response)
         if (response.data.loggedIn === true) {
             const user = response.data.user
             UserStore.set(user);
