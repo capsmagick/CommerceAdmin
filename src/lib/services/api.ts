@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from 'js-cookie'
 
 // let serviceBaseUrlDev = 'http://localhost:8000/api/';
-let serviceBaseUrlProd = 'http://manage.signupcasuals.com:8080/api/'
+let serviceBaseUrlProd = 'https://manage.signupcasuals.com:8443/api/'
 
 let onRejected = function (error) {
     return Promise.reject(error);
@@ -21,7 +21,7 @@ const getTokenFromResponse = function () {
 }
 
 
-function createAxiosInstance(serviceBaseUrl= 'http://localhost:8000/api/') {
+function createAxiosInstance(serviceBaseUrl= 'https://localhost:8443/api/') {
 
     const axiosInstance = axios.create({
         baseURL: serviceBaseUrl,
