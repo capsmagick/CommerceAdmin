@@ -9,6 +9,7 @@
   import { onMount } from "svelte";
   import { MoreHorizontal } from "lucide-svelte";
   import { toast } from "svelte-sonner";
+  import { goto } from "$app/navigation";
   import Pagination from "$lib/components/ui/table-pagination/pagination.svelte";
 
   // variables to handle pagination and table details
@@ -114,6 +115,11 @@
       .catch((error: any) => {
         console.log(error);
       });
+  }
+
+  function handleInvoice(data: any) {
+    console.log(data);
+    goto(`/orders/invoice/`);
   }
 
   onMount(() => {
@@ -252,7 +258,37 @@
           <Table.Cell>{data.description}</Table.Cell>
         {/if}
         {#if hidableCoulumns[2].value}
-          <Table.Cell>{data.status}</Table.Cell>
+          <Table.Cell>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild let:builder>
+                <Button
+                  builders={[builder]}
+                  variant="ghost"
+                  class=" font-normal"
+                >
+                  {data.status}
+                  <ChevronDown class="ml-2 h-4 w-4" /></Button
+                >
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content class="absolute">
+                <DropdownMenu.Item on:click={() => handleProcessing(data.id)}
+                  >Order Processing</DropdownMenu.Item
+                >
+                <DropdownMenu.Item on:click={() => handlePacking(data.id)}
+                  >Order Packing</DropdownMenu.Item
+                >
+                <DropdownMenu.Item on:click={() => handleReady(data.id)}
+                  >Order Ready for Dispatch</DropdownMenu.Item
+                >
+                <DropdownMenu.Item on:click={() => handleShipped(data.id)}
+                  >Order Shipped</DropdownMenu.Item
+                >
+                <DropdownMenu.Item on:click={() => handleDelivered(data.id)}
+                  >Order Delivered</DropdownMenu.Item
+                >
+              </DropdownMenu.Content>
+            </DropdownMenu.Root></Table.Cell
+          >
         {/if}
         {#if hidableCoulumns[3].value}
           <Table.Cell>{data.paymentStatus}</Table.Cell>
@@ -283,20 +319,12 @@
               >
             </DropdownMenu.Trigger>
             <DropdownMenu.Content class="absolute">
-              <DropdownMenu.Item on:click={() => handleProcessing(data.id)}
-                >Order Processing</DropdownMenu.Item
+              <DropdownMenu.Item
+                ><i class="fa fa-eye sm mr-2"></i>View</DropdownMenu.Item
               >
-              <DropdownMenu.Item on:click={() => handlePacking(data.id)}
-                >Order Packing</DropdownMenu.Item
-              >
-              <DropdownMenu.Item on:click={() => handleReady(data.id)}
-                >Order Ready for Dispatch</DropdownMenu.Item
-              >
-              <DropdownMenu.Item on:click={() => handleShipped(data.id)}
-                >Order Shipped</DropdownMenu.Item
-              >
-              <DropdownMenu.Item on:click={() => handleDelivered(data.id)}
-                >Order Delivered</DropdownMenu.Item
+              <DropdownMenu.Item on:click={() => handleInvoice(data)}
+                ><i class="fa-solid fa-file-lines mr-2"
+                ></i>Invoice</DropdownMenu.Item
               >
             </DropdownMenu.Content>
           </DropdownMenu.Root>
