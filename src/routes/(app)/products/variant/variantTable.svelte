@@ -116,7 +116,7 @@
       if (Array.isArray(value) && value.length > 0) {
         const imageUrl = value[0].image;
         // console.log("img:",imageUrl);
-        return `<img src="http://localhost:8000${imageUrl}" alt="Featured Image" class="h-10 w-10 rounded-full">`;//image api update backend 
+        return `<img src="http://localhost:8000${imageUrl}" alt="Featured Image" class="h-10 w-10 rounded-full">`;//image api update url
       } else {
         return 'No Image';
       }

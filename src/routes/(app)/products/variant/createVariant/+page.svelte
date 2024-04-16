@@ -282,6 +282,7 @@
                 bind:value={variantDetails.selling_price}
                 placeholder="Selling Price"/>
             </div>
+            {#if !editForm}
             <div class="flex items-center justify-evenly gap-2">
               <Button
                 type="button"
@@ -303,6 +304,7 @@
                 on:input={uploadAvatar}
                 accept="image/png, image/jpeg"/>
             </div>
+            {/if}
           </Card.Content>
           <Card.Footer class="justify-between space-x-2">
             <Button
