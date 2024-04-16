@@ -8,6 +8,7 @@
   import { toast } from "svelte-sonner";
   import * as Card from "$lib/components/ui/card";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
+  import HeroTable from "../heroTable.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -15,11 +16,13 @@
   export let editForm: boolean;
   let updateImage: boolean = false;
 
-  let heroDetails = {
+
+
+  let heroDetails:any = {
     id: "",
-    name: "",
+    title: "",
     cta_text: "",
-    image: "",
+    image:"",
     short_description: "",
     link: "",
   };
@@ -48,7 +51,7 @@
         form.append("image", heroDetails.image);
       }
       form.append("short_description", heroDetails.short_description);
-      form.append("name", heroDetails.name);
+      form.append("title", heroDetails.title);
       form.append("cta_text", heroDetails.cta_text);
       form.append("link", heroDetails.link);
       // form.append("name", heroDetails.name);
@@ -107,11 +110,11 @@
       >
     </Dialog.Header>
     <div class="mb-3">
-      <Label for="name">Name</Label>
+      <Label for="title">Title</Label>
       <Input
-        id="name"
-        bind:value={heroDetails.name}
-        placeholder="Name"
+        id="title"
+        bind:value={heroDetails.title}
+        placeholder="title"
         class="textarea"
       />
     </div>
