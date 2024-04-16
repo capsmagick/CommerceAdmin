@@ -21,7 +21,7 @@
     feature_image: "",
     description: "",
     collections: "",
-    tags: [],
+    tags:  [""],
   };
   let id = "";
 
@@ -35,7 +35,10 @@
     };
     id = editData.id;
   }
+  let tagInput: string = ''; // Holds the raw tag input from the user
 
+  // Reactive statement to process tag input and update productDetails.tags
+  $: collectionDetails.tags = tagInput.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
   async function fetchTags() {
     try {
       const res = await API.get("/masterdata/tag/");
@@ -45,10 +48,10 @@
     }
   }
 
-  function handleTagChange(selectedTags: { value: number }) {
-    selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
-    collectionDetails.tags.push(selectedTagGroups.id);
-  }
+  // function handleTagChange(selectedTags: { value: number }) {
+  //   selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
+  //   collectionDetails.tags.push(selectedTagGroups.id);
+  // }
 
   let imageUpload: HTMLInputElement;
 
@@ -75,7 +78,9 @@
       form.append("name", collectionDetails.name);
       form.append("description", collectionDetails.description);
       form.append("collections", collectionDetails.collections);
-      form.append("tags", collectionDetails.tags);
+      collectionDetails.tags.forEach(tag => {
+  form.append("tags[]", tag);
+});
 
       const url = editForm
         ? `/products/collection/${id}/update_record/`
@@ -127,7 +132,7 @@
         bind:value={collectionDetails.description}
         placeholder="Description"
         class="textarea"
-        type="text"
+        
       />
     </div>
 
@@ -137,28 +142,11 @@
                             </div> -->
 
     <div class="items-center gap-2 mb-3">
-      <Label for="description">Tag</Label>
-      <Select.Root>
-        <Select.Trigger class="input capitalize"
-          >{selectedTagGroups
-            ? selectedTagGroups.name
-            : "Select a Tag"}</Select.Trigger
-        >
-        <Select.Content>
-          <Select.Group>
-            {#each tags as tag}
-              <Select.Item
-                value={tag.id}
-                label={tag.name}
-                class="capitalize card"
-                on:click={() => handleTagChange({ value: tag.id })}
-              >
-                {tag.name}
-              </Select.Item>
-            {/each}
-          </Select.Group>
-        </Select.Content>
-      </Select.Root>
+      <Label for="tags">Tags</Label>
+      <Input
+        id="tags"
+        placeholder="Enter tags separated by commas"
+        bind:value={tagInput} />
     </div>
 
     <div class="flex justify-between mb-3">
