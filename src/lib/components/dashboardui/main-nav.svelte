@@ -58,14 +58,14 @@
 	    	{ name: "Hero", page: "hero" },
       ]
     },
-    {
-      name: "Temporary",
-      icon: "fa-users-viewfinder",
+    // {
+    //   name: "Temporary",
+    //   icon: "fa-users-viewfinder",
       
-      items: [
-	    	{ name: "tablepages", page: "tablefix" },
-      ]
-    },
+    //   items: [
+	  //   	{ name: "tablepages", page: "tablefix" },
+    //   ]
+    // },
     // {
     //   name: "Inventory",
     //   icon: "fa-warehouse",
@@ -96,21 +96,19 @@
       icon: "fa-gear",
       items: [
         { name: "General Settings", page: "settings-general" },
-        { name: "Payment Methods", page: "settings-payment" },
-        { name: "Shipping Methods", page: "settings-shipping" },
         { name: "Tax Configuration", page: "settings-tax" },
         { name: "Admin Users", page: "settings-admin-users" },
       ]
     },
-    {
-      name: "Help",
-      icon: "fa-circle-question",
-      items: [
-        { name: "Knowledge Base", page: "support-knowledge-base" },
-        { name: "Contact Support", page: "support-contact" },
-        { name: "System Status", page: "support-system-status" },
-      ]
-    },
+    // {
+    //   name: "Help",
+    //   icon: "fa-circle-question",
+    //   items: [
+    //     { name: "Knowledge Base", page: "support-knowledge-base" },
+    //     { name: "Contact Support", page: "support-contact" },
+    //     { name: "System Status", page: "support-system-status" },
+    //   ]
+    // },
   ];
 
 	async function navigate(page:string) {
