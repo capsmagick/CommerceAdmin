@@ -1,7 +1,7 @@
 <script lang="ts">
   import API from "$lib/services/api";
   import { Button } from "$lib/components/ui/button";
-  import AdminTable from "./AdminTable.svelte";
+  import AdminTable from "./adminTable.svelte";
   import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
   import {toast} from "svelte-sonner";
 
