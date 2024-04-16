@@ -1,11 +1,9 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
-  import AttributeTable from "./attributeTable.svelte";
+  import Template1 from "./template1/+page.svelte";
 
-  let showForm: boolean = false;
-
-  function toggleForm() {
-    showForm = !showForm;
+  function print() {
+    window.print();
   }
 </script>
 
@@ -14,19 +12,23 @@
     <h4
       class="text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-200 flex-1"
     >
-      Attribute
+      Invoice
     </h4>
     <div class="glow-border mr-4">
       <Button
         variant="outline"
         class="text-xs flex items-center gap-2  px-4 py-1.5"
-        on:click={() => toggleForm()}
+        on:click={print}
       >
         <span>
-          <i class="fa-solid fa-plus text-sm"></i>
-        </span>New Attribute
+          <i class="fa-solid fa-print text-sm"></i>
+        </span>Print
       </Button>
     </div>
   </div>
-  <AttributeTable {showForm} on:cancel={() => (showForm = false)}/>
+  <div class="p-5">
+    <div class="border p-5">
+      <Template1 />
+    </div>
+  </div>
 </div>

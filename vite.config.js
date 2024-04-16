@@ -10,7 +10,7 @@ export default defineConfig({
 		},
 		proxy:{
 			'/api':{
-				target:"http://localhost:8000",
+				target:"https://manage.signupcasuals.com:8443/api/",
 				changeOrigin: true,
 				rewrite: path => path.replace(/^\/api/, ''),
 			}

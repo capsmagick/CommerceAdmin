@@ -5,13 +5,15 @@
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import { onMount } from "svelte";
   import API from "$lib/services/api";
   import { MoreHorizontal } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import Pagination from "$lib/components/ui/table-pagination/pagination.svelte";
   import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
   import CreditAttribute from "./createattributes/+page.svelte";
+  import { createEventDispatcher, onMount } from "svelte";
+
+  const dispatch = createEventDispatcher();
 
   export let showForm: boolean = false;
 
@@ -97,6 +99,14 @@
     showDeleteModal = false;
   }
 
+  function closeEditModal() {
+    editData = null;
+    editForm = false;
+    showForm = false;
+    dispatch("cancel");
+
+  }
+
   onMount(() => {
     getAttribute();
   });
@@ -139,11 +149,7 @@
     <CreditAttribute
       {editData}
       {editForm}
-      on:cancel={() => {
-        editData = null;
-        editForm = false;
-        showForm = false;
-      }}
+      on:cancel={closeEditModal}
       on:newAttribute={() => handleNewAttribute()}
     />
   {/if}

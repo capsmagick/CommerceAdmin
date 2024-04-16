@@ -1,61 +1,42 @@
 <!-- ConfirmDeleteModal.svelte -->
-<script>
-  import { createEventDispatcher, onMount } from 'svelte';
-  import * as Card from "$lib/components/ui/card";
-  import {Button }from "$lib/components/ui/button";
-  import {Label} from "$lib/components/ui/label"
-  import Table from '../table/table.svelte';
+<script lang="ts">
+  import { createEventDispatcher } from "svelte";
+  import { Button } from "$lib/components/ui/button";
+  import { Label } from "$lib/components/ui/label";
+  import * as Dialog from "$lib/components/ui/dialog/index.js";
 
-  export let attribute;
+  export let attribute: any;
 
   const dispatch = createEventDispatcher();
 
   function confirmDelete() {
-    dispatch('confirm');
+    dispatch("confirm");
   }
 
   function cancelDelete() {
-    dispatch('cancel');
+    dispatch("cancel");
   }
-    function handleClickOutside(event) {
-    if (!event.target.closest('.card')) {
-      cancelDelete();
-    }
-  }
-  
-onMount(() => {
-  const timeout = setTimeout(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-  }, 100);
-
-  return () => {
-    clearTimeout(timeout);
-    document.removeEventListener('mousedown', handleClickOutside);
-  };
-});
-
-
-
-
 </script>
 
-<div class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50" style="color: black">
-  <div class="flex items-center justify-center">
-    <div class="glow-border" >
-      <div class="card glow-border-content bg-background text-foreground">
-        <Card.Root class="p-6 rounded-lg">
-          <Card.Header>
-            <Card.Title class="text-lg font-semibold mb-4">Confirm Delete</Card.Title>
-          </Card.Header>
-          <Card.Content>
-           <Label>Are you sure you want to delete <span style="color: red">{attribute}</span>?</Label>
-          </Card.Content>
-          <Card.Footer class="mt-4 flex justify-end">
-            <Button variant="ghost" on:click={cancelDelete}>Cancel</Button>
-            <Button variant="ghost" class="text-red-600 hover:text-red-600" on:click={confirmDelete}>Delete</Button>
-          </Card.Footer>
-        </Card.Root>
-      </div>
-    </div>
-  </div>
-</div>
+<Dialog.Root open={true} onOpenChange={cancelDelete}>
+  <Dialog.Content>
+    <Dialog.Header>
+      <Dialog.Description class="text-lg font-semibold mb-4"
+        >Confirm Delete</Dialog.Description
+      >
+    </Dialog.Header>
+    <Label
+      >Are you sure you want to delete <span style="color: red"
+        >{attribute}</span
+      >?</Label
+    >
+    <Dialog.Footer class="mt-4 flex justify-end">
+      <Button variant="ghost" on:click={cancelDelete}>Cancel</Button>
+      <Button
+        variant="ghost"
+        class="text-red-600 hover:text-red-600"
+        on:click={confirmDelete}>Delete</Button
+      >
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>

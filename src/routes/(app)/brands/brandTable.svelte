@@ -5,13 +5,15 @@
   import { Button } from "$lib/components/ui/button";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import { onMount } from "svelte";
   import API from "$lib/services/api";
   import { MoreHorizontal } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
   import CreditBrand from "./createBrand/+page.svelte";
   import Pagination from "$lib/components/ui/table-pagination/pagination.svelte";
+  import { createEventDispatcher, onMount } from "svelte";
+
+  const dispatch = createEventDispatcher();
 
   export let showForm: boolean = false;
   // variables to handle pagination and table details
@@ -104,6 +106,13 @@
     showDeleteModal = false;
   }
 
+  function cancelEditModel() {
+    editData = null;
+    editForm = false;
+    showForm = false;
+    dispatch("cancel");
+  }
+
   onMount(() => {
     getBrands();
   });
@@ -146,11 +155,7 @@
     <CreditBrand
       {editData}
       {editForm}
-      on:cancel={() => {
-        editData = null;
-        editForm = false;
-        showForm = false;
-      }}
+      on:cancel={cancelEditModel}
       on:newBrand={() => handleNewBrand()}
     />
   {/if}
