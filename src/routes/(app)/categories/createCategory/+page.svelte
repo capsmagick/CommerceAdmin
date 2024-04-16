@@ -9,6 +9,13 @@
   import * as Card from "$lib/components/ui/card";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
   import { Label } from "$lib/components/ui/label";
+  import { cn } from "$lib/utils.js";
+  import { tick } from "svelte";
+  import * as Command from "$lib/components/ui/command/index.js";
+  import * as Popover from "$lib/components/ui/popover/index.js";
+  import Check from "lucide-svelte/icons/check";
+  import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
+  import CaretSort from "svelte-radix/CaretSort.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -36,9 +43,12 @@
   let parent_category: string = "";
   let second_parent_category: string;
   let categories: any[] = [];
+  let categoryOptions:{ id:string,value: string, label: string }[] = [];
   let imageUpload: any;
   let tagNames: string[] = [];
   let attributeChange: boolean = false;
+
+  let open: boolean = false;
 
   if (editForm) {
     categoryDetails = {
@@ -87,6 +97,12 @@
     try {
       const res = await API.get("/masterdata/category/");
       categories = Array.isArray(res.data?.results) ? res.data.results : [];
+
+       categoryOptions = categories.map(category => ({
+        id:category.id,
+        value: category.name,
+        label: category.name
+      }));
     } catch (error) {
       console.log("category:fetch-category:", error);
       categories = [];
@@ -114,6 +130,8 @@
   async function createCategory() {
     try {
       const formData = new FormData();
+      console.log("categoryDetails", categoryDetails);
+      
       formData.append("name", categoryDetails.name);
       formData.append("description", categoryDetails.description);
       formData.append("handle", categoryDetails.handle);
@@ -174,6 +192,10 @@
     updateSelectionName();
   }
 
+  function handleParantCategory(){
+
+  }
+
   function handleSecondaryParentCat(selectedCat: { value: number }) {
     categoryDetails.second_parent_category = selectedCat.value;
     second_parent_category = categories.find(
@@ -201,6 +223,20 @@
   function cancelModel() {
     attributeChange = false;
     dispatch("cancel");
+  }
+
+   $: selectedParentCategory =
+    categoryOptions.find((f) => f.value === id)?.label ?? "Select Parent Category";
+    
+ 
+  // We want to refocus the trigger button when the user selects
+  // an item from the list so users can continue navigating the
+  // rest of the form with the keyboard.
+  function closeAndFocusTrigger(triggerId: string) {
+    open = false;
+    tick().then(() => {
+      document.getElementById(triggerId)?.focus();
+    });
   }
 
 </script>
@@ -265,27 +301,50 @@
 
     <div class="grid grid-cols-2 gap-4 mb-3">
       <div class="mb-3">
-        <Label for="mainMenu">Parent Category</Label>
-        <Select.Root>
-          <Select.Trigger class="input capitalize">
-            {parent_category ? parent_category : "Select Parent Category"}
-          </Select.Trigger>
-          <Select.Content>
-            <Select.Group>
-              {#each categories as category}
-                <Select.Item
-                  value={category.id}
-                  label={category.name}
-                  class="capitalize card"
-                  on:click={() => handleParentCat({ value: category.id })}
+          <Label for="parant_category">Parant Category</Label>
+
+            <Popover.Root bind:open let:ids>
+              <Popover.Trigger asChild let:builder>
+                <Button
+                  builders={[builder]}
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  class="w-[200px] justify-between"
                 >
-                  {category.name}
-                </Select.Item>
-              {/each}
-            </Select.Group>
-          </Select.Content>
-        </Select.Root>
-      </div>
+                  {selectedParentCategory}
+                  <CaretSort class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </Popover.Trigger>
+              <Popover.Content class="w-[200px] p-0">
+                <Command.Root>
+                  <Command.Input placeholder="Search category..." class="h-9" />
+                  <Command.Empty>No category found.</Command.Empty>
+                  <Command.Group>
+                    {#each categoryOptions as category}
+                      <Command.Item
+                        value={category.value}
+                        onSelect={(currentValue) => {
+                          id = currentValue;
+                          closeAndFocusTrigger(ids.trigger);
+                          categoryDetails.parent_category = category.id;
+                        }}
+                      >
+                        <Check
+                          class={cn(
+                            "mr-2 h-4 w-4",
+                            id !== category.id && "text-transparent"
+                          )}
+                        />
+                        {category.label}
+                      </Command.Item>
+                    {/each}
+                  </Command.Group>
+                </Command.Root>
+              </Popover.Content>
+            </Popover.Root>
+          </div>
+     
       <!-- <Select.Root>
                 <Select.Trigger class="input capitalize">
                   {second_parent_category
