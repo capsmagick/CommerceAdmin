@@ -272,7 +272,7 @@
             </DropdownMenu.Trigger>
             <DropdownMenu.Content class="absolute">
               <DropdownMenu.Item on:click={() => onView(data.id)}
-                ><i class="fa fa-eye sm mr-2"></i>Edit</DropdownMenu.Item
+                ><i class="fa fa-eye sm mr-2 text-blue-500"></i>View</DropdownMenu.Item
               >
               <DropdownMenu.Item on:click={() => onEdit(data)}
                 ><i class="fa fa-pencil sm mr-2"></i>Edit</DropdownMenu.Item

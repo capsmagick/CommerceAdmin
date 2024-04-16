@@ -38,7 +38,7 @@
   let categories: any[] = [];
   let imageUpload: any;
   let tagNames: string[] = [];
-  let tagChange: boolean = false;
+  let attributeChange: boolean = false;
 
   if (editForm) {
     categoryDetails = {
@@ -114,7 +114,6 @@
   async function createCategory() {
     try {
       const formData = new FormData();
-
       formData.append("name", categoryDetails.name);
       formData.append("description", categoryDetails.description);
       formData.append("handle", categoryDetails.handle);
@@ -122,12 +121,11 @@
       formData.append("is_top_category", categoryDetails.is_top_category);
       if (categoryDetails.parent_category)
         formData.append("parent_category", categoryDetails.parent_category);
-      if (categoryDetails.attribute_group.length > 0)
+      if(attributeChange){
         formData.append("attribute_group", categoryDetails.attribute_group);
-      if (tagChange) {
-        formData.append("tags", categoryDetails.tags);
       }
-      formData.append("attribute_group", categoryDetails.attribute_group);
+        formData.append("tags", categoryDetails.tags);
+      // formData.append("attribute_group", categoryDetails.attribute_group);
       if (updateImage) {
         formData.append("image", categoryDetails.image);
       }
@@ -152,6 +150,7 @@
   }
 
   function handleGroupChange(selectedGroup: { value: number }) {
+    attributeChange = true;
     categoryDetails.attribute_group = selectedGroup.value;
     selectedAttributeGroup = attributeGroups.find(
       (g: any) => g.id == selectedGroup.value
@@ -200,13 +199,13 @@
   });
 
   function cancelModel() {
-    tagChange = false;
+    attributeChange = false;
     dispatch("cancel");
   }
 
 </script>
 
-<Dialog.Root open={true} onOpenChange={cancelModel}>
+<Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
   <Dialog.Content>
     <Dialog.Header class="font-bold mb-5">
       <Dialog.Description
