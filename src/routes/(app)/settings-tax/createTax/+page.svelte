@@ -8,6 +8,8 @@
     import {createEventDispatcher, onMount} from "svelte";
     import {toast} from "svelte-sonner";
     import * as Card from "$lib/components/ui/card";
+    import * as Dialog from "$lib/components/ui/dialog/index.js";
+
 
     const dispatch = createEventDispatcher();
 
@@ -53,22 +55,23 @@
       function cancelDelete() {
     dispatch('cancel');
   }
-    function handleClickOutside(event: any) {
-    if (!event.target.closest('.card')) {
-      cancelDelete();
-    }
-  }
-  
-onMount(() => {
-  const timeout = setTimeout(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-  }, 100);
 
-  return () => {
-    clearTimeout(timeout);
-    document.removeEventListener('mousedown', handleClickOutside);
-  };
-});
+//     function handleClickOutside(event: any) {
+//     if (!event.target.closest('.card')) {
+//       cancelDelete();
+//     }
+//   }
+  
+// onMount(() => {
+//   const timeout = setTimeout(() => {
+//     document.addEventListener('mousedown', handleClickOutside);
+//   }, 100);
+
+//   return () => {
+//     clearTimeout(timeout);
+//     document.removeEventListener('mousedown', handleClickOutside);
+//   };
+// });
 
   function handleBrandChange(selectedVariantId: string) {
     taxDetails.slab = selectedVariantId;
@@ -76,15 +79,15 @@ onMount(() => {
 
 </script>
 
-<div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
+<!-- <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
    <div class="flex items-center justify-center">
        <div class="glow-border">
-           <div class="card glow-border-content bg-background text-foreground">
-                <Card.Root class="p-6 rounded-lg">
-                    <Card.Header class="font-bold mb-5">
-                        <Card.Title>{editForm ? 'Update Tax' : 'New Tax'}</Card.Title>
-                    </Card.Header>
-                    <Card.Content>
+           <div class="card glow-border-content bg-background text-foreground"> -->
+                <Dialog.Root open={true} onOpenChange={cancelDelete}>
+                    <Dialog.Content>
+                                          <Dialog.Header class="font-bold mb-5">
+                        <Dialog.Description>{editForm ? 'Update Tax' : 'New Tax'}</Dialog.Description>
+                    </Dialog.Header>
                             <div class="mb-3">
                                 <Label for="name">Name</Label>
                                 <Input id="name" bind:value={taxDetails.name} placeholder="Name" class="input"/>
@@ -108,15 +111,15 @@ onMount(() => {
                     </Select.Group>
                   </Select.Content>
                 </Select.Root>
-                        </div>            
-                    </Card.Content>
-                    <Card.Footer  class="justify-between space-x-2">
-                        <Button type="button" variant="ghost" on:click={() => dispatch("cancel")}>Cancel</Button>
+                        </div>   
+                                            <Dialog.Footer  class="justify-between space-x-2">
+                        <Button type="button" variant="ghost" on:click={cancelDelete}>Cancel</Button>
                         <Button type="submit"  on:click={createTax}>Save</Button>
-                    </Card.Footer>
-                </Card.Root>
-           </div>
+                    </Dialog.Footer>         
+                    </Dialog.Content>
+                </Dialog.Root>
+           <!-- </div>
        </div>
    </div>
-</div>
+</div> -->
 

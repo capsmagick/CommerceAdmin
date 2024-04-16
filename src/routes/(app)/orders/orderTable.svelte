@@ -320,7 +320,7 @@
             </DropdownMenu.Trigger>
             <DropdownMenu.Content class="absolute">
               <DropdownMenu.Item
-                ><i class="fa fa-eye sm mr-2"></i>View</DropdownMenu.Item
+                ><i class="fa fa-eye sm mr-2 text-blue-500"></i>View</DropdownMenu.Item
               >
               <DropdownMenu.Item on:click={() => handleInvoice(data)}
                 ><i class="fa-solid fa-file-lines mr-2"

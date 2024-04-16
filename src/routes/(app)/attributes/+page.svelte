@@ -28,5 +28,5 @@
       </Button>
     </div>
   </div>
-  <AttributeTable {showForm} />
+  <AttributeTable {showForm} on:cancel={() => (showForm = false)}/>
 </div>

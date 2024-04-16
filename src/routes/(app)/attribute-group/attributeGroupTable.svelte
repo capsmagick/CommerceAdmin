@@ -5,13 +5,16 @@
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import { onMount } from "svelte";
   import API from "$lib/services/api";
   import { MoreHorizontal } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import Pagination from "$lib/components/ui/table-pagination/pagination.svelte";
   import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
   import CreateAttributeGroup from "./create-attributeGroup/+page.svelte";
+  import { any } from "zod";
+  import { createEventDispatcher, onMount } from "svelte";
+
+  const dispatch = createEventDispatcher();
 
   export let showForm: boolean = false;
 
@@ -98,6 +101,14 @@
     showDeleteModal = false;
   }
 
+  function cancelEditModal() {
+    editData = null;
+    editForm = false;
+    showForm = false;
+    dispatch("cancel");
+
+  }
+
   onMount(() => {
     getAttributes();
   });
@@ -140,11 +151,7 @@
     <CreateAttributeGroup
       {editData}
       {editForm}
-      on:cancel={() => {
-        editData = null;
-        editForm = false;
-        showForm = false;
-      }}
+      on:cancel={cancelEditModal}
       on:newAttributeGroup={() => handleNewAttributeGroup()}
     />
   {/if}
