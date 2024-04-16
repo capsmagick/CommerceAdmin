@@ -7,7 +7,6 @@
   import API from "$lib/services/api";
   import { createEventDispatcher, onMount } from "svelte";
   import { toast } from "svelte-sonner";
-  import * as Card from "$lib/components/ui/card";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
 
   const dispatch = createEventDispatcher();
@@ -101,31 +100,8 @@
   function cancelModel() {
     dispatch("cancel");
   }
-  //     function handleClickOutside(event) {
-  //     if (!event.target.closest('.card')) {
-  //       cancelModel();
-  //     }
-  //   }
-
-  // onMount(async () => {
-  //     await fetchTags();
-  //   });
-  // onMount(() => {
-  //   const timeout = setTimeout(() => {
-  //     document.addEventListener('mousedown', handleClickOutside);
-  //   }, 100);
-
-  //   return () => {
-  //     clearTimeout(timeout);
-  //     document.removeEventListener('mousedown', handleClickOutside);
-  //   };
-  // });
 </script>
 
-<!-- <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
-   <div class="flex items-center justify-center">
-       <div class="glow-border">
-           <div class="card glow-border-content bg-background text-foreground overflow-y-auto"  style="max-height:90vh;"> -->
 <Dialog.Root open={true} onOpenChange={cancelModel}>
   <Dialog.Content>
     <Dialog.Header class="font-bold mb-5">
@@ -156,8 +132,8 @@
     </div>
 
     <!-- <div class="mb-3">
-                                <Label for="collections">Collections</Label>
-                                <Input id="collections" bind:value={collectionDetails.collections} placeholder="Collections" class="input"/>
+<Label for="collections">Collections</Label>
+<Input id="collections" bind:value={collectionDetails.collections} placeholder="Collections" class="input"/>
                             </div> -->
 
     <div class="items-center gap-2 mb-3">
@@ -215,11 +191,6 @@
     </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>
-
-<!-- </div>
-       </div>
-   </div>
-</div> -->
 
 <style>
   .hideImg {
