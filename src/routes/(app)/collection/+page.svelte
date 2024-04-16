@@ -37,5 +37,5 @@
       >
     </div>
   </div>
-  <CollectionTable {showForm} />
+  <CollectionTable {showForm} on:cancel={() => (showForm = false)}/>
 </div>
