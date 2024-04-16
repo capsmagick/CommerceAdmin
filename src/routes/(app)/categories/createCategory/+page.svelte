@@ -7,12 +7,14 @@
   import API from "$lib/services/api";
   import { toast } from "svelte-sonner";
   import * as Card from "$lib/components/ui/card";
+  import * as Dialog from "$lib/components/ui/dialog/index.js";
+  import { Label } from "$lib/components/ui/label";
 
   const dispatch = createEventDispatcher();
 
   export let editData;
   export let editForm: boolean;
-  let updateImage: boolean = false
+  let updateImage: boolean = false;
 
   let categoryDetails: any = {
     name: "",
@@ -36,7 +38,7 @@
   let categories: any[] = [];
   let imageUpload: any;
   let tagNames: string[] = [];
-  let tagChange: boolean = false
+  let tagChange: boolean = false;
 
   if (editForm) {
     categoryDetails = {
@@ -54,25 +56,31 @@
     updateSelectionName();
   }
 
-  async function updateSelectionName(){
-    if (categoryDetails.parent_category){
+  async function updateSelectionName() {
+    if (categoryDetails.parent_category) {
       await fetchCategories();
-      parent_category = categories.find(cat => cat.id === categoryDetails.parent_category)?.name;
+      parent_category = categories.find(
+        (cat) => cat.id === categoryDetails.parent_category
+      )?.name;
     }
     if (categoryDetails.second_parent_category) {
       await fetchCategories();
-      second_parent_category = categories.find(cat => cat.id === categoryDetails.second_parent_category)?.name;
+      second_parent_category = categories.find(
+        (cat) => cat.id === categoryDetails.second_parent_category
+      )?.name;
     }
 
     if (categoryDetails.attribute_group) {
       await fetchAttributeGroups();
-      selectedAttributeGroup = attributeGroups.find(group => group.id === categoryDetails.attribute_group)?.name;
+      selectedAttributeGroup = attributeGroups.find(
+        (group: any) => group.id === categoryDetails.attribute_group
+      )?.name;
     }
 
-    if (categoryDetails.tags && categoryDetails.tags.length > 0) {
-      await fetchTags(); 
-      tagNames = categoryDetails.tags.map(tag => tag.name);
-    }
+    // if (categoryDetails.tags && categoryDetails.tags.length > 0) {
+    //   await fetchTags();
+    //   tagNames = categoryDetails.tags.map((tag) => tag.name);
+    // }
   }
 
   async function fetchCategories() {
@@ -94,34 +102,34 @@
     }
   }
 
-  async function fetchTags() {
-    try {
-      const res = await API.get("/masterdata/tag/");
-      tags = res.data.results;
-    } catch (error) {
-      console.log("category:fetch-tags:", error);
-    }
-  }
+  // async function fetchTags() {
+  //   try {
+  //     const res = await API.get("/masterdata/tag/");
+  //     tags = res.data.results;
+  //   } catch (error) {
+  //     console.log("category:fetch-tags:", error);
+  //   }
+  // }
 
   async function createCategory() {
     try {
       const formData = new FormData();
-      
+
       formData.append("name", categoryDetails.name);
       formData.append("description", categoryDetails.description);
       formData.append("handle", categoryDetails.handle);
       formData.append("is_main_menu", categoryDetails.is_main_menu);
       formData.append("is_top_category", categoryDetails.is_top_category);
       if (categoryDetails.parent_category)
-            formData.append("parent_category", categoryDetails.parent_category);
+        formData.append("parent_category", categoryDetails.parent_category);
       if (categoryDetails.attribute_group.length > 0)
         formData.append("attribute_group", categoryDetails.attribute_group);
       if (tagChange) {
         formData.append("tags", categoryDetails.tags);
-        }
+      }
       formData.append("attribute_group", categoryDetails.attribute_group);
-      if (updateImage){
-      formData.append("image", categoryDetails.image);
+      if (updateImage) {
+        formData.append("image", categoryDetails.image);
       }
       const url = editForm
         ? `/masterdata/category/${id}/update_record/`
@@ -150,12 +158,13 @@
     ).name;
     updateSelectionName();
   }
-  function handleTagChange(selectedTags: { value: number }) {
-    tagChange = true
-    selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
-    categoryDetails.tags = selectedTagGroups.id;
-    updateSelectionName();
-  }
+
+  // function handleTagChange(selectedTags: { value: number }) {
+  //   tagChange = true;
+  //   selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
+  //   categoryDetails.tags = selectedTagGroups.id;
+  //   updateSelectionName();
+  // }
 
   function handleParentCat(selectedCat: { value: number }) {
     categoryDetails.parent_category = selectedCat.value;
@@ -188,111 +197,97 @@
   onMount(async () => {
     await fetchCategories();
     await fetchAttributeGroups();
-    await fetchTags();
   });
 
   function cancelModel() {
-    tagChange = false
+    tagChange = false;
     dispatch("cancel");
   }
-  function handleClickOutside(event:any) {
-    if (!event.target.closest(".card")) {
-      cancelModel();
-    }
-  }
 
-  onMount(() => {
-    const timeout = setTimeout(() => {
-      document.addEventListener("mousedown", handleClickOutside);
-    }, 100);
-
-    return () => {
-      clearTimeout(timeout);
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  });
 </script>
 
-<div
-  class="fixed bg-background inset-0 flex items-center justify-center"
-  style="background-color: rgba(0, 0, 0, 0.5);">
-  <div class="flex items-center justify-center">
-    <div class="glow-border">
-      <div class="card glow-border-content bg-background text-foreground">
-        <Card.Root class="p-6 rounded-lg">
-          <Card.Header class="font-bold mb-5">
-            <Card.Title
-              >{editForm ? "Update Category" : "New Category"}</Card.Title
-            >
-          </Card.Header>
-          <Card.Content>
-            <div class="mb-3">
-              <Input
-                bind:value={categoryDetails.name}
-                placeholder="Name"
-                class="input"
-                type="text"
-              />
-            </div>
-            <div class="mb-3">
-              <Textarea
-                bind:value={categoryDetails.description}
-                placeholder="Description"
-                class="textarea"
-                />
-            </div>
+<Dialog.Root open={true} onOpenChange={cancelModel}>
+  <Dialog.Content>
+    <Dialog.Header class="font-bold mb-5">
+      <Dialog.Description
+        >{editForm ? "Update Category" : "New Category"}</Dialog.Description
+      >
+    </Dialog.Header>
 
-            <div class="grid grid-cols-2 gap-4 mb-3">
-              <Input
-                bind:value={categoryDetails.handle}
-                placeholder="Handle"
-                class="input"
-                type="text"
-                />
-              <Select.Root>
-                <Select.Trigger class="input capitalize">
-                  {selectedAttributeGroup
-                    ? selectedAttributeGroup
-                    : "Select a Attribute Group"}</Select.Trigger>
-                <Select.Content>
-                  <Select.Group>
-                    {#each attributeGroups as group}
-                      <Select.Item
-                        value={group.id}
-                        label={group.name}
-                        class="capitalize card"
-                        on:click={() => handleGroupChange({ value: group.id })}>
-                        {group.name}
-                      </Select.Item>
-                    {/each}
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
-            </div>
+    <div class="mb-3">
+      <Input
+        bind:value={categoryDetails.name}
+        placeholder="Name"
+        class="input"
+        type="text"
+      />
+    </div>
+    <div class="mb-3">
+      <Textarea
+        bind:value={categoryDetails.description}
+        placeholder="Description"
+        class="textarea"
+      />
+    </div>
 
-            <div class="grid grid-cols-2 gap-4 mb-3">
-              <div class="mb-3">
-              <label for="mainMenu">Parent Category</label>
-              <Select.Root>
-                <Select.Trigger class="input capitalize">
-                  {parent_category ? parent_category : "Select Parent Category"}
-                </Select.Trigger>
-                <Select.Content>
-                  <Select.Group>
-                    {#each categories as category}
-                      <Select.Item
-                        value={category.id}
-                        label={category.name}
-                        class="capitalize card"
-                        on:click={() => handleParentCat({ value: category.id })}>
-                        {category.name}
-                      </Select.Item>
-                    {/each}
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
-            </div>
-              <!-- <Select.Root>
+    <div class="grid grid-cols-2 gap-4 mb-3">
+      <div>
+        <Input
+          bind:value={categoryDetails.handle}
+          placeholder="Handle"
+          class="input"
+          type="text"
+        />
+      </div>
+      <div>
+        <Select.Root>
+          <Select.Trigger class="input capitalize">
+            {selectedAttributeGroup
+              ? selectedAttributeGroup
+              : "Select a Attribute Group"}</Select.Trigger
+          >
+          <Select.Content>
+            <Select.Group>
+              {#each attributeGroups as group}
+                <Select.Item
+                  value={group.id}
+                  label={group.name}
+                  class="capitalize card"
+                  on:click={() => handleGroupChange({ value: group.id })}
+                >
+                  {group.name}
+                </Select.Item>
+              {/each}
+            </Select.Group>
+          </Select.Content>
+        </Select.Root>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-3">
+      <div class="mb-3">
+        <Label for="mainMenu">Parent Category</Label>
+        <Select.Root>
+          <Select.Trigger class="input capitalize">
+            {parent_category ? parent_category : "Select Parent Category"}
+          </Select.Trigger>
+          <Select.Content>
+            <Select.Group>
+              {#each categories as category}
+                <Select.Item
+                  value={category.id}
+                  label={category.name}
+                  class="capitalize card"
+                  on:click={() => handleParentCat({ value: category.id })}
+                >
+                  {category.name}
+                </Select.Item>
+              {/each}
+            </Select.Group>
+          </Select.Content>
+        </Select.Root>
+      </div>
+      <!-- <Select.Root>
                 <Select.Trigger class="input capitalize">
                   {second_parent_category
                     ? second_parent_category
@@ -314,63 +309,68 @@
                   </Select.Group>
                 </Select.Content>
               </Select.Root> -->
-            <div class="grid grid-cols-2 gap-4 mb-3">
-              <div class="mb-3">
-                <label for="mainMenu">Main Menu</label>
-              <Select.Root>
-                <Select.Trigger class="input capitalize">
-                  {categoryDetails.is_main_menu ? "Yes" : "No"}
-                </Select.Trigger>
-                <Select.Content>
-                  <Select.Group>
-                    <Select.Item
-                      value={true}
-                      label="Yes"
-                      class="capitalize card"
-                      on:click={() => categoryDetails.is_main_menu = true}>
-                      Yes
-                    </Select.Item>
-                    <Select.Item
-                      value={false}
-                      label="No"
-                      class="capitalize card"
-                      on:click={() => categoryDetails.is_main_menu = false}>
-                      No
-                    </Select.Item>
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
-            </div>
-            <div class="mb-3">
-              <label for="Topcategory">Top Category</label>
-            <Select.Root>
-              <Select.Trigger class="input capitalize">
-                {categoryDetails.is_top_category ? "Yes" : "No"}
-              </Select.Trigger>
-              <Select.Content>
-                <Select.Group>
-                  <Select.Item
-                    value={true}
-                    label="Yes"
-                    class="capitalize card"
-                    on:click={() => categoryDetails.is_top_category = true}>
-                    Yes
-                  </Select.Item>
-                  <Select.Item
-                    value={false}
-                    label="No"
-                    class="capitalize card"
-                    on:click={() => categoryDetails.is_top_category = false}>
-                    No
-                  </Select.Item>
-                </Select.Group>
-              </Select.Content>
-            </Select.Root>
-          </div>
-            </div>
+      <div class="grid grid-cols-2 gap-4 mb-3">
+        <div class="mb-3">
+          <Label for="mainMenu">Main Menu</Label>
+          <Select.Root>
+            <Select.Trigger class="input capitalize">
+              {categoryDetails.is_main_menu ? "Yes" : "No"}
+            </Select.Trigger>
+            <Select.Content>
+              <Select.Group>
+                <Select.Item
+                  value={true}
+                  label="Yes"
+                  class="capitalize card"
+                  on:click={() => (categoryDetails.is_main_menu = true)}
+                >
+                  Yes
+                </Select.Item>
+                <Select.Item
+                  value={false}
+                  label="No"
+                  class="capitalize card"
+                  on:click={() => (categoryDetails.is_main_menu = false)}
+                >
+                  No
+                </Select.Item>
+              </Select.Group>
+            </Select.Content>
+          </Select.Root>
+        </div>
+        <div class="mb-3">
+          <Label for="Topcategory">Top Category</Label>
+          <Select.Root>
+            <Select.Trigger class="input capitalize">
+              {categoryDetails.is_top_category ? "Yes" : "No"}
+            </Select.Trigger>
+            <Select.Content>
+              <Select.Group>
+                <Select.Item
+                  value={true}
+                  label="Yes"
+                  class="capitalize card"
+                  on:click={() => (categoryDetails.is_top_category = true)}
+                >
+                  Yes
+                </Select.Item>
+                <Select.Item
+                  value={false}
+                  label="No"
+                  class="capitalize card"
+                  on:click={() => (categoryDetails.is_top_category = false)}
+                >
+                  No
+                </Select.Item>
+              </Select.Group>
+            </Select.Content>
+          </Select.Root>
+        </div>
+      </div>
+    </div>
 
-            <div class="items-center gap-2 mb-3">
-              <!-- <Select.Root>
+    <!-- <div class="items-center gap-2 mb-3">
+        <Select.Root>
                 <Select.Trigger class="input capitalize">
                   {tagNames
                     ? tagNames
@@ -388,48 +388,44 @@
                     {/each}
                   </Select.Group>
                 </Select.Content>
-              </Select.Root> -->
-            </div>
-            <div class="flex items-center justify-evenly gap-2">
-              <Button
-                type="button"
-                class="btn flex gap-2 items-center bg-indigo-500 text-white text-xs"
-                on:click={pickAvatar}
-                ><i class="fa-solid fa-image text-sm"></i>Upload category image
-              </Button>
-              <img
-                id="selected-logo"
-                alt=""
-                class={categoryDetails.image ? "showImg" : "hideImg"}
-                src={updateImage ? window.URL.createObjectURL(categoryDetails.image) : categoryDetails.image}
-              />
-              <input
-                type="file"
-                id="file-input"
-                bind:this={imageUpload}
-                hidden
-                accept="image/png, image/jpeg"
-                on:input={uploadAvatar}
-              />
-            </div>
-
-            <!-- Assuming Select component exists and can handle multiple selections -->
-          </Card.Content>
-          <Card.Footer class="justify-between space-x-2">
-            <Button
-              type="button"
-              variant="ghost"
-              on:click={() => dispatch("cancel")}
-              >Cancel
-            </Button>
-
-            <Button type="button" on:click={createCategory}>Save</Button>
-          </Card.Footer>
-        </Card.Root>
-      </div>
+              </Select.Root>
+      </div> -->
+    <div class="flex justify-between mb-2">
+      <Button
+        type="button"
+        class="btn flex gap-2 items-center bg-indigo-500 text-white text-xs"
+        on:click={pickAvatar}
+        ><i class="fa-solid fa-image text-sm"></i>Upload category image
+      </Button>
+      <img
+        id="selected-logo"
+        alt=""
+        class={categoryDetails.image ? "showImg" : "hideImg"}
+        src={updateImage
+          ? window.URL.createObjectURL(categoryDetails.image)
+          : categoryDetails.image}
+      />
+      <input
+        type="file"
+        id="file-input"
+        bind:this={imageUpload}
+        hidden
+        accept="image/png, image/jpeg"
+        on:input={uploadAvatar}
+      />
     </div>
-  </div>
-</div>
+
+    <!-- Assuming Select component exists and can handle multiple selections -->
+
+    <Dialog.Footer>
+      <Button type="button" variant="ghost" on:click={cancelModel}
+        >Cancel
+      </Button>
+
+      <Button type="button" on:click={createCategory}>Save</Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>
 
 <style>
   .hideImg {
