@@ -131,7 +131,7 @@
     try {
       const formData = new FormData();
       console.log("categoryDetails", categoryDetails);
-      
+
       formData.append("name", categoryDetails.name);
       formData.append("description", categoryDetails.description);
       formData.append("handle", categoryDetails.handle);
@@ -139,21 +139,20 @@
       formData.append("is_top_category", categoryDetails.is_top_category);
       if (categoryDetails.parent_category)
         formData.append("parent_category", categoryDetails.parent_category);
-      if(attributeChange){
+      if (attributeChange) {
         formData.append("attribute_group", categoryDetails.attribute_group);
-
-      if (tagChange && categoryDetails && categoryDetails.tags) {
-        formData.append("tags", categoryDetails.tags);
       }
 
-        
+      if (categoryDetails && categoryDetails.tags) {
+        formData.append("tags", categoryDetails.tags);
+      }
       // formData.append("attribute_group", categoryDetails.attribute_group);
       if (updateImage) {
         formData.append("image", categoryDetails.image);
       }
       const url = editForm
-        ? `/masterdata/category/${id}/update_record/`
-        : "/masterdata/category/create_record/";
+              ? `/masterdata/category/${id}/update_record/`
+              : "/masterdata/category/create_record/";
 
       if (editForm) {
         await API.put(url, formData);
