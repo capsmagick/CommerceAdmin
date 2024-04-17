@@ -1,442 +1,464 @@
 <script lang="ts">
-  import CaretSort from "svelte-radix/CaretSort.svelte";
-  import ChevronDown from "svelte-radix/ChevronDown.svelte";
-  import * as Avatar from "$lib/components/ui/avatar";
-  import {
-    createTable,
-    Subscribe,
-    Render,
-    createRender,
-  } from "svelte-headless-table";
-  import {
-    addSortBy,
-    addPagination,
-    addTableFilter,
-    addSelectedRows,
-    addHiddenColumns,
-  } from "svelte-headless-table/plugins";
-  import { writable } from "svelte/store";
-  import * as Table from "$lib/components/ui/table/index.js";
-  import Actions from "./productTableActions.svelte";
-  import { Button } from "$lib/components/ui/button/index.js";
-  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-  import { cn } from "$lib/utils.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import DataTableCheckbox from "./productTableCheckbox.svelte";
-  import API from "$lib/services/api";
-  import { createEventDispatcher } from "svelte";
+    import CaretSort from "svelte-radix/CaretSort.svelte";
+    import ChevronDown from "svelte-radix/ChevronDown.svelte";
+    import * as Table from "$lib/components/ui/table/index.js";
+    import { Button } from "$lib/components/ui/button/index.js";
+    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+    import { Input } from "$lib/components/ui/input/index.js";
+    import API from "$lib/services/api";
+    import { createEventDispatcher, onMount } from "svelte";
+    import { MoreHorizontal } from "lucide-svelte";
+    import { toast } from "svelte-sonner";
+    import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
+    import Pagination from "$lib/components/ui/table-pagination/pagination.svelte";
+    import CreateProduct from "./createProduct/+page.svelte";
+    import CreateVariant from "./variant/createVariant/+page.svelte"
+    import { goto } from "$app/navigation";
+    import AddToLookbook from './addToLookbook/+page.svelte'
+    import { productIdStore } from '../../../lib/stores/data';
+    import ViewProduct from './viewProduct/+page.svelte'
 
-  const dispatch = createEventDispatcher();
 
-  type Product = {
-    id: string;
-    name: string;
-    description: string;
-    brand: string;
-    price: number;
-    stock: number;
-    categories: string[];
-    hsn_code: string;
-    tags: string[];
-    images:  string[];
-    rating: number;
-    no_of_reviews: number;
-    is_disabled: boolean; 
-    created_at: string;
-    updated_at: string;
-    created_by: string;
-    updated_by: string;
-    short_description: string;
-  };
+   let dispatch = createEventDispatcher();
+  
+    export let showForm: boolean = false;
+    let showVariantForm: boolean = false;
+    let lookbookModalForm: boolean = false
+    let viewProduct = false
 
-  let next: any;
-  let nextPage = false;
-  let previous: any;
-  let previousPage = false;
-
-  // Create a readable store for the data
-  const data = writable<Product[]>([], (set) => {
-    getProducts().then((data) => {
-      set(data);
-    });
-  });
-
-  function createFunction() {
-    dispatch("newAttribute");
-  }
-
-  export async function refreshTable() {
-    location.reload();
-  }
-
-  async function getProducts() {
-    try {
-      let res;
-      if (nextPage) {
-        res = await API.get(next);
-      } else if (previousPage) {
-        res = await API.get(previous);
-      } else {
-        res = await API.get("/products/product/");
+    // variables to handle pagination and table details
+    let page: number = 1;
+    let totalItems: number;
+    let per_page: number = 10;
+    let tableData: any[] = [];
+    let sortData: boolean = true;
+    let sortField: string = "";
+    let searchData: string = "";
+  
+    let showDeleteModal = false;
+    let deletingProduct: any;
+  
+    let editData: any;
+    let editForm: boolean = false;
+    let productID: any;
+    let productData2: any;
+  
+    let hidableCoulumns: any[] = [
+      { name: "Images", value: true },
+      { name: "Short Description", value: true },
+      { name: "Description", value: false },
+      { name: "Brand", value: true },
+      { name: "HSN Code", value: true },
+      { name: "Tags", value: true },
+      { name: "Number of Reviews", value: false },
+      { name: "Status", value: true },
+      { name: "Created At", value: false },
+      { name: "Updated At", value: false },
+      { name: "Created By", value: false },
+      { name: "Updated By", value: false },
+      { name: "Price", value: true },
+      { name: "Stock", value: true },
+      { name: "Categories", value: true },
+      { name: "Rating", value: false },
+    ];
+  
+    async function getProducts() {
+      try {
+        let res = await API.get(
+          `/products/product/?page=${page}&per_page=${per_page}&ordering=${sortField}&search=${searchData}`
+        );
+        totalItems = res.data.total;
+        tableData = res.data.results;
+      } catch (error) {
+        console.error("fetch:category:", error);
+        return [];
       }
-      next = res.data.next;
-      previous = res.data.previous;
-      return res.data.results;
-    } catch (error) {
-      console.error("fetch:Product:", error);
-      return [];
     }
-  }
+  
+    async function getNextPage() {
+      page += 1;
+      await getProducts();
+    }
+  
+    async function getPage(event: any) {
+      page = event.detail;
+      await getProducts();
+    }
+  
+    async function getPreviousPage() {
+      page -= 1;
+      await getProducts();
+    }
+  
+    function onEditProduct(data: any) {
+      editData = data;
+      showForm = true;
+      editForm = true;
+    }
+  
+    function handleNewProduct() {
+      editData = null;
+      editForm = false;
+      showForm = false;
+      getProducts();
+    }
+  
+    function onDelete(id: any, name: any) {
+      showDeleteModal = true;
+      deletingProduct = {
+        id: id,
+        name: name,
+      };
+    }
 
-  async function getNextPage() {
-    nextPage = true;
-    previousPage = false;
-    const newData = await getProducts();
-    data.set(newData);
-  }
-
-  async function getPreviousPage() {
-    nextPage = false;
-    previousPage = true;
-    const newData = await getProducts();
-    data.set(newData);
-  }
-
-  const table = createTable(data, {
-    sort: addSortBy({ disableMultiSort: true }),
-    page: addPagination(),
-    filter: addTableFilter({
-      fn: ({ filterValue, value }) => value.includes(filterValue),
-    }),
-    select: addSelectedRows(),
-    hide: addHiddenColumns(),
-  });
-
-  const columns = table.createColumns([
-    table.column({
-      header: (_, { pluginStates }) => {
-        const { allPageRowsSelected } = pluginStates.select;
-        return createRender(DataTableCheckbox, {
-          checked: allPageRowsSelected,
+    function viewVariant(data: any){
+      productID = data.id;
+      productData2 = data;
+      goto(`/products/variant?product=${productID}`)
+    }
+  
+    function confirmDelete() {
+      API.delete(`/products/product/${deletingProduct.id}/delete_record/`)
+        .then(() => {
+          closeDeleteModal();
+          getProducts();
+          toast("Product Deleted Successfully!");
+        })
+        .catch((error) => {
+          console.error("Error deleting Product:", error);
+          closeDeleteModal();
         });
-      },
-      accessor: "id",
-      cell: ({ row }, { pluginStates }) => {
-        const { getRowState } = pluginStates.select;
-        const { isSelected } = getRowState(row);
+    }
+  
+    function closeDeleteModal() {
+      showDeleteModal = false;
+    }
 
-        return createRender(DataTableCheckbox, {
-          checked: isSelected,
-        });
-      },
-      plugins: {
-        sort: {
-          disable: true,
-        },
-        filter: {
-          exclude: true,
-        },
-      },
-    }),
-    table.column({
-      header: "Images",
-      accessor: "images",
-      cell: ({ value }) => {
-        if (Array.isArray(value) && value.length > 0) {
-        const imageUrl = value[0].image;
-        // console.log("img:",imageUrl);
-        return `<img src="http://localhost:8000${imageUrl}" alt="Featured Image" class="h-10 w-10 rounded-full">`;//image api update url
+    function colseProduct(){
+      editData = null;
+      editForm = false;
+      showForm = false;
+      dispatch ("cancel");
+    }
+
+    function addVariant(data: any){
+      productData2 = data;
+      console.log("productData2: ",productData2);
+      showVariantForm = true;
+    }
+
+    function addLookbook(data: any){
+      productIdStore.set(data.id);
+      lookbookModalForm = true
+    }
+
+    async function onChangeStatus(data: any) {
+      let status = data.is_disabled;
+      let url = !status ? `/products/product/${data.id}/enable/` : `/products/product/${data.id}/disable/`;
+      
+      API.post(url).then(()=>{
+        toast.success("Product status updated successfully");
+        getProducts();
+      }).catch((error:any)=>{
+        console.log(error)
+      })
+    }
+
+    async function onViewProduct(data: any) {
+        editData = data.id;
+        viewProduct = true;
+        editForm = true;                
+    }
+  
+    onMount(() => {
+      getProducts();
+    });
+  
+    function sortName() {
+      if (sortData) {
+        sortField = "name";
+        getProducts();
+        sortData = !sortData;
       } else {
-        return 'No Image';
+        sortField = "-name";
+        getProducts();
+        sortData = !sortData;
       }
-      },
-    }),
-    table.column({
-      header: "Product Name",
-      accessor: "name",
-      cell: ({ value }) => value,
-      plugins: {
-        filter: {
-          getFilterValue(value) {
-            return value;
-          },
-        },
-      },
-    }),
-    table.column({
-      header: "Short Description",
-      accessor: "short_description",
-    }),
-    table.column({
-      header: "Description",
-      accessor: "description",
-      cell: ({ value }) => value,
-      plugins: { filter: {} },
-    }),
-        table.column({
-      header: "Brand",
-      accessor: ({brand}) => brand.name,
-    }),
-    table.column({
-      header: "HSN Code",
-      accessor: "hsn_code",
-      cell: ({ value }) => value,
-      plugins: { sort: {}, filter: {} },
-    }),
-    table.column({
-      header: "Tags",
-      accessor: "tags",
-      cell: ({ value }) => value.map(i => i.name).join(", "),
-      plugins: { filter: {} },
-    }),
-    table.column({
-      header: "Number of Reviews",
-      accessor: "no_of_reviews",
-      cell: ({ value }) => `${value} reviews`,
-      plugins: { sort: {}, filter: {} },
-    }),
-    table.column({
-      header: "Status",
-      accessor: "is_disabled",
-      cell: ({ value }) => value ? "Inactive" : "Active",
-      plugins: { filter: {} },
-    }),
-    table.column({
-      header: "Created At",
-      accessor: "created_at",
-      cell: ({ value }) => new Date(value).toLocaleDateString(),
-      plugins: { sort: {}, filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Updated At",
-      accessor: "updated_at",
-      cell: ({ value }) => new Date(value).toLocaleDateString(),
-      plugins: { sort: {}, filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Created By",
-      accessor: "created_by",
-      cell: ({ value }) => value,
-      plugins: { filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Updated By",
-      accessor: "updated_by",
-      cell: ({ value }) => value,
-      plugins: { filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Price",
-      accessor: "price",
-      cell: ({ value }) => {
-        const formatted = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(value);
-        return formatted;
-      },
-      plugins: { sort: {}, filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Stock",
-      accessor: "stock",
-      plugins: { sort: {}, filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Categories",
-      accessor: "categories",
-      cell: ({ value }) => value.map(category => category.name).join(", "),
-      plugins: { sort: {}, filter: {} },
-    }),
-    table.column({
-      header: "Rating",
-      accessor: "rating",
-      cell: ({ value }) => `${value} stars`,
-      plugins: { sort: {}, filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Actions",
-      accessor: ({ id }) => id,
-      cell: (item) => {
-        return createRender(Actions)
-          .on("view", (event: Actions["view"]) => {
-            dispatch("view", { item });
-          })
-          .on("edit", (event: Actions["edit"]) => {
-            dispatch("edit", { item });
-          })
-          .on("delete", (event: Actions["delete"]) => {
-            dispatch("delete", { item });
-          })
-          .on("addVariant", (event: Actions["addVariant"]) => {
-            dispatch("addVariant", { item });
-          })
-          .on("viewVariant", (event: Actions["viewVariant"]) => {
-            dispatch("viewVariant", { item });
-          })
-          .on("addLookbook", (event: Actions["addLookbook"]) => {
-            dispatch("addLookbook", { item });
-          })
-          .on("status", (event: Actions["status"]) => {
-            dispatch("status", { item });
-          });
-      },
-      plugins: {
-        sort: {
-          disable: true,
-        },
-      },
-    }),
-  ]);
-
-  const {
-    headerRows,
-    pageRows,
-    tableAttrs,
-    tableBodyAttrs,
-    flatColumns,
-    pluginStates,
-    rows,
-  } = table.createViewModel(columns);
-
-  const { sortKeys } = pluginStates.sort;
-
-  const { hiddenColumnIds } = pluginStates.hide;
-  const ids = flatColumns.map((c) => c.id);
-  let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
-
-  let initialHiddenColumns = [
-    "created_at",
-    "updated_at",
-    "description",
-    "hsn_code",
-    "tags",
-    "attributes",
-    "created_by",
-    "updated_by",
-  ];
-
-  $: hideForId = Object.fromEntries(
-    ids.map((id) => [id, !initialHiddenColumns.includes(id)])
-  );
-
-  $: $hiddenColumnIds = Object.entries(hideForId)
-    .filter(([, hide]) => !hide)
-    .map(([id]) => id);
-
-  const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
-  const { filterValue } = pluginStates.filter;
-
-  const { selectedDataIds } = pluginStates.select;
-
-  const hideableCols = [
-    "categories",
-    "rating",
-    "created_at",
-    "updated_at",
-    "description",
-    "short_description",
-    "hsn_code",
-    "tags",
-    "attributes",
-    "created_by",
-    "updated_by",
-  ];
-</script>
-
-<div class="w-full p-4 bg-background text-foreground">
-  <div class="mb-4 flex items-center gap-4">
-    <Input
-      class="max-w-sm"
-      placeholder="Filter Products..."
-      type="text"
-      bind:value={$filterValue}/>
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild let:builder>
-        <Button variant="outline" class="ml-auto" builders={[builder]}>
-          Columns <ChevronDown class="ml-2 h-4 w-4" />
-        </Button>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content>
-        {#each flatColumns as col}
-          {#if hideableCols.includes(col.id)}
-            <DropdownMenu.CheckboxItem bind:checked={hideForId[col.id]}>
-              {col.header}
-            </DropdownMenu.CheckboxItem>
-          {/if}
-        {/each}
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
+    }
+  
+    function searchName(event: any) {
+      searchData = event.target.value;
+      getProducts();
+    }
+  
+    function pageLimit(event: any, value: any) {
+      per_page = value;
+      getProducts();
+    }
+  </script>
+  
+  <div>
+    {#if showDeleteModal}
+      <ConfirmDeleteModal
+        attribute={deletingProduct.name}
+        on:confirm={confirmDelete}
+        on:cancel={closeDeleteModal}
+      />
+    {/if}
   </div>
-  <div class="rounded-md border">
-    <Table.Root {...$tableAttrs}>
-      <Table.Header>
-        {#each $headerRows as headerRow}
-          <Subscribe rowAttrs={headerRow.attrs()}>
-            <Table.Row>
-              {#each headerRow.cells as cell (cell.id)}
-                <Subscribe
-                  attrs={cell.attrs()}
-                  let:attrs
-                  props={cell.props()}
-                  let:props>
-                  <Table.Head
-                    {...attrs}
-                    class={cn("[&:has([role=checkbox])]:pl-3")}>
-                    {#if cell.id === "name"}
-                      <Button variant="ghost" on:click={props.sort.toggle}>
-                        <Render of={cell.render()} />
-                        <CaretSort
-                          class={cn($sortKeys[0]?.id === cell.id && "text-foreground",
-                            "ml-2 h-4 w-4")}/>
-                      </Button>
-                    {:else}
-                      <Render of={cell.render()} />
-                    {/if}
-                  </Table.Head>
-                </Subscribe>
-              {/each}
-            </Table.Row>
-          </Subscribe>
-        {/each}
-      </Table.Header>
-      <Table.Body {...$tableBodyAttrs}>
-        {#each $pageRows as row (row.id)}
-          <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-            <Table.Row
-              {...rowAttrs}
-              data-state={$selectedDataIds[row.id] && "selected"}>
-              {#each row.cells as cell (cell.id)}
-                <Subscribe attrs={cell.attrs()} let:attrs>
-                  <Table.Cell class="[&:has([role=checkbox])]:pl-3" {...attrs}>
-                    {#if typeof cell.render() === "string"}
-                      {@html cell.render()}
-                    {:else}
-                      <Render of={cell.render()} />
-                    {/if}
-                  </Table.Cell>
-                </Subscribe>
-              {/each}
-            </Table.Row>
-          </Subscribe>
-        {/each}
-      </Table.Body>
-    </Table.Root>
+  
+  <div class="abc">
+    {#if showForm}
+      <CreateProduct
+        {editData}
+        {editForm}
+        on:cancel={colseProduct}
+        on:newProduct={() => handleNewProduct()}
+      />
+    {/if}
   </div>
-  <div class="flex items-center justify-end space-x-2 py-4">
-    <div class="flex-1 text-sm text-muted-foreground">
-      {Object.keys($selectedDataIds).length} of{" "}
-      {$rows.length} row(s) selected.
+  <div>
+    {#if showVariantForm}
+        <CreateVariant 
+            {productData2}
+            {editData}
+            {editForm}
+            on:cancel={() => {
+                editData = null;
+                editForm = false;
+                showVariantForm = false;
+            }}
+            on:newVariant={() => {
+                editData = null   
+                showVariantForm = false;
+            }}/>
+    {/if}
+  </div>
+  <div>
+    {#if lookbookModalForm}
+      <AddToLookbook 
+      {editData}
+      {editForm} 
+      on:newLookbook={()=>{lookbookModalForm = false}}
+      on:cancel={()=>{lookbookModalForm = false}}
+                            />
+    {/if}
+  </div>
+  <div>
+    {#if viewProduct}
+    <ViewProduct 
+      {editData}
+      on:cancel = {() => (editData = null, viewProduct = false, editForm= false) }/>
+    {/if}
+  </div> 
+  
+  <div class="w-full p-5">
+    <div class="my-2 flex justify-between">
+      <div>
+        <Input
+          class="max-w-sm"
+          placeholder="Search Categories..."
+          type="text"
+          on:input={(event) => searchName(event)}
+        />
+      </div>
+      <div class="flex">
+        <div class="mr-2">
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              <Button variant="outline" size="sm">
+                Column
+                <ChevronDown class="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              {#each hidableCoulumns as column}
+                <DropdownMenu.CheckboxItem bind:checked={column.value}
+                  >{column.name}</DropdownMenu.CheckboxItem
+                >
+              {/each}
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        </div>
+        <div>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              <Button variant="outline" size="sm">
+                {per_page}
+                <ChevronDown class="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              <DropdownMenu.Item on:click={(event) => pageLimit(event, 10)}
+                >10</DropdownMenu.Item>
+              <DropdownMenu.Item on:click={(event) => pageLimit(event, 20)}
+                >20</DropdownMenu.Item>
+              <DropdownMenu.Item on:click={(event) => pageLimit(event, 25)}
+                >25</DropdownMenu.Item>
+              <DropdownMenu.Item on:click={(event) => pageLimit(event, 50)}
+                >50</DropdownMenu.Item>
+              <DropdownMenu.Item on:click={(event) => pageLimit(event, 100)}
+                >100</DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        </div>
+      </div>
     </div>
-    <Button
-      variant="outline"
-      size="sm"
-      on:click={getPreviousPage}
-      disabled={!previous}>
-      Previous
-    </Button>
-    <Button variant="outline" size="sm" disabled={!next} on:click={getNextPage}>
-      Next
-    </Button>
+  
+    <Table.Root>
+      <Table.Header>
+        <Table.Row>
+          {#if hidableCoulumns[0].value}
+            <Table.Head>Images</Table.Head>
+          {/if}
+          <Table.Head>
+            Product Name
+            <Button on:click={() => sortName()} variant="ghost"><CaretSort class="w-4 h-4" /></Button>
+          </Table.Head>
+          {#if hidableCoulumns[1].value}
+            <Table.Head>Short Description</Table.Head>
+          {/if}
+          {#if hidableCoulumns[2].value}
+            <Table.Head>Description</Table.Head>
+          {/if}
+          {#if hidableCoulumns[3].value}
+            <Table.Head>Brand</Table.Head>
+          {/if}
+          {#if hidableCoulumns[4].value}
+            <Table.Head>HSN Code</Table.Head>
+          {/if}
+          {#if hidableCoulumns[5].value}
+            <Table.Head>Tags</Table.Head>
+          {/if}
+          {#if hidableCoulumns[6].value}
+            <Table.Head>Number of Reviews</Table.Head>
+          {/if}
+          {#if hidableCoulumns[7].value}
+            <Table.Head>Status</Table.Head>
+          {/if}
+          {#if hidableCoulumns[8].value}
+            <Table.Head>Created At</Table.Head>
+          {/if}
+          {#if hidableCoulumns[9].value}
+            <Table.Head>Updated At</Table.Head>
+          {/if}
+          {#if hidableCoulumns[10].value}
+            <Table.Head>Created By</Table.Head>
+          {/if}
+          {#if hidableCoulumns[11].value}
+            <Table.Head>Updated By</Table.Head>
+          {/if}
+          {#if hidableCoulumns[12].value}
+            <Table.Head>Price</Table.Head>
+          {/if}
+          {#if hidableCoulumns[13].value}
+            <Table.Head>Stock</Table.Head>
+          {/if}
+          {#if hidableCoulumns[14].value}
+            <Table.Head>Categories</Table.Head>
+          {/if}
+          {#if hidableCoulumns[15].value}
+            <Table.Head>Rating</Table.Head>
+          {/if}
+          <Table.Head>Action</Table.Head>
+        </Table.Row>
+      </Table.Header>
+      {#each tableData as data}
+        <Table.Row>
+          {#if hidableCoulumns[0].value}
+            <Table.Cell>
+              <img
+                src={data.image}
+                alt="Logo"
+                class="w-12 h-12 object-cover rounded-full"/>
+            </Table.Cell>
+          {/if}
+          <Table.Cell>{data.name}</Table.Cell>
+          {#if hidableCoulumns[1].value}
+            <Table.Cell>{data.short_description}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[2].value}
+            <Table.Cell>{data.description}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[3].value}
+            <Table.Cell>{data.brand.name}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[4].value}
+            <Table.Cell>{data.hsn_code}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[5].value}
+            <Table.Cell>{data.tags.map((i) => i.name).join(" ,")}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[6].value}
+            <Table.Cell>{data.no_of_reviews} reviews</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[7].value}
+            <Table.Cell>{data.is_disabled ? "Inactive" : "Active"}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[8].value}
+            <Table.Cell>{data.created_at}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[9].value}
+            <Table.Cell>{data.updated_at}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[10].value}
+            <Table.Cell>{data.created_by}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[11].value}
+            <Table.Cell>{data.updated_by}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[12].value}
+            <Table.Cell>{data.price}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[13].value}
+            <Table.Cell>{data.stock}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[14].value}
+            <Table.Cell>{data.categories.map(category => category.name).join(", ")}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[15].value}
+            <Table.Cell>{data.rating} stars</Table.Cell>
+          {/if}
+          <Table.Cell>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild let:builder>
+                <Button builders={[builder]} variant="ghost"
+                  ><MoreHorizontal class="h-4 w-4" /></Button
+                >
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content class="absolute">
+                <DropdownMenu.Item on:click={() => onViewProduct(data)}>
+                    <i class="fa fa-eye sm mr-2">
+                    </i>View</DropdownMenu.Item>
+                <DropdownMenu.Item on:click={() => onEditProduct(data)}>
+                    <i class="fa fa-pencil sm mr-2">
+                    </i>Edit</DropdownMenu.Item>
+                <DropdownMenu.Item on:click={() => onDelete(data.id, data.name)}>
+                    <i class="fa fa-trash sm mr-2" style="color:red">
+                    </i>Delete</DropdownMenu.Item>
+                <DropdownMenu.Item on:click={() => addVariant(data)}>
+                    Add Variant</DropdownMenu.Item>
+                <DropdownMenu.Item on:click={() => viewVariant(data)}>
+                    View Variant</DropdownMenu.Item>
+                <DropdownMenu.Item on:click={() => addLookbook(data)}>
+                    Add Lookbook</DropdownMenu.Item>
+                <DropdownMenu.Item on:click={() => onChangeStatus(data)}>
+                    Change Status</DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          </Table.Cell>
+        </Table.Row>
+      {/each}
+    </Table.Root>
+  
+    <div class="d-flex justify-end align-items-end mt-3">
+      <Pagination
+        {totalItems}
+        {per_page}
+        on:prev={getPreviousPage}
+        on:next={getNextPage}
+        on:page={(event) => getPage(event)}
+      />
+    </div>
   </div>
-</div>
+  
