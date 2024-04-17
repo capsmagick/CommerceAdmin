@@ -19,7 +19,7 @@
 
   export let editData: any;
   export let editForm: boolean;
-  export let productID: any;
+  export let productData2: any;
   let attributegroup: any;
   let attributeDetails: AttributeDetail[] = [];
   let selectedAttributeValues = new Map();
@@ -39,31 +39,52 @@
     images: "",
   };
 
+  // if (editForm) {
+  //   variantDetails = editData;
+  // }
+
   if (editForm) {
-    variantDetails = editData;
+    variantDetails = { ...editData };
+  } else {
+    variantDetails = {
+      product: { id: productData2.id },
+      attributes: [],
+      stock: "",
+      selling_price: "",
+      images: "",
+    };
   }
-  if (productID) {
-    variantDetails.product = productID;
+  
+  if (productData2){
+    // variantDetails.product = productData2.id;
+    attribute_group = productData2.categories[0].attribute_group.id;
+  }
+  else{
+    attribute_group = editData.product.categories[0].attribute_group.id;
   }
 
+  // if (productID) {
+  //   variantDetails.product = productID;
+  // }
+
   onMount(() => {
-    const persistedAttributeGroup = localStorage.getItem("attribute_group");
-    if (persistedAttributeGroup) {
-        attribute_group = parseInt(persistedAttributeGroup);
-    }
+  //   const persistedAttributeGroup = localStorage.getItem("attribute_group");
+  //   if (persistedAttributeGroup) {
+  //       attribute_group = parseInt(persistedAttributeGroup);
+  //   }
     
-    if(!isSubscribed) {
-      unsubscribe = productDetailsStore.subscribe((value) => {
-        productData = value;
-        categoriesArray = productData.categories;
-        // attribute_group = categoriesArray[0].attribute_group.id;
-        if (categoriesArray && categoriesArray.length > 0) {
-                attribute_group = categoriesArray[0].attribute_group.id;
-                localStorage.setItem("attribute_group", attribute_group);
-            }
-      });
-    isSubscribed = true;
-    }
+  //   if(!isSubscribed) {
+  //     unsubscribe = productDetailsStore.subscribe((value) => {
+  //       productData = value;
+  //       categoriesArray = productData.categories;
+  //       // attribute_group = categoriesArray[0].attribute_group.id;
+  //       if (categoriesArray && categoriesArray.length > 0) {
+  //               attribute_group = categoriesArray[0].attribute_group.id;
+  //               localStorage.setItem("attribute_group", attribute_group);
+  //           }
+  //     });
+  //   isSubscribed = true;
+  //   }
 
     if (editData && editData.attributes) {
       variantDetails.attributes = editData.attributes.map((attr: {
@@ -143,10 +164,10 @@
 
   async function createVariant() {
     try {
-      debugger;
-      console.log("Variant Details before API call:", variantDetails);
+      // console.log("Variant Details before API call:", variantDetails);
       const form = new FormData();
-      form.append("product", variantDetails.product);
+      const pro = variantDetails.product.id;
+      form.append("product", variantDetails.product.id);
       form.append("stock", variantDetails.stock);
       form.append("selling_price", variantDetails.selling_price);
       form.append("attributes", JSON.stringify(variantDetails.attributes));
@@ -169,15 +190,14 @@
       dispatch("newVariant");
       const action = editForm ? "Variant Updated" : "Variant Created";
       toast(`${action} successfully!`);
-      debugger;
     } catch (error) {
       const action = editForm ? "Update Variant" : "Create Variant";
       console.log(`${action}:`, error);
       toast(`Failed to ${action}`);
     }
-    onDestroy(() => {
-        unsubscribe();
-      });
+    // onDestroy(() => {
+    //     unsubscribe();
+    //   });
   }
 
   function pickAvatar() {
@@ -191,7 +211,7 @@
   }
 
   function cancelModel() {
-    dispatch("close");
+    dispatch("cancel");
   }
   function handleClickOutside(event: any) {
     if (!event.target.closest(".card")) {
@@ -310,7 +330,7 @@
             <Button
               type="button"
               variant="ghost"
-              on:click={() => dispatch("close")}>Cancel</Button>
+              on:click={() => dispatch("cancel")}>Cancel</Button>
             <Button type="submit" on:click={createVariant}>Save</Button>
           </Card.Footer>
         </Card.Root>
