@@ -2,8 +2,7 @@
   import { UserStore } from "$lib/stores/data";
   import '../../../app.css';
   import logo from '$lib/images/SIGNUP_LOGO.png';
-  import { get } from "svelte/store";
-  import ReusableButton from "../../../components/Reusable/Button.svelte";
+
   import API from "$lib/services/api";
   import { goto } from "$app/navigation";
   import { Input } from "$lib/components/ui/input";

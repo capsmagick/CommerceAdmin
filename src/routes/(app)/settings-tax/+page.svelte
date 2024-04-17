@@ -3,6 +3,10 @@
   import TaxTable from "./taxTable.svelte";
 
   let showForm = false;
+
+  function toggleForm() {
+    showForm = !showForm;
+  }
 </script>
 
 <div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
@@ -23,12 +27,12 @@
       <Button
         variant="outline"
         class="text-xs flex items-center gap-2  px-4 py-1.5"
-        on:click={() => (showForm = true)}
+        on:click={toggleForm}
       >
         <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
         Add Tax</Button
       >
     </div>
   </div>
-  <TaxTable {showForm} />
+  <TaxTable {showForm} on:cancel={() => (showForm = false)}/>
 </div>

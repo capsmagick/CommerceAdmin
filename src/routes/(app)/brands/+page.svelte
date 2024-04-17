@@ -29,5 +29,5 @@
       </Button>
     </div>
   </div>
-  <BrandTable {showForm} />
+  <BrandTable {showForm} on:cancel={() => (showForm = false)} />
 </div>

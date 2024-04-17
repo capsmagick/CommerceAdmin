@@ -26,6 +26,10 @@
   let editBrand: boolean = false;
   let editCategory: boolean = false;
   let editTag: boolean = false;
+  let tagInput: string = ''; // Holds the raw tag input from the user
+
+  // This function processes the tag input when the user types or pastes the tags
+  
 
   let productDetails: any = {
     id: "",
@@ -116,11 +120,11 @@
     }
   }
 
-  function handleTagChange(selectedTags: { value: number }) {
-    editTag = true;
-    selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
-    productDetails.tags = selectedTagGroups.id;
-  }
+  // function handleTagChange(selectedTags: { value: number }) {
+  //   editTag = true;
+  //   selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
+  //   productDetails.tags = selectedTagGroups.id;
+  // }
 
   function handleCategoryChange(selectedCategoryId: string) {
     editCategory = true;
@@ -145,6 +149,7 @@
   function toggleDisabled() {
     productDetails.is_disabled = !productDetails.is_disabled;
   }
+  $: productDetails.tags = tagInput.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
 
   async function createProduct() {
     try {
@@ -384,25 +389,12 @@
               </div>
             </div>
             <div class="items-center gap-2 mb-3">
-              <Select.Root>
-                <Select.Trigger class="input capitalize"
-                  >{selectedTagGroups
-                    ? selectedTagGroups.name
-                    : "Select a Tag"}</Select.Trigger>
-                <Select.Content>
-                  <Select.Group>
-                    {#each tags as tag}
-                      <Select.Item
-                        value={tag.id}
-                        label={tag.name}
-                        class="capitalize card"
-                        on:click={() => handleTagChange({ value: tag.id })}>
-                        {tag.name}
-                      </Select.Item>
-                    {/each}
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
+              <Label for="tags">Tags</Label>
+              <Input
+                id="tags"
+                placeholder="Enter tags separated by commas"
+                bind:value={tagInput}
+                 />
             </div>
             {#if !editForm}
             <div class="grid grid-cols-1 gap-4">

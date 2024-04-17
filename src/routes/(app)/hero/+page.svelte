@@ -28,5 +28,5 @@
       </Button>
     </div>
   </div>
-  <HeroTable {showForm} />
+  <HeroTable {showForm} on:cancel={() => (showForm = false)}/>
 </div>

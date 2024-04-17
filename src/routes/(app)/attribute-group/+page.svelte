@@ -28,5 +28,5 @@
       </Button>
     </div>
   </div>
-  <AttributeGroupTable {showForm} />
+  <AttributeGroupTable {showForm} on:cancel={() => (showForm = false)}/>
 </div>

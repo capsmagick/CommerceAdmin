@@ -28,5 +28,5 @@
       </Button>
     </div>
   </div>
-  <CategoriesTable {showForm} />
+  <CategoriesTable {showForm} on:cancel={() => (showForm = false)} />
 </div>
