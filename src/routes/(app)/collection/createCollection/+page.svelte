@@ -10,13 +10,10 @@
   import * as Dialog from "$lib/components/ui/dialog/index.js";
   import { Switch } from "$lib/components/ui/switch/index.js";
 
-
   const dispatch = createEventDispatcher();
 
   export let editData: any;
   export let editForm: boolean;
-  let tags: any = [];
-  let selectedTagGroups: string;
   let updateImage: boolean = false;
 
   let collectionDetails = {
@@ -24,11 +21,11 @@
     feature_image: "",
     description: "",
     collections: "",
-    tags:  [""],
+    tags: [""],
     is_in_home_page: false,
   };
   let id = "";
-  let tagInput: string = ''; // Holds the raw tag input from the user
+  let tagInput: string = ""; // Holds the raw tag input from the user
 
   if (editForm) {
     collectionDetails = {
@@ -40,26 +37,14 @@
       is_in_home_page: editData.is_in_home_page,
     };
     id = editData.id;
-    tagInput = editData.tags.map(tag => tag).join(', ');
+    tagInput = editData.tags.map((tag) => tag).join(", ");
   }
-  
 
   // Reactive statement to process tag input and update productDetails.tags
-  $: collectionDetails.tags  = tagInput.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
-
-  // async function fetchTags() {
-  //   try {
-  //     const res = await API.get("/masterdata/tag/");
-  //     tags = res.data.results;
-  //   } catch (error) {
-  //     console.log("category:fetch-tags:", error);
-  //   }
-  // }
-
-  // function handleTagChange(selectedTags: { value: number }) {
-  //   selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
-  //   collectionDetails.tags.push(selectedTagGroups.id);
-  // }
+  $: collectionDetails.tags = tagInput
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter((tag) => tag !== "");
 
   let imageUpload: HTMLInputElement;
 
@@ -68,7 +53,7 @@
   }
 
   async function uploadAvatar() {
-    updateImage = true
+    updateImage = true;
     if (imageUpload.files && imageUpload.files.length > 0) {
       collectionDetails.feature_image = imageUpload.files[0];
       const img: HTMLImageElement | null = document.getElementById(
@@ -82,17 +67,16 @@
 
   async function createCollection() {
     try {
-      console.log(collectionDetails.is_in_home_page)
+      console.log(collectionDetails.is_in_home_page);
       const form = new FormData();
-      if(updateImage){
-      form.append("feature_image", collectionDetails.feature_image);
+      if (updateImage) {
+        form.append("feature_image", collectionDetails.feature_image);
       }
       form.append("name", collectionDetails.name);
       form.append("description", collectionDetails.description);
       form.append("collections", collectionDetails.collections);
       form.append("tags", collectionDetails.tags);
       form.append("is_in_home_page", collectionDetails.is_in_home_page);
-      
 
       const url = editForm
         ? `/products/collection/${id}/update_record/`
@@ -144,7 +128,6 @@
         bind:value={collectionDetails.description}
         placeholder="Description"
         class="textarea"
-        
       />
     </div>
 
@@ -158,13 +141,17 @@
       <Input
         id="tags"
         placeholder="Enter tags separated by commas"
-        bind:value={tagInput} />
-        <p class=' text-blue-400 font-medium'>use commas to seperate tags</p>
+        bind:value={tagInput}
+      />
+      <p class=" text-blue-400 font-medium">use commas to seperate tags</p>
     </div>
 
     <div class="mb-3">
-      <Label for="is_in_home_page" class="ms-3">Is In Homepage: </Label>
-      <Switch id="is_in_home_page" bind:checked={collectionDetails.is_in_home_page} />
+      <Label for="is_in_home_page" class="ms-3">Is In Homepage:</Label>
+      <Switch
+        id="is_in_home_page"
+        bind:checked={collectionDetails.is_in_home_page}
+      />
     </div>
     <div class="flex justify-between mb-3">
       <Button type="button" variant="outline" on:click={pickAvatar}>
@@ -176,9 +163,9 @@
         alt=""
         class:showImg={collectionDetails.feature_image}
         class:hideImg={!collectionDetails.feature_image}
-        src={updateImage? 
-        window.URL.createObjectURL (collectionDetails.feature_image)
-         : collectionDetails.feature_image}
+        src={updateImage
+          ? window.URL.createObjectURL(collectionDetails.feature_image)
+          : collectionDetails.feature_image}
       />
 
       <input
@@ -210,8 +197,5 @@
     width: 6rem;
     border-radius: 20px;
     object-fit: cover;
-  }
-  .card::-webkit-scrollbar {
-    display: none;
   }
 </style>
