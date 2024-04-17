@@ -82,7 +82,7 @@
       </div>
 
       <div>
-        <Button type="submit" on:click={loginFn} class="flex w-full justify-center  px-3 py-1.5 text-sm font-semibold leading-6  shadow-sm  ">Sign in
+        <Button type="button" on:click={loginFn} class="flex w-full justify-center  px-3 py-1.5 text-sm font-semibold leading-6  shadow-sm  ">Sign in
         </Button>
         </div>
     </form>

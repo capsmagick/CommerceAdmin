@@ -141,8 +141,12 @@
         formData.append("parent_category", categoryDetails.parent_category);
       if(attributeChange){
         formData.append("attribute_group", categoryDetails.attribute_group);
-      }
+
+      if (tagChange && categoryDetails && categoryDetails.tags) {
         formData.append("tags", categoryDetails.tags);
+      }
+
+        
       // formData.append("attribute_group", categoryDetails.attribute_group);
       if (updateImage) {
         formData.append("image", categoryDetails.image);
