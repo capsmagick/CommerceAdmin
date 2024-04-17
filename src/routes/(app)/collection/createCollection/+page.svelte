@@ -8,6 +8,8 @@
   import { createEventDispatcher, onMount } from "svelte";
   import { toast } from "svelte-sonner";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
+  import { Switch } from "$lib/components/ui/switch/index.js";
+
 
   const dispatch = createEventDispatcher();
 
@@ -23,8 +25,10 @@
     description: "",
     collections: "",
     tags:  [""],
+    is_in_home_page: false,
   };
   let id = "";
+  let tagInput: string = ''; // Holds the raw tag input from the user
 
   if (editForm) {
     collectionDetails = {
@@ -33,10 +37,12 @@
       description: editData.description,
       collections: editData.collections,
       tags: editData.tags,
+      is_in_home_page: editData.is_in_home_page,
     };
     id = editData.id;
+    tagInput = editData.tags.map(tag => tag).join(', ');
   }
-  let tagInput: string = ''; // Holds the raw tag input from the user
+  
 
   // Reactive statement to process tag input and update productDetails.tags
   $: collectionDetails.tags  = tagInput.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
@@ -76,6 +82,7 @@
 
   async function createCollection() {
     try {
+      console.log(collectionDetails.is_in_home_page)
       const form = new FormData();
       if(updateImage){
       form.append("feature_image", collectionDetails.feature_image);
@@ -83,9 +90,9 @@
       form.append("name", collectionDetails.name);
       form.append("description", collectionDetails.description);
       form.append("collections", collectionDetails.collections);
-      collectionDetails.tags.forEach(tag => {
-  form.append("tags[]", tag);
-});
+      form.append("tags", collectionDetails.tags);
+      form.append("is_in_home_page", collectionDetails.is_in_home_page);
+      
 
       const url = editForm
         ? `/products/collection/${id}/update_record/`
@@ -112,7 +119,7 @@
   }
 </script>
 
-<Dialog.Root open={true} onOpenChange={cancelModel}>
+<Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
   <Dialog.Content>
     <Dialog.Header class="font-bold mb-5">
       <Dialog.Description
@@ -155,6 +162,10 @@
         <p class=' text-blue-400 font-medium'>use commas to seperate tags</p>
     </div>
 
+    <div class="mb-3">
+      <Label for="is_in_home_page" class="ms-3">Is In Homepage: </Label>
+      <Switch id="is_in_home_page" bind:checked={collectionDetails.is_in_home_page} />
+    </div>
     <div class="flex justify-between mb-3">
       <Button type="button" variant="outline" on:click={pickAvatar}>
         <i class="fa-solid fa-image text-sm"></i>Upload Image
