@@ -140,13 +140,13 @@
       <Label for="tags">Tags</Label>
       <Input
         id="tags"
-        placeholder="Enter tags separated by commas"
+        placeholder="Enter tags separated by comma"
         bind:value={tagInput}
       />
-      <p class=" text-blue-400 font-medium">use commas to seperate tags</p>
+      <p class=" text-blue-400 font-medium">use comma to seperate tags</p>
     </div>
 
-    <div class="mb-3">
+    <div class="mb-3 flex align-center">
       <Label for="is_in_home_page" class="ms-3">Is In Homepage:</Label>
       <Switch
         id="is_in_home_page"
