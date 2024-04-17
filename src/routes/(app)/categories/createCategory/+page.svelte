@@ -16,6 +16,7 @@
   import Check from "lucide-svelte/icons/check";
   import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
   import CaretSort from "svelte-radix/CaretSort.svelte";
+  import { Switch } from "$lib/components/ui/switch/index.js";
 
   const dispatch = createEventDispatcher();
 
@@ -36,17 +37,15 @@
   };
 
   let id = "";
-  let tags: any = [];
-  let selectedTagGroups: string;
   let attributeGroups: any = [];
   let selectedAttributeGroup: string;
   let parent_category: string = "";
   let second_parent_category: string;
   let categories: any[] = [];
-  let categoryOptions:{ id:string,value: string, label: string }[] = [];
+  let categoryOptions: { id: string; value: string; label: string }[] = [];
   let imageUpload: any;
-  let tagNames: string[] = [];
   let attributeChange: boolean = false;
+  let tagInput: string = ""; // Holds the raw tag input from the user
 
   let open: boolean = false;
 
@@ -63,6 +62,7 @@
       tags: editData.tags,
     };
     id = editData.id;
+    tagInput = editData.tags.map((tag) => tag).join(", ");
     updateSelectionName();
   }
 
@@ -86,11 +86,6 @@
         (group: any) => group.id === categoryDetails.attribute_group
       )?.name;
     }
-
-    // if (categoryDetails.tags && categoryDetails.tags.length > 0) {
-    //   await fetchTags();
-    //   tagNames = categoryDetails.tags.map((tag) => tag.name);
-    // }
   }
 
   async function fetchCategories() {
@@ -98,10 +93,10 @@
       const res = await API.get("/masterdata/category/");
       categories = Array.isArray(res.data?.results) ? res.data.results : [];
 
-       categoryOptions = categories.map(category => ({
-        id:category.id,
+      categoryOptions = categories.map((category) => ({
+        id: category.id,
         value: category.name,
-        label: category.name
+        label: category.name,
       }));
     } catch (error) {
       console.log("category:fetch-category:", error);
@@ -117,15 +112,6 @@
       console.log("category:fetch-attribute-group:", error);
     }
   }
-
-  // async function fetchTags() {
-  //   try {
-  //     const res = await API.get("/masterdata/tag/");
-  //     tags = res.data.results;
-  //   } catch (error) {
-  //     console.log("category:fetch-tags:", error);
-  //   }
-  // }
 
   async function createCategory() {
     try {
@@ -151,8 +137,8 @@
         formData.append("image", categoryDetails.image);
       }
       const url = editForm
-              ? `/masterdata/category/${id}/update_record/`
-              : "/masterdata/category/create_record/";
+        ? `/masterdata/category/${id}/update_record/`
+        : "/masterdata/category/create_record/";
 
       if (editForm) {
         await API.put(url, formData);
@@ -177,26 +163,6 @@
       (g: any) => g.id == selectedGroup.value
     ).name;
     updateSelectionName();
-  }
-
-  // function handleTagChange(selectedTags: { value: number }) {
-  //   tagChange = true;
-  //   selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
-  //   categoryDetails.tags = selectedTagGroups.id;
-  //   updateSelectionName();
-  // }
-
-  function handleParentCat(selectedCat: { value: number }) {
-    categoryDetails.parent_category = selectedCat.value;
-    parent_category = categories.find(
-      (g: any) => g.id == selectedCat.value
-    ).name;
-    console.log("Parent category name:", parent_category);
-    updateSelectionName();
-  }
-
-  function handleParantCategory(){
-
   }
 
   function handleSecondaryParentCat(selectedCat: { value: number }) {
@@ -228,10 +194,10 @@
     dispatch("cancel");
   }
 
-   $: selectedParentCategory =
-    categoryOptions.find((f) => f.value === id)?.label ?? "Select Parent Category";
-    
- 
+  $: selectedParentCategory =
+    categoryOptions.find((f) => f.value === id)?.label ??
+    "Select Parent Category";
+
   // We want to refocus the trigger button when the user selects
   // an item from the list so users can continue navigating the
   // rest of the form with the keyboard.
@@ -243,18 +209,17 @@
   }
 
   // form validatio to handle
-    function handleInput(event:any) {
+  function handleInput(event: any) {
     // Convert input value to lowercase
-    categoryDetails.handle = event.target.value.toLowerCase().replace(/_/g, '');
+    categoryDetails.handle = event.target.value.toLowerCase().replace(/_/g, "");
   }
 
   function handleKeyPress(event: any) {
     // Prevent the underscore character from being entered
-    if (event.key === '_') {
+    if (event.key === "_") {
       event.preventDefault();
     }
   }
-
 </script>
 
 <Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
@@ -317,156 +282,83 @@
       </div>
     </div>
 
+    <div>
+      <Label for="tags">Tags</Label>
+      <Input
+        id="tags"
+        placeholder="Enter tags separated by comma"
+        bind:value={tagInput}
+      />
+      <p class=" text-blue-400 font-medium">use comma to seperate tags</p>
+    </div>
+
     <div class="grid grid-cols-2 gap-4 mb-3">
       <div class="mb-3">
-          <Label for="parant_category">Parant Category</Label>
+        <Label for="parant_category">Parant Category</Label>
 
-            <Popover.Root bind:open let:ids>
-              <Popover.Trigger asChild let:builder>
-                <Button
-                  builders={[builder]}
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  class="w-[200px] justify-between"
-                >
-                  {selectedParentCategory}
-                  <CaretSort class="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </Popover.Trigger>
-              <Popover.Content class="w-[200px] p-0">
-                <Command.Root>
-                  <Command.Input placeholder="Search category..." class="h-9" />
-                  <Command.Empty>No category found.</Command.Empty>
-                  <Command.Group>
-                    {#each categoryOptions as category}
-                      <Command.Item
-                        value={category.value}
-                        onSelect={(currentValue) => {
-                          id = currentValue;
-                          closeAndFocusTrigger(ids.trigger);
-                          categoryDetails.parent_category = category.id;
-                        }}
-                      >
-                        <Check
-                          class={cn(
-                            "mr-2 h-4 w-4",
-                            id !== category.id && "text-transparent"
-                          )}
-                        />
-                        {category.label}
-                      </Command.Item>
-                    {/each}
-                  </Command.Group>
-                </Command.Root>
-              </Popover.Content>
-            </Popover.Root>
+        <Popover.Root bind:open let:ids>
+          <Popover.Trigger asChild let:builder>
+            <Button
+              builders={[builder]}
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              class="w-[200px] justify-between"
+            >
+              {selectedParentCategory}
+              <CaretSort class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </Popover.Trigger>
+          <Popover.Content class="w-[200px] p-0">
+            <Command.Root>
+              <Command.Input placeholder="Search category..." class="h-9" />
+              <Command.Empty>No category found.</Command.Empty>
+              <Command.Group>
+                {#each categoryOptions as category}
+                  <Command.Item
+                    value={category.value}
+                    onSelect={(currentValue) => {
+                      id = currentValue;
+                      closeAndFocusTrigger(ids.trigger);
+                      categoryDetails.parent_category = category.id;
+                    }}
+                  >
+                    <Check
+                      class={cn(
+                        "mr-2 h-4 w-4",
+                        id !== category.id && "text-transparent"
+                      )}
+                    />
+                    {category.label}
+                  </Command.Item>
+                {/each}
+              </Command.Group>
+            </Command.Root>
+          </Popover.Content>
+        </Popover.Root>
+      </div>
+
+      <div class="flex">
+        <div class="mb-3">
+          <Label for="mainMenu" class="ms-3">Main Menu:</Label>
+          <div class="flex justify-center">
+            <Switch id="mainMenu" bind:checked={categoryDetails.is_main_menu} />
           </div>
-     
-      <!-- <Select.Root>
-                <Select.Trigger class="input capitalize">
-                  {second_parent_category
-                    ? second_parent_category
-                    : "Select Secondary parent category"}
-                </Select.Trigger>
-                <Select.Content>
-                  <Select.Group>
-                    {#each categories as category}
-                      <Select.Item
-                        value={category.id}
-                        label={category.name}
-                        class="capitalize card"
-                        on:click={() =>
-                          handleSecondaryParentCat({ value: category.id })}
-                      >
-                        {category.name}
-                      </Select.Item>
-                    {/each}
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root> -->
-      <div class="grid grid-cols-2 gap-4 mb-3">
-        <div class="mb-3">
-          <Label for="mainMenu">Main Menu</Label>
-          <Select.Root>
-            <Select.Trigger class="input capitalize">
-              {categoryDetails.is_main_menu ? "Yes" : "No"}
-            </Select.Trigger>
-            <Select.Content>
-              <Select.Group>
-                <Select.Item
-                  value={true}
-                  label="Yes"
-                  class="capitalize card"
-                  on:click={() => (categoryDetails.is_main_menu = true)}
-                >
-                  Yes
-                </Select.Item>
-                <Select.Item
-                  value={false}
-                  label="No"
-                  class="capitalize card"
-                  on:click={() => (categoryDetails.is_main_menu = false)}
-                >
-                  No
-                </Select.Item>
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
         </div>
+
         <div class="mb-3">
-          <Label for="Topcategory">Top Category</Label>
-          <Select.Root>
-            <Select.Trigger class="input capitalize">
-              {categoryDetails.is_top_category ? "Yes" : "No"}
-            </Select.Trigger>
-            <Select.Content>
-              <Select.Group>
-                <Select.Item
-                  value={true}
-                  label="Yes"
-                  class="capitalize card"
-                  on:click={() => (categoryDetails.is_top_category = true)}
-                >
-                  Yes
-                </Select.Item>
-                <Select.Item
-                  value={false}
-                  label="No"
-                  class="capitalize card"
-                  on:click={() => (categoryDetails.is_top_category = false)}
-                >
-                  No
-                </Select.Item>
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
+          <Label for="Topcategory" class="ms-3">Top Category:</Label>
+          <div class="flex justify-center">
+            <Switch
+              id="Topcategory"
+              bind:checked={categoryDetails.is_top_category}
+            />
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- <div class="items-center gap-2 mb-3">
-        <Select.Root>
-                <Select.Trigger class="input capitalize">
-                  {tagNames
-                    ? tagNames
-                    : "Select a Tag"}</Select.Trigger>
-                <Select.Content>
-                  <Select.Group>
-                    {#each tags as tag}
-                      <Select.Item
-                        value={tag.id}
-                        label={tag.name}
-                        class="capitalize card"
-                        on:click={() => handleTagChange({ value: tag.id })}>
-                        {tag.name}
-                      </Select.Item>
-                    {/each}
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
-      </div> -->
-    <div class="flex justify-between mb-2">
+    <div class="flex justify-between mb-3">
       <Button
         type="button"
         class="btn flex gap-2 items-center bg-indigo-500 text-white text-xs"
