@@ -38,15 +38,16 @@
   let tagInput: string = ''; // Holds the raw tag input from the user
 
   // Reactive statement to process tag input and update productDetails.tags
-  $: collectionDetails.tags = tagInput.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
-  async function fetchTags() {
-    try {
-      const res = await API.get("/masterdata/tag/");
-      tags = res.data.results;
-    } catch (error) {
-      console.log("category:fetch-tags:", error);
-    }
-  }
+  $: collectionDetails.tags  = tagInput.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+
+  // async function fetchTags() {
+  //   try {
+  //     const res = await API.get("/masterdata/tag/");
+  //     tags = res.data.results;
+  //   } catch (error) {
+  //     console.log("category:fetch-tags:", error);
+  //   }
+  // }
 
   // function handleTagChange(selectedTags: { value: number }) {
   //   selectedTagGroups = tags.find((g: any) => g.id == selectedTags.value);
@@ -147,6 +148,7 @@
         id="tags"
         placeholder="Enter tags separated by commas"
         bind:value={tagInput} />
+        <p class=' text-blue-400 font-medium'>use commas to seperate tags</p>
     </div>
 
     <div class="flex justify-between mb-3">

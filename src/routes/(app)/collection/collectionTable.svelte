@@ -35,7 +35,7 @@
     { name: "Featured Image", value: true },
     { name: "Description", value: true },
     { name: "Tags", value: true },
-    { name: "Variants", value: true },
+    // { name: "Variants", value: true },
     { name: "Created At", value: false },
     { name: "Updated At", value: false },
     { name: "Created By", value: false },
@@ -168,7 +168,7 @@
     <div>
       <Input
         class="max-w-sm"
-        placeholder="Search Brands..."
+        placeholder="Search Collection..."
         type="text"
         on:input={(event) => searchName(event)}
       />
@@ -238,19 +238,19 @@
         {#if hidableCoulumns[2].value}
           <Table.Head>Tags</Table.Head>
         {/if}
-        {#if hidableCoulumns[3].value}
+        <!-- {#if hidableCoulumns[3].value}
           <Table.Head>Variants</Table.Head>
-        {/if}
-        {#if hidableCoulumns[4].value}
+        {/if} -->
+        {#if hidableCoulumns[3].value}
           <Table.Head>Created At</Table.Head>
         {/if}
-        {#if hidableCoulumns[5].value}
+        {#if hidableCoulumns[4].value}
           <Table.Head>Updated At</Table.Head>
         {/if}
-        {#if hidableCoulumns[6].value}
+        {#if hidableCoulumns[5].value}
           <Table.Head>Created By</Table.Head>
         {/if}
-        {#if hidableCoulumns[7].value}
+        {#if hidableCoulumns[6].value}
           <Table.Head>Updated By</Table.Head>
         {/if}
         <Table.Head>Action</Table.Head>
@@ -261,8 +261,8 @@
         {#if hidableCoulumns[0].value}
           <Table.Cell>
             <img
-              src={data.featuredImage}
-              alt="featured_image"
+              src={data.feature_image}
+              alt="feature_image"
               class="w-12 h-12 object-cover rounded-full"
             /></Table.Cell
           >
@@ -273,19 +273,19 @@
         {/if}{#if hidableCoulumns[2].value}
           <Table.Cell>{data.tags}</Table.Cell>
         {/if}
-        {#if hidableCoulumns[3].value}
+        <!-- {#if hidableCoulumns[3].value}
           <Table.Cell>{data.variants.map((i) => i.name.join(" ,"))}</Table.Cell>
-        {/if}
-        {#if hidableCoulumns[4].value}
+        {/if} -->
+        {#if hidableCoulumns[3].value}
           <Table.Cell>{data.created_at}</Table.Cell>
         {/if}
-        {#if hidableCoulumns[5].value}
+        {#if hidableCoulumns[4].value}
           <Table.Cell>{data.updated_at}</Table.Cell>
         {/if}
-        {#if hidableCoulumns[6].value}
+        {#if hidableCoulumns[5].value}
           <Table.Cell>{data.created_by}</Table.Cell>
         {/if}
-        {#if hidableCoulumns[7].value}
+        {#if hidableCoulumns[6].value}
           <Table.Cell>{data.updated_by}</Table.Cell>
         {/if}
         <Table.Cell>
