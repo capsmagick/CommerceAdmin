@@ -15,6 +15,7 @@
   export let editForm: boolean;
   let tags: any = [];
   let selectedTagGroups: string;
+  let updateImage: boolean = false;
 
   let collectionDetails = {
     name: "",
@@ -61,6 +62,7 @@
   }
 
   async function uploadAvatar() {
+    updateImage = true
     if (imageUpload.files && imageUpload.files.length > 0) {
       collectionDetails.feature_image = imageUpload.files[0];
       const img: HTMLImageElement | null = document.getElementById(
@@ -75,7 +77,9 @@
   async function createCollection() {
     try {
       const form = new FormData();
+      if(updateImage){
       form.append("feature_image", collectionDetails.feature_image);
+      }
       form.append("name", collectionDetails.name);
       form.append("description", collectionDetails.description);
       form.append("collections", collectionDetails.collections);
@@ -161,7 +165,9 @@
         alt=""
         class:showImg={collectionDetails.feature_image}
         class:hideImg={!collectionDetails.feature_image}
-        src=""
+        src={updateImage? 
+        window.URL.createObjectURL (collectionDetails.feature_image)
+         : collectionDetails.feature_image}
       />
 
       <input
