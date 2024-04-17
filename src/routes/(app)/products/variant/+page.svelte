@@ -12,12 +12,17 @@
 
   let showDeleteModal = false;
   let showModal: boolean = false
+  let showForm: boolean = false;
   let editData: any;
   let editForm: boolean;
   let deletingVariant: any;
   let refreshTable: any;
-
+  let productData2: any;
   let productID: any;
+
+  function toggleForm() {
+    showForm = !showForm
+  }
 
   const urlParams = new URLSearchParams(window.location.search);
   productID = urlParams.get('product');
@@ -78,7 +83,7 @@
 <div>
   {#if showModal}
     <CreateVariant 
-        {productID}
+        {productData2}
         {editData}
         {editForm}
         on:close = {() => closemodal()}
@@ -92,15 +97,18 @@
   <div class="flex items-center ">
       <h4 class="text-3xl font-bold tracking-tight  text-gray-800 dark:text-gray-200 flex-1">Variant</h4>
       <div class="glow-border mr-4">
-      <Button variant="outline"  class="text-xs flex items-center gap-2  px-4 py-1.5" on:click={() => (showModal = true)}>
+      <Button variant="outline"  class="text-xs flex items-center gap-2  px-4 py-1.5" on:click={() => toggleForm()}>
         <i class="fa-solid  fa-cloud-arrow-up text-sm"></i>
         Add Variant</Button>
       </div>
   </div>
-  <VariantTable 
+  <!-- <VariantTable 
     on:edit={(event) => onEditProduct(event.detail.item.row)}
     on:delete={(event) => onDeleteProduct(event.detail.item.row)}
-    bind:this={refreshTable}/>
+    bind:this={refreshTable}/> -->
+    
+  <VariantTable {showForm} on:cancel={() => showForm=false}/>
+
   <div class="flex justify-end">
     <Button class="text-end"
     on:click={goBack}>Go Back</Button>
