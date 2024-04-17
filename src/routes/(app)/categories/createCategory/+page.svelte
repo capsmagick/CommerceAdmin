@@ -242,6 +242,19 @@
     });
   }
 
+  // form validatio to handle
+    function handleInput(event:any) {
+    // Convert input value to lowercase
+    categoryDetails.handle = event.target.value.toLowerCase().replace(/_/g, '');
+  }
+
+  function handleKeyPress(event: any) {
+    // Prevent the underscore character from being entered
+    if (event.key === '_') {
+      event.preventDefault();
+    }
+  }
+
 </script>
 
 <Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
@@ -272,6 +285,8 @@
       <div>
         <Input
           bind:value={categoryDetails.handle}
+          on:input={handleInput}
+          on:keypress={handleKeyPress}
           placeholder="Handle"
           class="input"
           type="text"

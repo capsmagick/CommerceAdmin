@@ -3,7 +3,22 @@
 	import * as Avatar from "../ui/avatar";
 	import { Button } from "../ui/button";
 	import API from "$lib/services/api";
-import { goto } from '$app/navigation';
+	import { goto } from '$app/navigation';
+	import { UserStore } from "$lib/stores/data";
+	import { onMount } from "svelte";
+
+
+	let user: any;
+	function getUser()  {
+		UserStore.subscribe(userData => {
+			if (userData) {
+				user = userData;								
+			} else {
+				return null;
+			}
+		});
+	}
+	onMount(getUser);
 
 	async function logout() {
   // Implement the logout logic here
@@ -27,9 +42,6 @@ import { goto } from '$app/navigation';
       throw new Error('Logout failed');   
     }
     
-    
-
-    
     // Handle successful logout, e.g., redirecting the user or updating UI state
   } catch (error) {
     console.error('Logout error:', error);
@@ -37,44 +49,35 @@ import { goto } from '$app/navigation';
   }
 
 }
+
+
 </script>
 
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger asChild let:builder>
 		<Button variant="ghost" builders={[builder]} class="relative h-8 w-8 rounded-full">
 			<Avatar.Root class="h-8 w-8">
-				<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
-				<Avatar.Fallback>SC</Avatar.Fallback>
+				<img src={`http://localhost:8000${user?user.profile_picture:''}`} alt="@shadcn" />
+				<!-- <Avatar.Image src={user? user.profile_picture: ''} alt="user" /> -->
+				<!-- <Avatar.Fallback>SC</Avatar.Fallback> -->
 			</Avatar.Root>
 		</Button>
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content class="w-56" align="end">
 		<DropdownMenu.Label class="font-normal">
 			<div class="flex flex-col space-y-1">
-				<p class="text-sm font-medium leading-none">shadcn</p>
-				<p class="text-xs leading-none text-muted-foreground">m@example.com</p>
+				<p class="text-sm font-medium leading-none">{user.first_name} {user.last_name}</p>
 			</div>
 		</DropdownMenu.Label>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Group>
-			<DropdownMenu.Item>
+			<DropdownMenu.Item on:click={() => goto('/settings-general')}>
 				Profile
-				<DropdownMenu.Shortcut>⇧⌘P</DropdownMenu.Shortcut>
 			</DropdownMenu.Item>
-			<DropdownMenu.Item>
-				Billing
-				<DropdownMenu.Shortcut>⌘B</DropdownMenu.Shortcut>
-			</DropdownMenu.Item>
-			<DropdownMenu.Item>
-				Settings
-				<DropdownMenu.Shortcut>⌘S</DropdownMenu.Shortcut>
-			</DropdownMenu.Item>
-			<DropdownMenu.Item>New Team</DropdownMenu.Item>
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Item on:click={logout}>
 			Log out
-			<DropdownMenu.Shortcut>⇧⌘Q</DropdownMenu.Shortcut>
 		</DropdownMenu.Item>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>
