@@ -116,7 +116,7 @@
             formData.append("parent_category", categoryDetails.parent_category);
       if (categoryDetails.attribute_group.length > 0)
         formData.append("attribute_group", categoryDetails.attribute_group);
-      if (tagChange) {
+      if (tagChange && categoryDetails && categoryDetails.tags) {
         formData.append("tags", categoryDetails.tags);
         }
       formData.append("attribute_group", categoryDetails.attribute_group);
