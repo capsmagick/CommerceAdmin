@@ -175,12 +175,12 @@
         <Button variant="outline" class="glow-border-content">Export Products</Button>
       </div>
       <div class="glow-border mr-4">
-      <Button variant="outline"  class="text-xs flex items-center gap-2  px-4 py-1.5" on:click={() => (showModal = true)}>
+      <Button variant="outline"  class="text-xs flex items-center gap-2  px-4 py-1.5" on:click={() => toggleForm()}>
         <i class="fa-solid  fa-cloud-arrow-up text-sm"></i>
         Add Products</Button>
       </div>
   </div>
-  <ProductTable on:newCategory={() => toggleForm()}
+  <!-- <ProductTable on:newCategory={() => toggleForm()}
                      on:view={(event) => onViewProduct(event.detail.item.row)}
                      on:edit={(event) => onEditProduct(event.detail.item.row)}
                      on:delete={(event) => onDeleteProduct(event.detail.item.row)}
@@ -188,7 +188,8 @@
                      on:viewVariant={(event) => viewVariantTable(event.detail.item.row)}
                      on:addLookbook={(event) => addLookbook(event.detail.item.row)}
                      on:status={(event) => onChangeStatus(event.detail.item.row)}
-                     bind:this={refreshTable}/>
+                     bind:this={refreshTable}/> -->
+  <ProductTable {showForm} on:cancel={() => showForm=false}/>
   </div>
   </div>
   <div>
@@ -210,9 +211,6 @@
     {#if viewProduct}
     <ViewProduct 
       {editData}
-      on:cancel = {() => (editData = null, viewProduct = false, showModal = false, editForm= false) }
-    />
+      on:cancel = {() => (editData = null, viewProduct = false, showModal = false, editForm= false) }/>
     {/if}
-  </div>
- 
-  
+  </div> 
