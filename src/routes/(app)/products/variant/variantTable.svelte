@@ -1,31 +1,38 @@
 <script lang="ts">
   import CaretSort from "svelte-radix/CaretSort.svelte";
   import ChevronDown from "svelte-radix/ChevronDown.svelte";
-  import * as Avatar from "$lib/components/ui/avatar";
-  import {
-    createTable,
-    Subscribe,
-    Render,
-    createRender,
-  } from "svelte-headless-table";
-  import {
-    addSortBy,
-    addPagination,
-    addTableFilter,
-    addSelectedRows,
-  } from "svelte-headless-table/plugins";
-  import { readable } from "svelte/store";
   import * as Table from "$lib/components/ui/table/index.js";
-  import Actions from "./variantTableActions.svelte";
   import { Button } from "$lib/components/ui/button/index.js";
-  import { cn } from "$lib/utils.js";
+  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import DataTableCheckbox from "./variantTableCheckbox.svelte";
   import API from "$lib/services/api";
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
+  import { MoreHorizontal } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
+  import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
+  import Pagination from "$lib/components/ui/table-pagination/pagination.svelte";
+  import CreateVarient from "./createVariant/+page.svelte";
 
-  const dispatch = createEventDispatcher();
+  let dispatch = createEventDispatcher();
 
+  export let showForm: boolean = false;
+  // variables to handle pagination and table details
+  let page: number = 1;
+  let totalItems: number;
+  let per_page: number = 10;
+  let tableData: any[] = [];
+  let sortData: boolean = true;
+  let sortField: string = "";
+  let searchData: string = "";
+
+  let showDeleteModal = false;
+  let deletingVariant: any;
+
+  let editData: any;
+  let editForm: boolean = false;
+  let productData2: any;
+
+  //url params
   let productId: any;
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -37,234 +44,265 @@
     } else {
       productId = sessionStorage.getItem('productId');
     }
+   //url params close
 
-  type Variant = {
-    id: string;
-    name: string;
-    product: string[];
-    attributes: { name: string, value: string }[];
-    selling_price: string;
-    stock: number;
-    images: string;
-  };
-
-  const data = readable<Variant[]>([], (set) => {
-    getVariant().then((data) => {
-      // console.log(data);
-      set(data);
-    });
-  });
-
-  export async function refreshTable() {
-    location.reload();
-  }
+  let hidableCoulumns: any[] = [
+    { name: "Image", value: true },
+    { name: "Attributes", value: true },
+    { name: "Selling Price", value: true },
+    { name: "Stock", value: true },
+  ];
 
   async function getVariant() {
     try {
-      const res = await API.get(`/products/variant/?product=${productId}`);
-      return res.data.results;
+      let res = await API.get(
+        `/products/variant/?product=${productId}&page=${page}&per_page=${per_page}&ordering=${sortField}&search=${searchData}`
+      );
+      totalItems = res.data.total;
+      tableData = res.data.results;
     } catch (error) {
-      console.error("fetch:brands:", error);
+      console.error("fetch:category:", error);
       return [];
     }
   }
 
-  const table = createTable(data, {
-    sort: addSortBy({ disableMultiSort: true }),
-    page: addPagination(),
-    filter: addTableFilter({
-      fn: ({ filterValue, value }) => value.includes(filterValue),
-    }),
-    select: addSelectedRows(),
+  async function getNextPage() {
+    page += 1;
+    await getVariant();
+  }
+
+  async function getPage(event: any) {
+    page = event.detail;
+    await getVariant();
+  }
+
+  async function getPreviousPage() {
+    page -= 1;
+    await getVariant();
+  }
+
+  function onEdit(data: any) {
+    console.log("Edit:", data);
+    editData = data;
+    showForm = true;
+    editForm = true;
+  }
+
+  function handleNewVariant() {
+    editData = null;
+    editForm = false;
+    showForm = false;
+    getVariant();
+  }
+
+  function onDelete(id: any) {
+    showDeleteModal = true;
+    deletingVariant = {
+      id: id,
+    //   name: name,
+    };
+  }
+
+  function confirmDelete() {
+    API.delete(`/products/variant/${deletingVariant.id}/delete_record/`)
+      .then(() => {
+        closeDeleteModal();
+        getVariant();
+        toast("Variant Deleted Successfully!");
+      })
+      .catch((error) => {
+        console.error("Error deleting Variant:", error);
+        closeDeleteModal();
+      });
+  }
+
+  function closeDeleteModal() {
+    showDeleteModal = false;
+  }
+
+  function colseVariant(){
+      editData = null;
+      editForm = false;
+      showForm = false;
+      dispatch ("cancel");
+    }
+
+  onMount(() => {
+    getVariant();
   });
 
-  const columns = table.createColumns([
-    table.column({
-      header: (_, { pluginStates }) => {
-        const { allPageRowsSelected } = pluginStates.select;
-        return createRender(DataTableCheckbox, {
-          checked: allPageRowsSelected,
-        });
-      },
-      accessor: "id",
-      cell: ({ row }, { pluginStates }) => {
-        const { getRowState } = pluginStates.select;
-        const { isSelected } = getRowState(row);
+  function sortName() {
+    if (sortData) {
+      sortField = "name";
+      getVariant();
+      sortData = !sortData;
+    } else {
+      sortField = "-name";
+      getVariant();
+      sortData = !sortData;
+    }
+  }
 
-        return createRender(DataTableCheckbox, {
-          checked: isSelected,
-        });
-      },
-      plugins: {
-        sort: {
-          disable: true,
-        },
-        filter: {
-          exclude: true,
-        },
-      },
-    }),
-    table.column({
-      header: "Product Name",
-      accessor: "product",
-      cell: ({ value }) => value.name,
-    }),
-    table.column({
-      header: "Images",
-      accessor: "images",
-      cell: ({ value }) =>{
-      if (Array.isArray(value) && value.length > 0) {
-        const imageUrl = value[0].image;
-        // console.log("img:",imageUrl);
-        return `<img src="http://localhost:8000${imageUrl}" alt="Featured Image" class="h-10 w-10 rounded-full">`;//image api update url
-      } else {
-        return 'No Image';
-      }
-    },
-      plugins: { filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Attributes",
-      accessor: "attributes",
-      cell: ({ value }) => {
-        if (Array.isArray(value) && value.length > 0) {
-          const attributeValues = value.map(attr => `${attr.attributes.name}: ${attr.value}`).join(', ');
-          return attributeValues;
-        } else {
-          return 'No Attributes';
-        }
-      },
-    }),
-    table.column({
-      header: "Selling Price",
-      accessor: "selling_price",
-      cell: ({ value }) => value,
-    }),
-    table.column({
-      header: "Stock",
-      accessor: "stock",
-      cell: ({ value }) => value,
-    }),
-    table.column({
-      header: "Actions",
-      accessor: ({ id }) => id,
-      cell: (item) => {
-        return createRender(Actions)
-          .on("edit", (event: Actions["edit"]) => {
-            dispatch("edit", { item });
-          })
-          .on("delete", (event: Actions["delete"]) => {
-            dispatch("delete", { item });
-          });
-      },
-      plugins: {
-        sort: {
-          disable: true,
-        },
-      },
-    }),
-  ]);
+  function searchName(event: any) {
+    searchData = event.target.value;
+    getVariant();
+  }
 
-  const {
-    headerRows,
-    pageRows,
-    tableAttrs,
-    tableBodyAttrs,
-    flatColumns,
-    pluginStates,
-    rows,
-  } = table.createViewModel(columns);
-
-  const { sortKeys } = pluginStates.sort;
-
-  const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
-  const { filterValue } = pluginStates.filter;
-
-  const { selectedDataIds } = pluginStates.select;
+  function pageLimit(event: any, value: any) {
+    per_page = value;
+    getVariant();
+  }
 </script>
 
-<div class="w-full">
-  <div class="mb-4 p-4 flex items-center gap-4">
-    <Input
-      class="max-w-sm"
-      placeholder="Filter Variant..."
-      type="text"
-      bind:value={$filterValue}
+<div>
+  {#if showDeleteModal}
+    <ConfirmDeleteModal
+      attribute={deletingVariant.name}
+      on:confirm={confirmDelete}
+      on:cancel={closeDeleteModal}
     />
-  </div>
-  <div class="rounded-md border">
-    <Table.Root {...$tableAttrs}>
-      <Table.Header>
-        {#each $headerRows as headerRow}
-          <Subscribe rowAttrs={headerRow.attrs()}>
-            <Table.Row>
-              {#each headerRow.cells as cell (cell.id)}
-                <Subscribe
-                  attrs={cell.attrs()}
-                  let:attrs
-                  props={cell.props()}
-                  let:props>
-                  <Table.Head
-                    {...attrs}
-                    class={cn("[&:has([role=checkbox])]:pl-3")}>
-                    {#if cell.id === "product"}
-                      <Button variant="ghost" on:click={props.sort.toggle}>
-                        <Render of={cell.render()} />
-                        <CaretSort
-                          class={cn(
-                            $sortKeys[0]?.id === cell.id && "text-foreground",
-                            "ml-2 h-4 w-4"
-                          )}/>
-                      </Button>
-                    {:else}
-                      <Render of={cell.render()} />
-                    {/if}
-                  </Table.Head>
-                </Subscribe>
-              {/each}
-            </Table.Row>
-          </Subscribe>
-        {/each}
-      </Table.Header>
-      <Table.Body {...$tableBodyAttrs}>
-        {#each $pageRows as row (row.id)}
-          <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-            <Table.Row
-              {...rowAttrs}
-              data-state={$selectedDataIds[row.id] && "selected"}>
-              {#each row.cells as cell (cell.id)}
-                <Subscribe attrs={cell.attrs()} let:attrs>
-                  <Table.Cell class="[&:has([role=checkbox])]:pl-3" {...attrs}>
-                    {#if typeof cell.render() === "string"}
-                      {@html cell.render()}
-                    {:else}
-                      <Render of={cell.render()} />
-                    {/if}
-                  </Table.Cell>
-                </Subscribe>
-              {/each}
-            </Table.Row>
-          </Subscribe>
-        {/each}
-      </Table.Body>
-    </Table.Root>
-  </div>
-  <div class="flex items-center justify-end space-x-2 py-4">
-    <div class="flex-1 text-sm text-muted-foreground">
-      {Object.keys($selectedDataIds).length} of{" "}
-      {$rows.length} row(s) selected.
+  {/if}
+</div>
+
+<div class="abc">
+  {#if showForm}
+    <CreateVarient
+      {productData2}
+      {editData}
+      {editForm}
+      on:cancel={colseVariant}
+      on:newVariant={() => handleNewVariant()}
+    />
+  {/if}
+</div>
+
+<div class="w-full p-5">
+  <div class="my-2 flex justify-between">
+    <div>
+      <Input
+        class="max-w-sm"
+        placeholder="Search Categories..."
+        type="text"
+        on:input={(event) => searchName(event)}
+      />
     </div>
-    <Button
-      variant="outline"
-      size="sm"
-      on:click={() => ($pageIndex = $pageIndex - 1)}
-      disabled={!$hasPreviousPage}>Previous</Button
-    >
-    <Button
-      variant="outline"
-      size="sm"
-      disabled={!$hasNextPage}
-      on:click={() => ($pageIndex = $pageIndex + 1)}>Next</Button
-    >
+    <div class="flex">
+      <div class="mr-2">
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            <Button variant="outline" size="sm">
+              Column
+              <ChevronDown class="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content>
+            {#each hidableCoulumns as column}
+              <DropdownMenu.CheckboxItem bind:checked={column.value}
+                >{column.name}</DropdownMenu.CheckboxItem
+              >
+            {/each}
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+      </div>
+      <div>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            <Button variant="outline" size="sm">
+              {per_page}
+              <ChevronDown class="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item on:click={(event) => pageLimit(event, 10)}
+              >10</DropdownMenu.Item
+            >
+            <DropdownMenu.Item on:click={(event) => pageLimit(event, 20)}
+              >20</DropdownMenu.Item
+            >
+            <DropdownMenu.Item on:click={(event) => pageLimit(event, 25)}
+              >25</DropdownMenu.Item
+            >
+            <DropdownMenu.Item on:click={(event) => pageLimit(event, 50)}
+              >50</DropdownMenu.Item
+            >
+            <DropdownMenu.Item on:click={(event) => pageLimit(event, 100)}
+              >100</DropdownMenu.Item
+            >
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+      </div>
+    </div>
+  </div>
+
+  <Table.Root>
+    <Table.Header>
+      <Table.Row>
+          <Table.Head>
+            Product Name
+            <Button on:click={() => sortName()} variant="ghost">
+              <CaretSort class="w-4 h-4" /></Button>
+          </Table.Head>
+        {#if hidableCoulumns[0].value}
+          <Table.Head>Image</Table.Head>
+        {/if}
+        {#if hidableCoulumns[1].value}
+          <Table.Head>Attributes</Table.Head>
+        {/if}
+        {#if hidableCoulumns[2].value}
+          <Table.Head>Selling Price</Table.Head>
+        {/if}
+        {#if hidableCoulumns[3].value}
+          <Table.Head>Stock</Table.Head>
+        {/if}
+        <Table.Head>Action</Table.Head>
+      </Table.Row>
+    </Table.Header>
+    {#each tableData as data}
+      <Table.Row>
+          <Table.Cell>{data.product.name}</Table.Cell>
+        {#if hidableCoulumns[0].value}
+          <Table.Cell>
+            <img
+              src={data.image}
+              alt="Logo"
+              class="w-12 h-12 object-cover rounded-full"
+            /></Table.Cell
+          >
+        {/if}
+        {#if hidableCoulumns[1].value}
+          <Table.Cell>{data.attributes.map(attr => `${attr.attributes.name}: ${attr.value}`).join(", ")}</Table.Cell>
+        {/if}
+        {#if hidableCoulumns[2].value}
+          <Table.Cell>{data.selling_price}</Table.Cell>
+        {/if}
+        {#if hidableCoulumns[3].value}
+          <Table.Cell>{data.stock}</Table.Cell>
+        {/if}
+        <Table.Cell>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild let:builder>
+              <Button builders={[builder]} variant="ghost"
+                ><MoreHorizontal class="h-4 w-4" /></Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content class="absolute">
+              <DropdownMenu.Item on:click={() => onEdit(data)}>
+                <i class="fa fa-pencil sm mr-2"></i>Edit</DropdownMenu.Item>
+              <DropdownMenu.Item on:click={() => onDelete(data.id)}>
+                <i class="fa fa-trash sm mr-2" style="color:red"></i>Delete</DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        </Table.Cell>
+      </Table.Row>
+    {/each}
+  </Table.Root>
+
+  <div class="d-flex justify-end align-items-end mt-3">
+    <Pagination
+      {totalItems}
+      {per_page}
+      on:prev={getPreviousPage}
+      on:next={getNextPage}
+      on:page={(event) => getPage(event)}
+    />
   </div>
 </div>
