@@ -225,8 +225,8 @@
 <Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
   <Dialog.Content>
     <Dialog.Header class="font-bold mb-5">
-      <Dialog.Description
-        >{editForm ? "Update Category" : "New Category"}</Dialog.Description
+      <Dialog.Title
+        >{editForm ? "Update Category" : "New Category"}</Dialog.Title
       >
     </Dialog.Header>
 
