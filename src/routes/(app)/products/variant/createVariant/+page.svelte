@@ -8,6 +8,7 @@
   import { toast } from "svelte-sonner";
   import * as Card from "$lib/components/ui/card";
   import { productDetailsStore } from "$lib/stores/data";
+  import * as Dialog from "$lib/components/ui/dialog/index.js";
 
   const dispatch = createEventDispatcher();
 
@@ -24,7 +25,7 @@
   let attributeDetails: AttributeDetail[] = [];
   let selectedAttributeValues = new Map();
   let imageUpload: any;
-  let updateImage: boolean = false
+  let updateImage: boolean = false;
   let productData: any;
   let categoriesArray: any;
   let attribute_group: any;
@@ -54,12 +55,11 @@
       images: "",
     };
   }
-  
-  if (productData2){
+
+  if (productData2) {
     // variantDetails.product = productData2.id;
     attribute_group = productData2.categories[0].attribute_group.id;
-  }
-  else{
+  } else {
     attribute_group = editData.product.categories[0].attribute_group.id;
   }
 
@@ -68,34 +68,32 @@
   // }
 
   onMount(() => {
-  //   const persistedAttributeGroup = localStorage.getItem("attribute_group");
-  //   if (persistedAttributeGroup) {
-  //       attribute_group = parseInt(persistedAttributeGroup);
-  //   }
-    
-  //   if(!isSubscribed) {
-  //     unsubscribe = productDetailsStore.subscribe((value) => {
-  //       productData = value;
-  //       categoriesArray = productData.categories;
-  //       // attribute_group = categoriesArray[0].attribute_group.id;
-  //       if (categoriesArray && categoriesArray.length > 0) {
-  //               attribute_group = categoriesArray[0].attribute_group.id;
-  //               localStorage.setItem("attribute_group", attribute_group);
-  //           }
-  //     });
-  //   isSubscribed = true;
-  //   }
+    //   const persistedAttributeGroup = localStorage.getItem("attribute_group");
+    //   if (persistedAttributeGroup) {
+    //       attribute_group = parseInt(persistedAttributeGroup);
+    //   }
+
+    //   if(!isSubscribed) {
+    //     unsubscribe = productDetailsStore.subscribe((value) => {
+    //       productData = value;
+    //       categoriesArray = productData.categories;
+    //       // attribute_group = categoriesArray[0].attribute_group.id;
+    //       if (categoriesArray && categoriesArray.length > 0) {
+    //               attribute_group = categoriesArray[0].attribute_group.id;
+    //               localStorage.setItem("attribute_group", attribute_group);
+    //           }
+    //     });
+    //   isSubscribed = true;
+    //   }
 
     if (editData && editData.attributes) {
-      variantDetails.attributes = editData.attributes.map((attr: {
-        attributes: { id: number },
-        value: string,
-        id: number
-      }) => ({
-        attribute: attr.attributes.id,
-        value: attr.value,
-        id: attr.id
-      }));
+      variantDetails.attributes = editData.attributes.map(
+        (attr: { attributes: { id: number }; value: string; id: number }) => ({
+          attribute: attr.attributes.id,
+          value: attr.value,
+          id: attr.id,
+        })
+      );
     }
   });
 
@@ -138,19 +136,30 @@
     }
   }
 
-  function handleAttributeValueChange(attributeId: number, attributeName: string, value: string) {
-      selectedAttributeValues.set(attributeName, value);
-      selectedAttributeValues = new Map(selectedAttributeValues);
-      const existingIndex = variantDetails.attributes.findIndex((attr: { attribute: number, value: string, id?: number }) => attr.attribute === attributeId);
-      if (existingIndex !== -1) {
-        if (editForm) {
-          variantDetails.attributes[existingIndex] = { attribute: attributeId, value: value, id: variantDetails.attributes[existingIndex].id };
-        } else {
-          variantDetails.attributes[existingIndex].value = value;
-        }
+  function handleAttributeValueChange(
+    attributeId: number,
+    attributeName: string,
+    value: string
+  ) {
+    selectedAttributeValues.set(attributeName, value);
+    selectedAttributeValues = new Map(selectedAttributeValues);
+    const existingIndex = variantDetails.attributes.findIndex(
+      (attr: { attribute: number; value: string; id?: number }) =>
+        attr.attribute === attributeId
+    );
+    if (existingIndex !== -1) {
+      if (editForm) {
+        variantDetails.attributes[existingIndex] = {
+          attribute: attributeId,
+          value: value,
+          id: variantDetails.attributes[existingIndex].id,
+        };
       } else {
-        variantDetails.attributes.push({ attribute: attributeId, value: value });
+        variantDetails.attributes[existingIndex].value = value;
       }
+    } else {
+      variantDetails.attributes.push({ attribute: attributeId, value: value });
+    }
   }
 
   async function fetchAttributegroup() {
@@ -171,11 +180,11 @@
       form.append("stock", variantDetails.stock);
       form.append("selling_price", variantDetails.selling_price);
       form.append("attributes", JSON.stringify(variantDetails.attributes));
-      if (updateImage && variantDetails.images){
+      if (updateImage && variantDetails.images) {
         form.append("images", variantDetails.images);
       }
 
-      console.log("image uploading:", variantDetails.images)
+      console.log("image uploading:", variantDetails.images);
       console.log("attributes:", variantDetails.attributes);
       const url = editForm
         ? `/products/variant/${variantDetails.id}/update_record/`
@@ -213,136 +222,112 @@
   function cancelModel() {
     dispatch("cancel");
   }
-  function handleClickOutside(event: any) {
-    if (!event.target.closest(".card")) {
-      cancelModel();
-    }
-  }
 
   onMount(async () => {
     await fetchAttributegroup();
     await handleAttributeGroupData();
   });
 
-  onMount(() => {
-    const timeout = setTimeout(() => {
-      document.addEventListener("mousedown", handleClickOutside);
-    }, 100);
-
-    return () => {
-      clearTimeout(timeout);
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  });
 </script>
 
-<div
-  class="fixed bg-background inset-0 flex items-center justify-center"
-  style="background-color: rgba(0, 0, 0, 0.5);">
-  <div class="flex items-center justify-center">
-    <div class="glow-border">
-      <div
-        class="card glow-border-content bg-background text-foreground overflow-y-auto"
-        style="max-height:90vh;">
-        <Card.Root>
-          <Card.Header class="font-bold mb-5">
-            <Card.Title>
-              {editForm ? "Update Variant" : "New Variant"}</Card.Title>
-          </Card.Header>
-          <Card.Content>
-            {#each attributeDetails as detail}
-              <div class="flex justify-center">
-                <div class="mb-3" style="min-width: 100px; max-width: 200px;">
-                  <Label>{detail.name}</Label>
-                </div>
-                <div class="mb-3 pl-4" style="min-width: 150px; max-width: 250px;">
-                  <Select.Root>
-                    <Select.Trigger class="input capitalize">
-                      {#if selectedAttributeValues.has(detail.name)}
-                        {selectedAttributeValues.get(detail.name)}
-                      {:else}
-                        {variantDetails.attributes.find(attr => attr.attribute === detail.id)?.value ?? 'Select an Attribute'}
-                      {/if}
-                    </Select.Trigger>
-                    <Select.Content>
-                      <Select.Group>
-                        {#each detail.values as value, index}
-                          <Select.Item
-                            value={index}
-                            label={value}
-                            class="capitalize card"
-                            on:click={() =>
-                              handleAttributeValueChange(
-                                detail.id,
-                                detail.name,
-                                value
-                              )}>
-                            {value}
-                          </Select.Item>
-                        {/each}
-                      </Select.Group>
-                    </Select.Content>
-                  </Select.Root>
-                </div>
-              </div>
-            {/each}
-            <div class="mb-3">
-              <Label for="stock">Stock</Label>
-              <Input
-                id="stock"
-                type="number"
-                bind:value={variantDetails.stock}
-                placeholder="Stock"/>
-            </div>
-            <div class="mb-3">
-              <Label for="selling_price">Selling Price</Label>
-              <Input
-                id="selling_price"
-                type="number"
-                bind:value={variantDetails.selling_price}
-                placeholder="Selling Price"/>
-            </div>
-            {#if !editForm}
-            <div class="flex items-center justify-evenly gap-2">
-              <Button
-                type="button"
-                class="btn flex gap-2 items-center bg-indigo-500 text-white text-xs"
-                on:click={pickAvatar}>
-                <i class="fa-solid fa-image text-sm"></i>
-                Upload Variant image
-              </Button>
-              <img
-                id="selected-logo"
-                alt=""
-                class={variantDetails.images ? "showImg" : "hideImg"}
-                src={updateImage ? window.URL.createObjectURL(variantDetails.images) : variantDetails.images}/>
-              <input
-                type="file"
-                id="file-input"
-                hidden
-                bind:this={imageUpload}
-                on:input={uploadAvatar}
-                accept="image/png, image/jpeg"/>
-            </div>
-            {/if}
-          </Card.Content>
-          <Card.Footer class="justify-between space-x-2">
-            <Button
-              type="button"
-              variant="ghost"
-              on:click={() => dispatch("cancel")}>Cancel</Button>
-            <Button type="submit" on:click={createVariant}>Save</Button>
-          </Card.Footer>
-        </Card.Root>
+<Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
+  <Dialog.Content>
+    <Dialog.Header>
+      <Dialog.Title>
+        {editForm ? "Update Variant" : "New Variant"}</Dialog.Title
+      >
+    </Dialog.Header>
+    {#each attributeDetails as detail}
+      <div class="flex justify-center">
+        <div class="mb-3" style="min-width: 100px; max-width: 200px;">
+          <Label>{detail.name}</Label>
+        </div>
+        <div class="mb-3 pl-4" style="min-width: 150px; max-width: 250px;">
+          <Select.Root>
+            <Select.Trigger class="input capitalize">
+              {#if selectedAttributeValues.has(detail.name)}
+                {selectedAttributeValues.get(detail.name)}
+              {:else}
+                {variantDetails.attributes.find(
+                  (attr) => attr.attribute === detail.id
+                )?.value ?? "Select an Attribute"}
+              {/if}
+            </Select.Trigger>
+            <Select.Content>
+              <Select.Group>
+                {#each detail.values as value, index}
+                  <Select.Item
+                    value={index}
+                    label={value}
+                    class="capitalize card"
+                    on:click={() =>
+                      handleAttributeValueChange(detail.id, detail.name, value)}
+                  >
+                    {value}
+                  </Select.Item>
+                {/each}
+              </Select.Group>
+            </Select.Content>
+          </Select.Root>
+        </div>
       </div>
+    {/each}
+    <div class="mb-3">
+      <Label for="stock">Stock</Label>
+      <Input
+        id="stock"
+        type="number"
+        bind:value={variantDetails.stock}
+        placeholder="Stock"
+      />
     </div>
-  </div>
-</div>
+    <div class="mb-3">
+      <Label for="selling_price">Selling Price</Label>
+      <Input
+        id="selling_price"
+        type="number"
+        bind:value={variantDetails.selling_price}
+        placeholder="Selling Price"
+      />
+    </div>
+    {#if !editForm}
+      <div class="flex items-center justify-evenly gap-2">
+        <Button
+          type="button"
+          class="btn flex gap-2 items-center bg-indigo-500 text-white text-xs"
+          on:click={pickAvatar}
+        >
+          <i class="fa-solid fa-image text-sm"></i>
+          Upload Variant image
+        </Button>
+        <img
+          id="selected-logo"
+          alt=""
+          class={variantDetails.images ? "showImg" : "hideImg"}
+          src={updateImage
+            ? window.URL.createObjectURL(variantDetails.images)
+            : variantDetails.images}
+        />
+        <input
+          type="file"
+          id="file-input"
+          hidden
+          bind:this={imageUpload}
+          on:input={uploadAvatar}
+          accept="image/png, image/jpeg"
+        />
+      </div>
+    {/if}
+    <Dialog.Footer class="justify-between space-x-2">
+      <Button type="button" variant="ghost" on:click={cancelModel}
+        >Cancel</Button
+      >
+      <Button type="submit" on:click={createVariant}>Save</Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>
 
 <style>
-  .card::-webkit-scrollbar {
-    display: none;
-  }
   .hideImg {
     visibility: hidden;
   }

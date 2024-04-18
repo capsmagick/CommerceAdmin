@@ -225,8 +225,8 @@
 <Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
   <Dialog.Content>
     <Dialog.Header class="font-bold mb-5">
-      <Dialog.Description
-        >{editForm ? "Update Category" : "New Category"}</Dialog.Description
+      <Dialog.Title
+        >{editForm ? "Update Category" : "New Category"}</Dialog.Title
       >
     </Dialog.Header>
 
@@ -238,121 +238,126 @@
         type="text"
       />
     </div>
-    <div class="mb-3">
-      <Textarea
-        bind:value={categoryDetails.description}
-        placeholder="Description"
-        class="textarea"
-      />
-    </div>
-
     <div class="grid grid-cols-2 gap-4 mb-3">
       <div>
-        <Input
-          bind:value={categoryDetails.handle}
-          on:input={handleInput}
-          on:keypress={handleKeyPress}
-          placeholder="Handle"
-          class="input"
-          type="text"
+        <Textarea
+          bind:value={categoryDetails.description}
+          placeholder="Description"
+          class="textarea"
         />
       </div>
       <div>
-        <Select.Root>
-          <Select.Trigger class="input capitalize">
-            {selectedAttributeGroup
-              ? selectedAttributeGroup
-              : "Select a Attribute Group"}</Select.Trigger
-          >
-          <Select.Content>
-            <Select.Group>
-              {#each attributeGroups as group}
-                <Select.Item
-                  value={group.id}
-                  label={group.name}
-                  class="capitalize card"
-                  on:click={() => handleGroupChange({ value: group.id })}
-                >
-                  {group.name}
-                </Select.Item>
-              {/each}
-            </Select.Group>
-          </Select.Content>
-        </Select.Root>
+        <div class="mb-1">
+          <Input
+            bind:value={categoryDetails.handle}
+            on:input={handleInput}
+            on:keypress={handleKeyPress}
+            placeholder="Handle"
+            class="input"
+            type="text"
+          />
+        </div>
+        <div>
+          <Select.Root>
+            <Select.Trigger class="input capitalize">
+              {selectedAttributeGroup
+                ? selectedAttributeGroup
+                : "Select a Attribute Group"}</Select.Trigger
+            >
+            <Select.Content>
+              <Select.Group>
+                {#each attributeGroups as group}
+                  <Select.Item
+                    value={group.id}
+                    label={group.name}
+                    class="capitalize card"
+                    on:click={() => handleGroupChange({ value: group.id })}
+                  >
+                    {group.name}
+                  </Select.Item>
+                {/each}
+              </Select.Group>
+            </Select.Content>
+          </Select.Root>
+        </div>
       </div>
-    </div>
-
-    <div>
-      <Label for="tags">Tags</Label>
-      <Input
-        id="tags"
-        placeholder="Enter tags separated by comma"
-        bind:value={tagInput}
-      />
-      <p class=" text-blue-400 font-medium">use comma to seperate tags</p>
     </div>
 
     <div class="grid grid-cols-2 gap-4 mb-3">
-      <div class="mb-3">
-        <Label for="parant_category">Parant Category</Label>
-
-        <Popover.Root bind:open let:ids>
-          <Popover.Trigger asChild let:builder>
-            <Button
-              builders={[builder]}
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              class="w-[200px] justify-between"
-            >
-              {selectedParentCategory}
-              <CaretSort class="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </Popover.Trigger>
-          <Popover.Content class="w-[200px] p-0">
-            <Command.Root>
-              <Command.Input placeholder="Search category..." class="h-9" />
-              <Command.Empty>No category found.</Command.Empty>
-              <Command.Group>
-                {#each categoryOptions as category}
-                  <Command.Item
-                    value={category.value}
-                    onSelect={(currentValue) => {
-                      id = currentValue;
-                      closeAndFocusTrigger(ids.trigger);
-                      categoryDetails.parent_category = category.id;
-                    }}
-                  >
-                    <Check
-                      class={cn(
-                        "mr-2 h-4 w-4",
-                        id !== category.id && "text-transparent"
-                      )}
-                    />
-                    {category.label}
-                  </Command.Item>
-                {/each}
-              </Command.Group>
-            </Command.Root>
-          </Popover.Content>
-        </Popover.Root>
+      <div>
+        <Label for="tags">Tags</Label>
+        <Input
+          id="tags"
+          placeholder="Enter tags separated by comma"
+          bind:value={tagInput}
+        />
+        <p class=" text-blue-400 font-medium">use comma to seperate tags</p>
       </div>
+      <div class="grid grid-cols-2 gap-4 mb-3">
+        <div>
+          <Label for="parant_category">Parant Category</Label>
 
-      <div class="flex">
-        <div class="mb-3">
-          <Label for="mainMenu" class="ms-3">Main Menu:</Label>
-          <div class="flex justify-center">
-            <Switch id="mainMenu" bind:checked={categoryDetails.is_main_menu} />
-          </div>
+          <Popover.Root bind:open let:ids>
+            <Popover.Trigger asChild let:builder>
+              <Button
+                builders={[builder]}
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                class="w-[200px] justify-between"
+              >
+                {selectedParentCategory}
+                <CaretSort class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </Popover.Trigger>
+            <Popover.Content class="w-[200px] p-0">
+              <Command.Root>
+                <Command.Input placeholder="Search category..." class="h-9" />
+                <Command.Empty>No category found.</Command.Empty>
+                <Command.Group>
+                  {#each categoryOptions as category}
+                    <Command.Item
+                      value={category.value}
+                      onSelect={(currentValue) => {
+                        id = currentValue;
+                        closeAndFocusTrigger(ids.trigger);
+                        categoryDetails.parent_category = category.id;
+                      }}
+                    >
+                      <Check
+                        class={cn(
+                          "mr-2 h-4 w-4",
+                          id !== category.id && "text-transparent"
+                        )}
+                      />
+                      {category.label}
+                    </Command.Item>
+                  {/each}
+                </Command.Group>
+              </Command.Root>
+            </Popover.Content>
+          </Popover.Root>
         </div>
 
-        <div class="mb-3">
-          <Label for="Topcategory" class="ms-3">Top Category:</Label>
-          <div class="flex justify-center">
-            <Switch
-              id="Topcategory"
-              bind:checked={categoryDetails.is_top_category}
-            />
+        <div class="flex">
+          <div class="mb-3">
+            <Label for="mainMenu" class="ms-3">Main Menu:</Label>
+            <div class="flex justify-center">
+              <Switch
+                id="mainMenu"
+                bind:checked={categoryDetails.is_main_menu}
+              />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <Label for="Topcategory" class="ms-3">Top Category:</Label>
+            <div class="flex justify-center">
+              <Switch
+                id="Topcategory"
+                bind:checked={categoryDetails.is_top_category}
+              />
+            </div>
           </div>
         </div>
       </div>
