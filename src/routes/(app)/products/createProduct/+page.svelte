@@ -21,6 +21,7 @@
   let selectedCategory: string;
   let editBrand: boolean = false;
   let editCategory: boolean = false;
+  let editImage: boolean = false;
   let editTag: boolean = false;
   let tagInput: string = ""; // Holds the raw tag input from the user
 
@@ -153,6 +154,9 @@
       if (!editBrand) {
         productDetails.brand = productDetails.brand.id;
       }
+      if (!editCategory) {
+        productDetails.categories = productDetails.categories[0].id;
+      }
       form.append("name", productDetails.name);
       form.append("short_description", productDetails.short_description);
       form.append("description", productDetails.description);
@@ -170,7 +174,9 @@
         form.append("tags", productDetails.tags);
       }
       //  form.append("dimension", productDetails.dimension);
+      if(editImage){
       form.append("images", productDetails.images);
+      }
 
       const url = editForm
         ? `/products/product/${productDetails.id}/update_record/`
@@ -194,7 +200,6 @@
   function cancelModel() {
     editBrand = false;
     editCategory = false;
-    editCategory = false;
     dispatch("cancel");
   }
 
@@ -210,6 +215,7 @@
   }
 
   async function uploadAvatar() {
+    editImage = true;
     if (imageUpload.files && imageUpload.files.length > 0) {
       productDetails.images = imageUpload.files[0];
       const img: HTMLImageElement | null = document.getElementById(
