@@ -168,7 +168,7 @@
   }
 
   async function onViewProduct(data: any) {
-    editData = data.id;
+    editData = data;
     viewProduct = true;
     editForm = true;
   }
