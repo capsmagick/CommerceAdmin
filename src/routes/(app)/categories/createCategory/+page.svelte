@@ -282,7 +282,10 @@
       </div>
     </div>
 
-    <div>
+   
+
+    <div class="grid grid-cols-2 gap-4 mb-3">
+       <div>
       <Label for="tags">Tags</Label>
       <Input
         id="tags"
@@ -291,54 +294,53 @@
       />
       <p class=" text-blue-400 font-medium">use comma to seperate tags</p>
     </div>
+      <div class="grid grid-cols-2 gap-4 mb-3">
+        <div>
+          <Label for="parant_category">Parant Category</Label>
+  
+          <Popover.Root bind:open let:ids>
+            <Popover.Trigger asChild let:builder>
+              <Button
+                builders={[builder]}
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                class="w-[200px] justify-between"
+              >
+                {selectedParentCategory}
+                <CaretSort class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </Popover.Trigger>
+            <Popover.Content class="w-[200px] p-0">
+              <Command.Root>
+                <Command.Input placeholder="Search category..." class="h-9" />
+                <Command.Empty>No category found.</Command.Empty>
+                <Command.Group>
+                  {#each categoryOptions as category}
+                    <Command.Item
+                      value={category.value}
+                      onSelect={(currentValue) => {
+                        id = currentValue;
+                        closeAndFocusTrigger(ids.trigger);
+                        categoryDetails.parent_category = category.id;
+                      }}
+                    >
+                      <Check
+                        class={cn(
+                          "mr-2 h-4 w-4",
+                          id !== category.id && "text-transparent"
+                        )}
+                      />
+                      {category.label}
+                    </Command.Item>
+                  {/each}
+                </Command.Group>
+              </Command.Root>
+            </Popover.Content>
+          </Popover.Root>
+        </div>
 
-    <div class="grid grid-cols-2 gap-4 mb-3">
-      <div class="mb-3">
-        <Label for="parant_category">Parant Category</Label>
-
-        <Popover.Root bind:open let:ids>
-          <Popover.Trigger asChild let:builder>
-            <Button
-              builders={[builder]}
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              class="w-[200px] justify-between"
-            >
-              {selectedParentCategory}
-              <CaretSort class="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </Popover.Trigger>
-          <Popover.Content class="w-[200px] p-0">
-            <Command.Root>
-              <Command.Input placeholder="Search category..." class="h-9" />
-              <Command.Empty>No category found.</Command.Empty>
-              <Command.Group>
-                {#each categoryOptions as category}
-                  <Command.Item
-                    value={category.value}
-                    onSelect={(currentValue) => {
-                      id = currentValue;
-                      closeAndFocusTrigger(ids.trigger);
-                      categoryDetails.parent_category = category.id;
-                    }}
-                  >
-                    <Check
-                      class={cn(
-                        "mr-2 h-4 w-4",
-                        id !== category.id && "text-transparent"
-                      )}
-                    />
-                    {category.label}
-                  </Command.Item>
-                {/each}
-              </Command.Group>
-            </Command.Root>
-          </Popover.Content>
-        </Popover.Root>
-      </div>
-
-      <div class="flex">
+              <div class="flex">
         <div class="mb-3">
           <Label for="mainMenu" class="ms-3">Main Menu:</Label>
           <div class="flex justify-center">
@@ -356,6 +358,8 @@
           </div>
         </div>
       </div>
+      </div>
+
     </div>
 
     <div class="flex justify-between mb-3">
