@@ -51,7 +51,12 @@
   };
 
   if (editForm) {
+    console.log(editData);
+    
     productDetails = editData;
+    selectedCategory = productDetails.categories[0]? productDetails.categories[0].name: '';
+    selectedBrand = productDetails.brand? productDetails.brand.name: '';
+    tagInput = productDetails.tags.map((tag: any) => tag).join(',');
   }
 
   type Brand = {
