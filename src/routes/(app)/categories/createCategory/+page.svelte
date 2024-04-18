@@ -238,66 +238,65 @@
         type="text"
       />
     </div>
-    <div class="mb-3">
-      <Textarea
-        bind:value={categoryDetails.description}
-        placeholder="Description"
-        class="textarea"
-      />
-    </div>
-
     <div class="grid grid-cols-2 gap-4 mb-3">
       <div>
-        <Input
-          bind:value={categoryDetails.handle}
-          on:input={handleInput}
-          on:keypress={handleKeyPress}
-          placeholder="Handle"
-          class="input"
-          type="text"
+        <Textarea
+          bind:value={categoryDetails.description}
+          placeholder="Description"
+          class="textarea"
         />
       </div>
       <div>
-        <Select.Root>
-          <Select.Trigger class="input capitalize">
-            {selectedAttributeGroup
-              ? selectedAttributeGroup
-              : "Select a Attribute Group"}</Select.Trigger
-          >
-          <Select.Content>
-            <Select.Group>
-              {#each attributeGroups as group}
-                <Select.Item
-                  value={group.id}
-                  label={group.name}
-                  class="capitalize card"
-                  on:click={() => handleGroupChange({ value: group.id })}
-                >
-                  {group.name}
-                </Select.Item>
-              {/each}
-            </Select.Group>
-          </Select.Content>
-        </Select.Root>
+        <div class="mb-1">
+          <Input
+            bind:value={categoryDetails.handle}
+            on:input={handleInput}
+            on:keypress={handleKeyPress}
+            placeholder="Handle"
+            class="input"
+            type="text"
+          />
+        </div>
+        <div>
+          <Select.Root>
+            <Select.Trigger class="input capitalize">
+              {selectedAttributeGroup
+                ? selectedAttributeGroup
+                : "Select a Attribute Group"}</Select.Trigger
+            >
+            <Select.Content>
+              <Select.Group>
+                {#each attributeGroups as group}
+                  <Select.Item
+                    value={group.id}
+                    label={group.name}
+                    class="capitalize card"
+                    on:click={() => handleGroupChange({ value: group.id })}
+                  >
+                    {group.name}
+                  </Select.Item>
+                {/each}
+              </Select.Group>
+            </Select.Content>
+          </Select.Root>
+        </div>
       </div>
     </div>
 
-   
-
     <div class="grid grid-cols-2 gap-4 mb-3">
-       <div>
-      <Label for="tags">Tags</Label>
-      <Input
-        id="tags"
-        placeholder="Enter tags separated by comma"
-        bind:value={tagInput}
-      />
-      <p class=" text-blue-400 font-medium">use comma to seperate tags</p>
-    </div>
+      <div>
+        <Label for="tags">Tags</Label>
+        <Input
+          id="tags"
+          placeholder="Enter tags separated by comma"
+          bind:value={tagInput}
+        />
+        <p class=" text-blue-400 font-medium">use comma to seperate tags</p>
+      </div>
       <div class="grid grid-cols-2 gap-4 mb-3">
         <div>
           <Label for="parant_category">Parant Category</Label>
-  
+
           <Popover.Root bind:open let:ids>
             <Popover.Trigger asChild let:builder>
               <Button
@@ -340,26 +339,28 @@
           </Popover.Root>
         </div>
 
-              <div class="flex">
-        <div class="mb-3">
-          <Label for="mainMenu" class="ms-3">Main Menu:</Label>
-          <div class="flex justify-center">
-            <Switch id="mainMenu" bind:checked={categoryDetails.is_main_menu} />
+        <div class="flex">
+          <div class="mb-3">
+            <Label for="mainMenu" class="ms-3">Main Menu:</Label>
+            <div class="flex justify-center">
+              <Switch
+                id="mainMenu"
+                bind:checked={categoryDetails.is_main_menu}
+              />
+            </div>
           </div>
-        </div>
 
-        <div class="mb-3">
-          <Label for="Topcategory" class="ms-3">Top Category:</Label>
-          <div class="flex justify-center">
-            <Switch
-              id="Topcategory"
-              bind:checked={categoryDetails.is_top_category}
-            />
+          <div class="mb-3">
+            <Label for="Topcategory" class="ms-3">Top Category:</Label>
+            <div class="flex justify-center">
+              <Switch
+                id="Topcategory"
+                bind:checked={categoryDetails.is_top_category}
+              />
+            </div>
           </div>
         </div>
       </div>
-      </div>
-
     </div>
 
     <div class="flex justify-between mb-3">
