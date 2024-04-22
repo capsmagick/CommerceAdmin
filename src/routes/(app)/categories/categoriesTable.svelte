@@ -277,7 +277,7 @@
           <Table.Cell>{data.description}</Table.Cell>
         {/if}
         {#if hidableCoulumns[2].value}
-          <Table.Cell>{data.tags.map((i) => i.name).join(" ,")}</Table.Cell>
+          <Table.Cell>{data.tags}</Table.Cell>
         {/if}
         {#if hidableCoulumns[3].value}
           <Table.Cell>{data.parent_category}</Table.Cell>

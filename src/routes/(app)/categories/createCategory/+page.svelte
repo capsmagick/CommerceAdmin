@@ -115,8 +115,12 @@
 
   async function createCategory() {
     try {
+    categoryDetails.tags = tagInput
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter((tag) => tag !== "");
+    
       const formData = new FormData();
-      console.log("categoryDetails", categoryDetails);
 
       formData.append("name", categoryDetails.name);
       formData.append("description", categoryDetails.description);
@@ -129,9 +133,9 @@
         formData.append("attribute_group", categoryDetails.attribute_group);
       }
 
-      if (categoryDetails && categoryDetails.tags) {
+      // if (categoryDetails && categoryDetails.tags) {
         formData.append("tags", categoryDetails.tags);
-      }
+      // }
       // formData.append("attribute_group", categoryDetails.attribute_group);
       if (updateImage) {
         formData.append("image", categoryDetails.image);
