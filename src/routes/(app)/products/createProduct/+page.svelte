@@ -43,7 +43,7 @@
     noOfReviews: 0,
     tags: [],
     dimension: "",
-    images: "",
+    images: [],
   };
 
   if (editForm) {
@@ -173,9 +173,10 @@
       if (editTag) {
         form.append("tags", productDetails.tags);
       }
-      //  form.append("dimension", productDetails.dimension);
-      if(editImage){
-      form.append("images", productDetails.images);
+      if (editImage) {
+        for (let i = 0; i < productDetails.images.length; i++) {
+          form.append("images", productDetails.images[i]);
+        }
       }
 
       const url = editForm
@@ -217,13 +218,15 @@
   async function uploadAvatar() {
     editImage = true;
     if (imageUpload.files && imageUpload.files.length > 0) {
-      productDetails.images = imageUpload.files[0];
-      const img: HTMLImageElement | null = document.getElementById(
-        "selected-logo"
-      ) as HTMLImageElement;
-      if (img) {
-        img.src = window.URL.createObjectURL(productDetails.images);
+      for (let i = 0; i < imageUpload.files.length; i++) {
+        productDetails.images.push(imageUpload.files[i]);
       }
+      // Update the preview image with the last selected image
+      const img: HTMLImageElement | null = document.getElementById("selected-logo") as HTMLImageElement;
+      if (img) {
+        img.src = window.URL.createObjectURL(productDetails.images[productDetails.images.length - 1]);
+      }
+      console.log("productDetails.images after update:", productDetails.images);
     }
   }
 </script>
@@ -377,6 +380,7 @@
             id="file-input"
             bind:this={imageUpload}
             hidden
+            multiple
             accept="image/png, image/jpeg"
             on:change={uploadAvatar}
           />
@@ -384,18 +388,23 @@
         <div
           style="display:flex; justify-content: center; align-items: center; margin-top: 10px;"
         >
-          {#if productDetails.images}
-            <img
-              id="selected-logo"
-              style="height: 100px;"
-              alt=""
-              class:showImg={productDetails.images}
-              class:hideImg={!productDetails.images}
-              src={productDetails.images
-                ? window.URL.createObjectURL(productDetails.images)
-                : ""}
-            />
-          {/if}
+        {#if productDetails.images.length > 0}
+          <div class="image-preview-container">
+            {#each productDetails.images as image, index}
+              <img
+                id="selected-logo-{index}"
+                class="selected-logo"
+                alt=""
+                src={window.URL.createObjectURL(image)}
+              />
+              <script>
+                console.log('Rendering image:', index);
+                console.log('Image File:', image);
+                console.log('Image URL:', window.URL.createObjectURL(image));
+              </script>
+            {/each}
+          </div>
+        {/if}
         </div>
       </div>
     {/if}
@@ -417,5 +426,16 @@
     flex: none;
     border-radius: 20px;
     object-fit: cover;
+  }
+  .image-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .selected-logo {
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
   }
 </style>
