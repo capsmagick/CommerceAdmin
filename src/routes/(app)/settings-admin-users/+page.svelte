@@ -21,5 +21,5 @@
             </Button>
         </div>
     </div>
-    <AdminTable {showForm}/>
+    <AdminTable {showForm} on:cancel={() => (showForm = false)}/>
 </div>

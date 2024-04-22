@@ -5,12 +5,15 @@
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import { onMount } from "svelte";
   import API from "$lib/services/api";
   import { MoreHorizontal } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
   import Pagination from "$lib/components/ui/table-pagination/pagination.svelte";
+  import CreateAdmin from "./createAdmin/+page.svelte";
+  import { createEventDispatcher, onMount } from "svelte";
+
+  const dispatch = createEventDispatcher();
 
   export let showForm: boolean = false;
   // variables to handle pagination and table details
@@ -39,7 +42,7 @@
     { name: "Updated By", value: false },
   ];
 
-  async function getAdmin() {
+  async function getAdmin() { 
     try {
       let res = await API.get(
         `/account/manager/?page=${page}&per_page=${per_page}&ordering=${sortField}&search=${searchData}`
@@ -78,6 +81,13 @@
     editForm = false;
     showForm = false;
     getAdmin();
+  }
+
+    function cancelEditModel() {
+    editData = null;
+    editForm = false;
+    showForm = false;
+    dispatch("cancel");
   }
 
   function onDelete(id: any, first_name: any, last_name: any) {
@@ -131,6 +141,17 @@
     getAdmin();
   }
 </script>
+
+<div class="abc">
+  {#if showForm}
+    <CreateAdmin
+      {editData}
+      {editForm}
+      on:cancel={cancelEditModel}
+      on:newCategory={() => handleNewAdmin()}
+    />
+  {/if}
+</div>
 
 <div>
   {#if showDeleteModal}
