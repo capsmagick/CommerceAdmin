@@ -148,7 +148,7 @@
       {editData}
       {editForm}
       on:cancel={cancelEditModel}
-      on:newCategory={() => handleNewAdmin()}
+      on:newAdmin={() => handleNewAdmin()}
     />
   {/if}
 </div>

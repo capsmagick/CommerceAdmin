@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher } from "svelte";
   import { Input } from "$lib/components/ui/input";
   import { Button } from "$lib/components/ui/button";
   import API from "$lib/services/api";
@@ -13,23 +13,18 @@
   export let editData;
   export let editForm: boolean;
   let updateImage: boolean = false;
-
-  let adminDetails: any = {  };
-
+  let adminDetails: any = { 
+   };
   let imageUpload: any;
-  let attributeChange: boolean = false;
 
 
   if (editForm) {
-    console.log(editData);
-    
     adminDetails = editData;
   }
 
   async function createAdmin() {
     try {
       const formData = new FormData();
-      console.log("adminDetails", adminDetails);
 
       formData.append("username", adminDetails.username);
       formData.append("password", adminDetails.password);
@@ -72,7 +67,7 @@
   }
 
   function cancelModel() {
-    attributeChange = false;
+    adminDetails = null;
     dispatch("cancel");
   }
 </script>
@@ -112,6 +107,8 @@
           placeholder="Username"
           class="input"
           type="text"
+          autocomplete="off"
+          
         />
       </div>
       <div class="grid gap-2">
@@ -121,6 +118,8 @@
           placeholder="Password"
           class="input"
           type="password"
+          autocomplete="off"
+
         />
       </div>
     </div>
@@ -151,9 +150,8 @@
         <Label>Date of Birth</Label>
         <Input
           bind:value={adminDetails.date_of_birth}
-          placeholder="Date of birth"
           class="input"
-          type="calendar"
+          type="date"
         />
       </div>
     </div>
