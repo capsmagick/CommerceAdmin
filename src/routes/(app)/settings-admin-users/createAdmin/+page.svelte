@@ -14,7 +14,7 @@
   export let editForm: boolean;
   let updateImage: boolean = false;
 
-  let categoryDetails: any = {  };
+  let adminDetails: any = {  };
 
   let imageUpload: any;
   let attributeChange: boolean = false;
@@ -23,26 +23,26 @@
   if (editForm) {
     console.log(editData);
     
-    categoryDetails = editData;
+    adminDetails = editData;
   }
 
-  async function createCategory() {
+  async function createAdmin() {
     try {
       const formData = new FormData();
-      console.log("categoryDetails", categoryDetails);
+      console.log("adminDetails", adminDetails);
 
-      formData.append("username", categoryDetails.username);
-      formData.append("password", categoryDetails.password);
-      formData.append("first_name", categoryDetails.first_name);
-      formData.append("last_name", categoryDetails.last_name);
-      formData.append("email", categoryDetails.email);
-      formData.append("mobile_number", categoryDetails.mobile_number);
-      formData.append("date_of_birth", categoryDetails.date_of_birth);
+      formData.append("username", adminDetails.username);
+      formData.append("password", adminDetails.password);
+      formData.append("first_name", adminDetails.first_name);
+      formData.append("last_name", adminDetails.last_name);
+      formData.append("email", adminDetails.email);
+      formData.append("mobile_number", adminDetails.mobile_number);
+      formData.append("date_of_birth", adminDetails.date_of_birth);
       if(updateImage){
-      formData.append("profile_picture", categoryDetails.profile_picture);
+      formData.append("profile_picture", adminDetails.profile_picture);
       }
       const url = editForm
-        ? `/account/manager/${categoryDetails.id}/update_record/`
+        ? `/account/manager/${adminDetails.id}/update_record/`
         : "/account/manager/create_record/";
 
       if (editForm) {
@@ -51,11 +51,11 @@
         await API.post(url, formData);
       }
 
-      dispatch("newCategory");
-      const action = editForm ? "Category Updated" : "Category Created";
+      dispatch("newAdmin");
+      const action = editForm ? "Admin Updated" : "Admin Created";
       toast(`${action} successfully!`);
     } catch (error) {
-      const action = editForm ? "Update Category" : "Create Category";
+      const action = editForm ? "Update Admin" : "Create Admin";
       console.log(`${action}:`, error);
       toast(`Failed to ${action}`);
     }
@@ -68,7 +68,7 @@
 
   async function uploadAvatar() {
     updateImage = true;
-    categoryDetails.profile_picture = imageUpload.files[0];
+    adminDetails.profile_picture = imageUpload.files[0];
   }
 
   function cancelModel() {
@@ -87,7 +87,7 @@
       <div class="grid gap-2">
         <Label>First Name</Label>
         <Input
-          bind:value={categoryDetails.first_name}
+          bind:value={adminDetails.first_name}
           placeholder="First Name"
           class="input"
           type="text"
@@ -96,7 +96,7 @@
       <div class="grid gap-2">
         <Label>Last Name</Label>
         <Input
-          bind:value={categoryDetails.last_name}
+          bind:value={adminDetails.last_name}
           placeholder="Last Name"
           class="input"
           type="text"
@@ -108,7 +108,7 @@
       <div class="grid gap-2">
         <Label>Username</Label>
         <Input
-          bind:value={categoryDetails.username}
+          bind:value={adminDetails.username}
           placeholder="Username"
           class="input"
           type="text"
@@ -117,7 +117,7 @@
       <div class="grid gap-2">
         <Label>Password</Label>
         <Input
-          bind:value={categoryDetails.password}
+          bind:value={adminDetails.password}
           placeholder="Password"
           class="input"
           type="password"
@@ -129,7 +129,7 @@
       <div class="grid gap-2">
         <Label>E Mail</Label>
         <Input
-          bind:value={categoryDetails.email}
+          bind:value={adminDetails.email}
           placeholder="E Mail"
           class="input"
           type="text"
@@ -138,7 +138,7 @@
       <div class="grid gap-2">
         <Label>Phone Number</Label>
         <Input
-          bind:value={categoryDetails.mobile_number}
+          bind:value={adminDetails.mobile_number}
           placeholder="Phone Number"
           class="input"
           type="text"
@@ -150,7 +150,7 @@
       <div class="grid gap-2">
         <Label>Date of Birth</Label>
         <Input
-          bind:value={categoryDetails.date_of_birth}
+          bind:value={adminDetails.date_of_birth}
           placeholder="Date of birth"
           class="input"
           type="calendar"
@@ -163,15 +163,15 @@
         type="button"
         class="btn flex gap-2 items-center bg-indigo-500 text-white text-xs"
         on:click={pickAvatar}
-        ><i class="fa-solid fa-image text-sm"></i>Upload category image
+        ><i class="fa-solid fa-image text-sm"></i>Upload admin image
       </Button>
       <img
         id="selected-logo"
         alt=""
-        class={categoryDetails.profile_picture ? "showImg" : "hideImg"}
+        class={adminDetails.profile_picture ? "showImg" : "hideImg"}
         src={updateImage
-          ? window.URL.createObjectURL(categoryDetails.profile_picture)
-          : categoryDetails.profile_picture}
+          ? window.URL.createObjectURL(adminDetails.profile_picture)
+          : adminDetails.profile_picture}
       />
       <input
         type="file"
@@ -190,7 +190,7 @@
         >Cancel
       </Button>
 
-      <Button type="button" on:click={createCategory}>Save</Button>
+      <Button type="button" on:click={createAdmin}>Save</Button>
     </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>
