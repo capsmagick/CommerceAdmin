@@ -386,8 +386,8 @@
         {#if hidableCoulumns[0].value}
           <Table.Cell>
             <img
-              src={data.images}
-              alt="Logo"
+              src={`http://localhost:8000/${data.images.map(i => i.image)[0]}`}
+              alt="product_image"
               class="w-12 h-12 object-cover rounded-full"
             />
           </Table.Cell>
