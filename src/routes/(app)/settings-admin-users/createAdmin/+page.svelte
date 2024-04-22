@@ -41,7 +41,7 @@
         : "/account/manager/create_record/";
 
       if (editForm) {
-        await API.put(url, formData);
+        // await API.put(url, formData);
       } else {
         await API.post(url, formData);
       }
