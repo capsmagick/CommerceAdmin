@@ -43,8 +43,10 @@
     noOfReviews: 0,
     tags: [],
     dimension: "",
-    images: "",
+    images: [],
   };
+
+  const reactiveImages = writable([]);
 
   if (editForm) {
     console.log(editData);
@@ -173,9 +175,10 @@
       if (editTag) {
         form.append("tags", productDetails.tags);
       }
-      //  form.append("dimension", productDetails.dimension);
-      if(editImage){
-      form.append("images", productDetails.images);
+      if (editImage) {
+        for (let i = 0; i < productDetails.images.length; i++) {
+          form.append("images", productDetails.images[i]);
+        }
       }
 
       const url = editForm
@@ -217,14 +220,24 @@
   async function uploadAvatar() {
     editImage = true;
     if (imageUpload.files && imageUpload.files.length > 0) {
-      productDetails.images = imageUpload.files[0];
-      const img: HTMLImageElement | null = document.getElementById(
-        "selected-logo"
-      ) as HTMLImageElement;
-      if (img) {
-        img.src = window.URL.createObjectURL(productDetails.images);
+      for (let i = 0; i < imageUpload.files.length; i++) {
+        productDetails.images.push(imageUpload.files[i]);
       }
+      // Update the reactiveImages store
+      reactiveImages.set(productDetails.images);
+      // Update the preview image with the last selected image
+      const img: HTMLImageElement | null = document.getElementById("selected-logo") as HTMLImageElement;
+      if (img) {
+        img.src = window.URL.createObjectURL(productDetails.images[productDetails.images.length - 1]);
+      }
+      console.log("productDetails.images after update:", productDetails.images);
     }
+  }
+  function removeImage(index: any) {
+    const newImages = [...$reactiveImages];
+    newImages.splice(index, 1);
+    reactiveImages.set(newImages);
+    productDetails.images = newImages; // Update productDetails.images
   }
 </script>
 
@@ -377,6 +390,7 @@
             id="file-input"
             bind:this={imageUpload}
             hidden
+            multiple
             accept="image/png, image/jpeg"
             on:change={uploadAvatar}
           />
@@ -384,18 +398,23 @@
         <div
           style="display:flex; justify-content: center; align-items: center; margin-top: 10px;"
         >
-          {#if productDetails.images}
-            <img
-              id="selected-logo"
-              style="height: 100px;"
-              alt=""
-              class:showImg={productDetails.images}
-              class:hideImg={!productDetails.images}
-              src={productDetails.images
-                ? window.URL.createObjectURL(productDetails.images)
-                : ""}
-            />
-          {/if}
+        {#if productDetails.images.length > 0}
+          <div class="image-preview-container">
+            {#each $reactiveImages as image, index}
+              <div class="image-container">
+                <img
+                  id="selected-logo-{index}"
+                  class="selected-logo w-32 h-32 object-cover rounded-md"
+                  alt=""
+                  src={window.URL.createObjectURL(image)}
+                />
+                <button class="remove-btn" on:click={() => removeImage(index)}>
+                  &times;
+                </button>
+              </div>
+            {/each}
+          </div>
+        {/if}
         </div>
       </div>
     {/if}
@@ -417,5 +436,37 @@
     flex: none;
     border-radius: 20px;
     object-fit: cover;
+  }
+  .image-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .selected-logo {
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  .image-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
   }
 </style>
