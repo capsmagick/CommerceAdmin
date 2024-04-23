@@ -113,7 +113,7 @@
           bind:value={adminDetails.email}
           placeholder="E Mail"
           class="input"
-          type="text"
+          type="email"
         />
       </div>
     </div>
@@ -125,7 +125,7 @@
           bind:value={adminDetails.mobile_number}
           placeholder="Phone Number"
           class="input"
-          type="text"
+          type="number"
         />
       </div>
 
