@@ -15,7 +15,7 @@
   export let editData: any;
   export let editForm: boolean;
   let updateImage: boolean = false;
-  let collectionDetails: any = {};
+  let collectionDetails: any = {is_in_home_page : false};
   let tagInput: string = ""; // Holds the raw tag input from the user
 
   if (editForm) {
