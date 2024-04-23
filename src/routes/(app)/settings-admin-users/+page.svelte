@@ -5,6 +5,7 @@
     let showForm: boolean = false;
 
     function toggleForm() {
+        // debugger;
         showForm = !showForm
     }
 
@@ -21,5 +22,5 @@
             </Button>
         </div>
     </div>
-    <AdminTable {showForm}/>
+    <AdminTable {showForm} on:cancel={() => (showForm = false)}/>
 </div>
