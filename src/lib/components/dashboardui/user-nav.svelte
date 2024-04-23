@@ -57,7 +57,7 @@
 	<DropdownMenu.Trigger asChild let:builder>
 		<Button variant="ghost" builders={[builder]} class="relative h-8 w-8 rounded-full">
 			<Avatar.Root class="h-8 w-8">
-				<img src={`http://localhost:8000${user?user.profile_picture:''}`} alt="@shadcn" />
+				<img src={`http://localhost:8000${user?user.profile_picture:''}`} alt="" />
 				<!-- <Avatar.Image src={user? user.profile_picture: ''} alt="user" /> -->
 				<!-- <Avatar.Fallback>SC</Avatar.Fallback> -->
 			</Avatar.Root>
