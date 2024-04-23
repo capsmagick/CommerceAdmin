@@ -46,6 +46,8 @@
     images: [],
   };
 
+  const reactiveImages = writable([]);
+
   if (editForm) {
     console.log(editData);
 
@@ -221,6 +223,8 @@
       for (let i = 0; i < imageUpload.files.length; i++) {
         productDetails.images.push(imageUpload.files[i]);
       }
+      // Update the reactiveImages store
+      reactiveImages.set(productDetails.images);
       // Update the preview image with the last selected image
       const img: HTMLImageElement | null = document.getElementById("selected-logo") as HTMLImageElement;
       if (img) {
@@ -228,6 +232,12 @@
       }
       console.log("productDetails.images after update:", productDetails.images);
     }
+  }
+  function removeImage(index: any) {
+    const newImages = [...$reactiveImages];
+    newImages.splice(index, 1);
+    reactiveImages.set(newImages);
+    productDetails.images = newImages; // Update productDetails.images
   }
 </script>
 
@@ -390,18 +400,18 @@
         >
         {#if productDetails.images.length > 0}
           <div class="image-preview-container">
-            {#each productDetails.images as image, index}
-              <img
-                id="selected-logo-{index}"
-                class="selected-logo"
-                alt=""
-                src={window.URL.createObjectURL(image)}
-              />
-              <script>
-                console.log('Rendering image:', index);
-                console.log('Image File:', image);
-                console.log('Image URL:', window.URL.createObjectURL(image));
-              </script>
+            {#each $reactiveImages as image, index}
+              <div class="image-container">
+                <img
+                  id="selected-logo-{index}"
+                  class="selected-logo w-32 h-32 object-cover rounded-md"
+                  alt=""
+                  src={window.URL.createObjectURL(image)}
+                />
+                <button class="remove-btn" on:click={() => removeImage(index)}>
+                  &times;
+                </button>
+              </div>
             {/each}
           </div>
         {/if}
@@ -437,5 +447,26 @@
     height: 100px;
     object-fit: cover;
     border-radius: 4px;
+  }
+
+  .image-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
   }
 </style>
