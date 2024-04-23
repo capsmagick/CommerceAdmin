@@ -15,6 +15,7 @@
   export let editData;
   export let editForm: boolean;
   let updateImage: boolean = false;
+  let validation: any = {};
 
   let brandDetails = {
     name: "",
@@ -67,9 +68,10 @@
       dispatch("newBrand");
       const action = editForm ? "Brand Updated" : "Brand Created";
       toast(`${action} successfully!`);
-    } catch (error) {
+    } catch (error:any) {
       const action = editForm ? "Update Brand" : "Create Brand";
       console.log(`${action}:`, error);
+      validation = error.response.data;
       toast(`Failed to ${action}`);
     }
   }
@@ -91,9 +93,10 @@
         id="name"
         bind:value={brandDetails.name}
         placeholder="Name"
-        class="input"
+        class="input {validation.name ? 'border-red-500' : ''}"
         type="text"
       />
+        <p class="text-red-500">{validation.name ? validation.name : ""}</p>
     </div>
 
     <div class="mb-3">
@@ -102,8 +105,9 @@
         id="description"
         bind:value={brandDetails.description}
         placeholder="Description"
-        class="textarea"
+        class="textarea {validation.description ? 'border-red-500' : ''}"
       />
+        <p class="text-red-500">{validation.description ? validation.description : ""}</p>
     </div>
 
     <div class="flex justify-between mb-3">

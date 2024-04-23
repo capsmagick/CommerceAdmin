@@ -15,28 +15,11 @@
   export let editData: any;
   export let editForm: boolean;
   let updateImage: boolean = false;
-
-  let collectionDetails = {
-    name: "",
-    feature_image: "",
-    description: "",
-    collections: "",
-    tags: [""],
-    is_in_home_page: false,
-  };
-  let id = "";
+  let collectionDetails: any = {};
   let tagInput: string = ""; // Holds the raw tag input from the user
 
   if (editForm) {
-    collectionDetails = {
-      name: editData.name,
-      feature_image: editData.feature_image,
-      description: editData.description,
-      collections: editData.collections,
-      tags: editData.tags,
-      is_in_home_page: editData.is_in_home_page,
-    };
-    id = editData.id;
+    collectionDetails = editData;
     tagInput = editData.tags.map((tag) => tag).join(", ");
   }
 
@@ -79,7 +62,7 @@
       form.append("is_in_home_page", collectionDetails.is_in_home_page);
 
       const url = editForm
-        ? `/products/collection/${id}/update_record/`
+        ? `/products/collection/${collectionDetails.id}/update_record/`
         : "/products/collection/create_record/";
 
       if (editForm) {
@@ -146,12 +129,14 @@
       <p class=" text-blue-400 font-medium">use comma to seperate tags</p>
     </div>
 
-    <div class="mb-3 flex align-center">
-      <Label for="is_in_home_page" class="ms-3">Is In Homepage:</Label>
-      <Switch
-        id="is_in_home_page"
-        bind:checked={collectionDetails.is_in_home_page}
-      />
+    <div class="mb-3 flex align-items-center">
+      <div><Label for="is_in_home_page" class="me-3">Is In Homepage:</Label></div>
+      <div>
+        <Switch
+          id="is_in_home_page"
+          bind:checked={collectionDetails.is_in_home_page}
+        />
+      </div>
     </div>
     <div class="flex justify-between mb-3">
       <Button type="button" variant="outline" on:click={pickAvatar}>

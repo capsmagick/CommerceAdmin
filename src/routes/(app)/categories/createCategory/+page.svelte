@@ -23,6 +23,7 @@
   export let editData;
   export let editForm: boolean;
   let updateImage: boolean = false;
+  let validation: any = {};
 
   let categoryDetails: any = {
     name: "",
@@ -115,11 +116,11 @@
 
   async function createCategory() {
     try {
-    categoryDetails.tags = tagInput
-    .split(",")
-    .map((tag) => tag.trim())
-    .filter((tag) => tag !== "");
-    
+      categoryDetails.tags = tagInput
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag !== "");
+
       const formData = new FormData();
 
       formData.append("name", categoryDetails.name);
@@ -134,7 +135,7 @@
       }
 
       // if (categoryDetails && categoryDetails.tags) {
-        formData.append("tags", categoryDetails.tags);
+      formData.append("tags", categoryDetails.tags);
       // }
       // formData.append("attribute_group", categoryDetails.attribute_group);
       if (updateImage) {
@@ -153,9 +154,10 @@
       dispatch("newCategory");
       const action = editForm ? "Category Updated" : "Category Created";
       toast(`${action} successfully!`);
-    } catch (error) {
+    } catch (error:any) {
       const action = editForm ? "Update Category" : "Create Category";
       console.log(`${action}:`, error);
+      validation = error.response.data;
       toast(`Failed to ${action}`);
     }
   }
@@ -238,17 +240,25 @@
       <Input
         bind:value={categoryDetails.name}
         placeholder="Name"
-        class="input"
+        class="input {validation.name ? 'border-red-500' : ''}"
         type="text"
       />
+      <div>
+        <p class="text-red-500">{validation.name ? validation.name : ""}</p>
+      </div>
     </div>
     <div class="grid grid-cols-2 gap-4 mb-3">
       <div>
         <Textarea
           bind:value={categoryDetails.description}
           placeholder="Description"
-          class="textarea"
+          class="textarea {validation.description ? 'border-red-500' : ''}"
         />
+        <div>
+          <p class="text-red-500">
+            {validation.description ? validation.description : ""}
+          </p>
+        </div>
       </div>
       <div>
         <div class="mb-1">
@@ -257,9 +267,14 @@
             on:input={handleInput}
             on:keypress={handleKeyPress}
             placeholder="Handle"
-            class="input"
+            class="input {validation.handle ? 'border-red-500' : ''}"
             type="text"
           />
+          <div>
+            <p class="text-red-500">
+              {validation.handle ? validation.handle : ""}
+            </p>
+          </div>
         </div>
         <div>
           <Select.Root>
@@ -288,17 +303,23 @@
     </div>
 
     <div class="grid grid-cols-2 gap-4 mb-3">
-      <div>
+      <div class="grid gap-2">
         <Label for="tags">Tags</Label>
         <Input
           id="tags"
           placeholder="Enter tags separated by comma"
           bind:value={tagInput}
+          class="input {validation.tags ? 'border-red-500' : ''}"
         />
+        <div>
+          <p class="text-red-500">
+            {validation.tags ? validation.tags[0] : ""}
+          </p>
+        </div>
         <p class=" text-blue-400 font-medium">use comma to seperate tags</p>
       </div>
-      <div class="grid grid-cols-2 gap-4 mb-3">
-        <div>
+      <div class="grid grid-cols-2 mb-3">
+        <div class="">
           <Label for="parant_category">Parant Category</Label>
 
           <Popover.Root bind:open let:ids>
@@ -343,10 +364,11 @@
           </Popover.Root>
         </div>
 
-        <div class="flex">
-          <div class="mb-3">
+        <div class="grid grid-flow-col">
+          <div class="grid">
             <Label for="mainMenu" class="ms-3">Main Menu:</Label>
-            <div class="flex justify-center">
+
+            <div class="grid justify-center">
               <Switch
                 id="mainMenu"
                 bind:checked={categoryDetails.is_main_menu}
@@ -354,9 +376,10 @@
             </div>
           </div>
 
-          <div class="mb-3">
+          <div class="grid">
             <Label for="Topcategory" class="ms-3">Top Category:</Label>
-            <div class="flex justify-center">
+
+            <div class="grid justify-center">
               <Switch
                 id="Topcategory"
                 bind:checked={categoryDetails.is_top_category}

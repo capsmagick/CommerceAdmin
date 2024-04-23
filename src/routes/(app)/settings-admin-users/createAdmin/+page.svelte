@@ -7,16 +7,13 @@
   import * as Dialog from "$lib/components/ui/dialog/index.js";
   import { Label } from "$lib/components/ui/label";
 
-
   const dispatch = createEventDispatcher();
 
   export let editData;
   export let editForm: boolean;
   let updateImage: boolean = false;
-  let adminDetails: any = { 
-   };
+  let adminDetails: any = {};
   let imageUpload: any;
-
 
   if (editForm) {
     adminDetails = editData;
@@ -27,14 +24,13 @@
       const formData = new FormData();
 
       formData.append("username", adminDetails.username);
-      formData.append("password", adminDetails.password);
       formData.append("first_name", adminDetails.first_name);
       formData.append("last_name", adminDetails.last_name);
       formData.append("email", adminDetails.email);
       formData.append("mobile_number", adminDetails.mobile_number);
       formData.append("date_of_birth", adminDetails.date_of_birth);
-      if(updateImage){
-      formData.append("profile_picture", adminDetails.profile_picture);
+      if (updateImage) {
+        formData.append("profile_picture", adminDetails.profile_picture);
       }
       const url = editForm
         ? `/account/manager/${adminDetails.id}/update_record/`
@@ -108,44 +104,31 @@
           class="input"
           type="text"
           autocomplete="off"
-          
         />
       </div>
-      <div class="grid gap-2">
-        <Label>Password</Label>
-        <Input
-          bind:value={adminDetails.password}
-          placeholder="Password"
-          class="input"
-          type="password"
-          autocomplete="off"
 
-        />
-      </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-4 mb-3">
       <div class="grid gap-2">
         <Label>E Mail</Label>
         <Input
           bind:value={adminDetails.email}
           placeholder="E Mail"
           class="input"
-          type="text"
+          type="email"
         />
       </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-3">
       <div class="grid gap-2">
         <Label>Phone Number</Label>
         <Input
           bind:value={adminDetails.mobile_number}
           placeholder="Phone Number"
           class="input"
-          type="text"
+          type="number"
         />
       </div>
-    </div>
 
-    <div>
       <div class="grid gap-2">
         <Label>Date of Birth</Label>
         <Input

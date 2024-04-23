@@ -24,19 +24,19 @@
 
   async function onCreateNewAttribute() {
     try {
-      const formData = {
-        name,
-        value: [value.replace(/\s/g, "")],
-      };
+      const form = new FormData();
+
+      form.append("name", name);
+      form.append("value", value);
 
       const url = editForm
         ? `/masterdata/attribute/${id}/update_record/`
         : "/masterdata/attribute/create_record/";
 
       if (editForm) {
-        await API.put(url, formData);
+        await API.put(url, form);
       } else {
-        await API.post(url, formData);
+        await API.post(url, form);
       }
 
       dispatch("newAttribute");
@@ -64,9 +64,6 @@
       {:else}
         <Dialog.Description>Update Attribute</Dialog.Description>
       {/if}
-      <!--            <button on:click={() => dispatch("close")}>-->
-      <!--                <i class="fa-solid fa-xmark"></i>-->
-      <!--            </button>-->
     </Dialog.Header>
     <div>
       <Label
