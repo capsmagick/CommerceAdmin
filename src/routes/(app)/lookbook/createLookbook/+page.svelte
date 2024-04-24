@@ -1,154 +1,218 @@
 <script lang="ts">
-    import {Input} from "$lib/components/ui/input";
-    import { Label } from "$lib/components/ui/label";
-    import {Textarea} from "$lib/components/ui/textarea";
-    import * as Select from "$lib/components/ui/select";
-    import {Button} from "$lib/components/ui/button";
-    import API from "$lib/services/api";
-    import {createEventDispatcher, onMount} from "svelte";
-    import {toast} from "svelte-sonner";
-    import * as Card from "$lib/components/ui/card";
-    import { productIdStore } from '../../../../lib/stores/data';
-    import { writable } from "svelte/store";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import { Textarea } from "$lib/components/ui/textarea";
+  import * as Select from "$lib/components/ui/select";
+  import { Button } from "$lib/components/ui/button";
+  import API from "$lib/services/api";
+  import { createEventDispatcher, onMount } from "svelte";
+  import { toast } from "svelte-sonner";
+  import * as Dialog from "$lib/components/ui/dialog/index.js";
+  import { Switch } from "$lib/components/ui/switch/index.js";
 
-    const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
-    export let editData: any;
-    export let editForm: boolean;
-    let productId: any;
-    let selectedVariant: string;
+  const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
 
-    type Variant = {
-    id: string;
-    name: string;
+  export let editData: any;
+  export let editForm: boolean;
+  let updateImage: boolean = false;
+  let lookbookDetails: any = {
+    name: "",
+    description: "",
+    tags: "",
+    is_in_home_page: false,
   };
+  let tagInput: string = ""; // Holds the raw tag input from the user
+  let validation: any = {};
 
-    productIdStore.subscribe(value => {
-    productId = value;
-    
-    });
-
-    export const variants = writable<Variant[]>([], (set) => {
-    getVariant().then((data) => {
-      set(data);
-    });
-  });
-
-    let lookbookDetails = {
-        id: "",
-        name: "",
-        variants: "",
-    };
-
-    if (editForm) {
-        lookbookDetails = editData
-    }
-    async function getVariant() {
-        try{
-            const response = await API.get(`/products/variant/?product=${productId}`);
-            return response.data.results;
-        }
-        catch (error) {
-            console.error("fetch:Variant:", error);
-        }
-    }
-    async function createLookbook() {
-        try {
-            const form = new FormData();
-
-            form.append("name", lookbookDetails.name);
-            // form.append("variants", JSON.stringify(lookbookDetails.variants));
-            form.append("variants", lookbookDetails.variants);
-
-            const url = editForm ? `/products/look-book/${lookbookDetails.id}/update_record/` : "/products/look-book/create_record/";
-
-            if (editForm) {
-                await API.put(url, form);
-            } else {
-                await API.post(url, form);
-            }
-
-            dispatch("newLookbook");
-            const action = editForm ? "Lookbook Updated" : "Lookbook Created";
-            toast(`${action} successfully!`);
-        } catch (error) {
-            const action = editForm ? "Update Lookbook" : "Create Lookbook";
-            console.log(`${action}:`, error);
-            toast(`Failed to ${action}`);
-        }
-    }
-
-      function cancelDelete() {
-    dispatch('cancel');
+  if (editForm) {
+    lookbookDetails = editData;
+    tagInput = editData.tags.map((tag) => tag).join(", ");
   }
-    function handleClickOutside(event: any) {
-    if (!event.target.closest('.card')) {
-      cancelDelete();
+
+  // Reactive statement to process tag input and update productDetails.tags
+  $: lookbookDetails.tags = tagInput
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter((tag) => tag !== "");
+
+  let imageUpload: HTMLInputElement;
+
+  function pickAvatar() {
+    imageUpload.click();
+  }
+
+  async function uploadAvatar() {
+    updateImage = true;
+    if (imageUpload.files && imageUpload.files.length > 0) {
+      lookbookDetails.feature_image = imageUpload.files[0];
+      const img: HTMLImageElement | null = document.getElementById(
+        "selected-feature_image"
+      ) as HTMLImageElement;
+      if (img) {
+        img.src = window.URL.createObjectURL(lookbookDetails.feature_image);
+      }
     }
   }
-  
-onMount(() => {
-  const timeout = setTimeout(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-  }, 100);
 
-  return () => {
-    clearTimeout(timeout);
-    document.removeEventListener('mousedown', handleClickOutside);
-  };
-});
+  async function createCollection() {
+    try {
+      validation = {};
 
-  function handleBrandChange(selectedVariantId: string) {
-    const variantArray = $variants;
-    lookbookDetails.variants = selectedVariantId;
-    const foundBrand  = variantArray.find((g: any) => g.id == selectedVariantId);
-    if (foundBrand) {
-      selectedVariant = foundBrand.name;
+      if (lookbookDetails.name == "") {
+        validation.name = ["This field may not be blank."];
+      }
+
+      if (lookbookDetails.description == "") {
+        validation.description = ["This field may not be blank."];
+      }
+
+      if (lookbookDetails.tags == "") {
+        validation.tags = ["This field may not be blank."];
+      }
+
+      const form = new FormData();
+      if (updateImage) {
+        form.append("feature_image", lookbookDetails.feature_image);
+      }
+      form.append("name", lookbookDetails.name);
+      form.append("description", lookbookDetails.description);
+      form.append("tags", lookbookDetails.tags);
+      form.append("is_in_home_page", lookbookDetails.is_in_home_page);
+
+      const url = editForm
+        ? `/products/look-book/${lookbookDetails.id}/update_record/`
+        : "/products/look-book/create_record/";
+
+      if (validation.name || validation.description || validation.tags) {
+        toast(`Please fill the required field`);
+      } else {
+        if (editForm) {
+          await API.put(url, form);
+        } else {
+          await API.post(url, form);
+        }
+
+        dispatch("newLookbook");
+        const action = editForm ? "Lookbook Updated" : "Lookbook Created";
+        toast(`${action} successfully!`);
+      }
+    } catch (error: any) {
+      const action = editForm ? "Update Lookbook" : "Create Lookbook";
+      console.log(`${action}:`, error);
+      validation = error.response.data;
+      toast(`Failed to ${action}`);
     }
+  }
+
+  function cancelModel() {
+    dispatch("cancel");
   }
 </script>
 
-<div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
-   <div class="flex items-center justify-center">
-       <div class="glow-border">
-           <div class="card glow-border-content bg-background text-foreground">
-                <Card.Root class="p-6 rounded-lg">
-                    <Card.Header class="font-bold mb-5">
-                        <Card.Title>{editForm ? 'Update Lookbook' : 'New Lookbook'}</Card.Title>
-                    </Card.Header>
-                    <Card.Content>
-                            <div class="mb-3">
-                                <Label for="name">Name</Label>
-                                <Input id="name" bind:value={lookbookDetails.name} placeholder="Name" class="input"/>
-                            </div>
-                            <div class="grid gap-2">
-                            <Label for="security-level">Variant</Label>
-                            <Select.Root>
-                  <Select.Trigger class="input capitalize">
-                    {selectedVariant
-                      ? selectedVariant
-                      : "Select a Variant"}
-                  </Select.Trigger>
-                  <Select.Content>
-                    <Select.Group>
-                      {#each $variants as variant}
-                      <Select.Item value={variant.id} label={variant.name} class="capitalize card"
-                        on:click={() => handleBrandChange( variant.id )}>
-                        {variant.name}
-                      </Select.Item>
-                      {/each}
-                    </Select.Group>
-                  </Select.Content>
-                </Select.Root>
-                        </div>            
-                    </Card.Content>
-                    <Card.Footer  class="justify-between space-x-2">
-                        <Button type="button" variant="ghost" on:click={() => dispatch("cancel")}>Cancel</Button>
-                        <Button type="submit"  on:click={createLookbook}>Save</Button>
-                    </Card.Footer>
-                </Card.Root>
-           </div>
-       </div>
-   </div>
-</div>
+<Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
+  <Dialog.Content>
+    <Dialog.Header class="font-bold mb-5">
+      <Dialog.Description
+        >{editForm ? "Update Lookbook" : "New Lookbook"}</Dialog.Description
+      >
+    </Dialog.Header>
+    <div class="mb-3">
+      <Label for="name">Name</Label>
+      <Input
+        id="name"
+        bind:value={lookbookDetails.name}
+        placeholder="Name"
+        class="input {validation.name ? 'border-red-500' : ''}"
+        type="text"
+      />
+      <p class="text-red-500">{validation.name ? validation.name : ""}</p>
+    </div>
 
+    <div class="grid grid-cols-2 gap-4">
+      <div class="grid gap-2">
+        <Label for="description">Description</Label>
+        <Textarea
+          id="description"
+          bind:value={lookbookDetails.description}
+          placeholder="Description"
+          class="textarea {validation.description ? 'border-red-500' : ''}"
+        />
+        <p class="text-red-500">
+          {validation.description ? validation.description : ""}
+        </p>
+      </div>
+
+      <div class="grid gap-4">
+        <Label for="tags">Tags</Label>
+        <div>
+          <Textarea
+            id="tags"
+            placeholder="Enter tags separated by comma"
+            bind:value={tagInput}
+            class={validation.tags ? "border-red-500" : ""}
+          />
+          <p class="text-red-500">{validation.tags ? validation.tags : ""}</p>
+          <p class=" text-blue-400 font-medium">use comma to seperate tags</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3 flex align-items-center">
+      <div>
+        <Label for="is_in_home_page" class="me-3">Is In Homepage:</Label>
+      </div>
+      <div>
+        <Switch
+          id="is_in_home_page"
+          bind:checked={lookbookDetails.is_in_home_page}
+        />
+      </div>
+    </div>
+    <div class="flex justify-between mb-3">
+      <Button type="button" variant="outline" on:click={pickAvatar}>
+        <i class="fa-solid fa-image text-sm"></i>Upload Image
+      </Button>
+
+      <img
+        id="selected-feature_image"
+        alt=""
+        class:showImg={lookbookDetails.feature_image}
+        class:hideImg={!lookbookDetails.feature_image}
+        src={updateImage
+          ? window.URL.createObjectURL(lookbookDetails.feature_image)
+          : `${baseUrl}${lookbookDetails.feature_image}`}
+      />
+
+      <input
+        type="file"
+        id="file-input"
+        bind:this={imageUpload}
+        hidden
+        accept="image/png, image/jpeg"
+        on:change={uploadAvatar}
+      />
+    </div>
+    <Dialog.Footer class="justify-between space-x-2">
+      <Button type="button" variant="ghost" on:click={() => dispatch("cancel")}
+        >Cancel</Button
+      >
+      <Button type="submit" on:click={createCollection}>Save</Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>
+
+<style>
+  .hideImg {
+    display: none;
+  }
+
+  .showImg {
+    display: block;
+    height: 6rem;
+    width: 6rem;
+    border-radius: 20px;
+    object-fit: cover;
+  }
+</style>
