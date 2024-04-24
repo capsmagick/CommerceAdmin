@@ -96,9 +96,10 @@
         const action = editForm ? "Collection Updated" : "Collection Created";
         toast(`${action} successfully!`);
       }
-    } catch (error) {
+    } catch (error: any) {
       const action = editForm ? "Update Collection" : "Create Collection";
       console.log(`${action}:`, error);
+      validation = error.response.data;
       toast(`Failed to ${action}`);
     }
   }
