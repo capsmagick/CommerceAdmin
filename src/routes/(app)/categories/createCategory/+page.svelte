@@ -162,9 +162,13 @@
         ? `/masterdata/category/${id}/update_record/`
         : "/masterdata/category/create_record/";
 
-      if (validation.name || validation.description || validation.handle || validation.tags ) {
-        const action = editForm ? "Update Category" : "Create Category";        
-        toast(`Failed to ${action}`);
+      if (
+        validation.name ||
+        validation.description ||
+        validation.handle ||
+        validation.tags
+      ) {
+        toast(`Please fill the required field`);
       } else {
         if (editForm) {
           await API.put(url, formData);

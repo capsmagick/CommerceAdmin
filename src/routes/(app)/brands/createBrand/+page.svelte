@@ -65,12 +65,8 @@
       form.append("name", brandDetails.name);
       form.append("description", brandDetails.description);
 
-      if (
-        validation.name ||
-        validation.description
-      ) {
-        const action = editForm ? "Update Category" : "Create Category";
-        toast(`Failed to ${action}`);
+      if (validation.name || validation.description) {
+        toast(`Please fill the required field`);
       } else {
         const url = editForm
           ? `/masterdata/brand/${id}/update_record/`
