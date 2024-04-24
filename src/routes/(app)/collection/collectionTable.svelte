@@ -12,6 +12,8 @@
   import Pagination from "$lib/components/ui/table-pagination/pagination.svelte";
   import CreateCollection from "./createCollection/+page.svelte";
   import { createEventDispatcher, onMount } from "svelte";
+  import ViewCollection from "./viewCollection/+page.svelte"
+  import { goto } from "$app/navigation";
 
   const dispatch = createEventDispatcher();
 
@@ -26,6 +28,7 @@
   let sortData: boolean = true;
   let sortField: string = "";
   let searchData: string = "";
+  let viewCollection:boolean = false
 
   let showDeleteModal = false;
   let deletingCollection: any;
@@ -76,6 +79,11 @@
     editData = data;
     showForm = true;
     editForm = true;
+  }
+
+    async function onViewCollection(data: any) {
+      let collectionId = data.id
+    goto(`collection/viewCollection?id=${collectionId}`)
   }
 
   function handleNewCollection() {
@@ -161,6 +169,17 @@
       {editForm}
       on:cancel={cancelEditModel}
       on:newCollection={() => handleNewCollection()}
+    />
+  {/if}
+</div>
+
+<div>
+  {#if viewCollection}
+    <ViewCollection
+      {editData}
+      on:cancel={() => (
+        (editData = null), (viewCollection = false), (editForm = false)
+      )}
     />
   {/if}
 </div>
@@ -298,6 +317,9 @@
               >
             </DropdownMenu.Trigger>
             <DropdownMenu.Content class="absolute">
+              <DropdownMenu.Item on:click={() => onViewCollection(data)}>
+                <i class="fa fa-eye sm mr-2  text-blue-500"> </i>View</DropdownMenu.Item
+              >
               <DropdownMenu.Item on:click={() => onEdit(data)}
                 ><i class="fa fa-pencil sm mr-2"></i>Edit</DropdownMenu.Item
               >
