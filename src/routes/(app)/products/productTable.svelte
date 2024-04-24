@@ -17,11 +17,13 @@
   import AddToLookbook from "./addToLookbook/+page.svelte";
   import { productIdStore } from "../../../lib/stores/data";
   import ViewProduct from "./viewProduct/+page.svelte";
+  import AddToCollection from "./addToCollection/+page.svelte"
 
   let dispatch = createEventDispatcher();
 
   export let showForm: boolean = false;
   let showVariantForm: boolean = false;
+  let showCollectionForm: boolean = false
   let lookbookModalForm: boolean = false;
   let viewProduct = false;
 
@@ -164,6 +166,12 @@
     lookbookModalForm = true;
   }
 
+  function addToCollection(data: any) {
+    editData = data;
+    showCollectionForm = true;
+    editForm = true;
+  }
+
   async function onChangeStatus(data: any) {
     let status = data.is_disabled;
     let url = !status
@@ -272,6 +280,20 @@
       on:cancel={() => (
         (editData = null), (viewProduct = false), (editForm = false)
       )}
+    />
+  {/if}
+</div>
+
+<div>
+  {#if showCollectionForm}
+    <AddToCollection
+      {editData}
+      on:cancel={() => (
+        (editData = null), (showCollectionForm = false), (editForm = false)
+      )}
+      on:addToCollection={() => {
+        showCollectionForm = false;
+      }}
     />
   {/if}
 </div>
@@ -501,6 +523,9 @@
               >
               <DropdownMenu.Item on:click={() => addLookbook(data)}>
                 Add Lookbook</DropdownMenu.Item
+              >
+              <DropdownMenu.Item on:click={() => addToCollection(data)}>
+                Add To Collection</DropdownMenu.Item
               >
             </DropdownMenu.Content>
           </DropdownMenu.Root>
