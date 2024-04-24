@@ -61,6 +61,19 @@
     { name: "Rating", value: false },
   ];
 
+  const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
+
+  // function logImageUrl(data: any): string {
+  //   console.log('Product:', data.name);
+  //   if (data.images && data.images.length > 0) {
+  //     const imageUrl: string = `${baseUrl}${data.images[0].image}`;
+  //     console.log('Image URL:', imageUrl);
+  //   } else {
+  //     console.log('No image available for', data.name);
+  //   }
+  //   return '';
+  // }
+
   async function getProducts() {
     try {
       let res = await API.get(
@@ -385,11 +398,16 @@
       <Table.Row>
         {#if hidableCoulumns[0].value}
           <Table.Cell>
+            {#if data.images && data.images.length > 0}
             <img
-              src={`http://localhost:8000/${data.images.map(i => i.image)[0]}`}
+              src={`${baseUrl}${data.images[0].image}`}
               alt="product_image"
               class="w-12 h-12 object-cover rounded-full"
             />
+            {:else}
+              <span>No image available</span>
+            {/if}
+            <!-- {logImageUrl(data)} -->
           </Table.Cell>
         {/if}
         <Table.Cell>{data.name}</Table.Cell>
