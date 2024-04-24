@@ -12,6 +12,8 @@
 
   const dispatch = createEventDispatcher();
 
+  const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
+
   export let editData;
   export let editForm: boolean;
   let updateImage: boolean = false;
@@ -158,7 +160,7 @@
           <img
             src={updateImage
               ? window.URL.createObjectURL(heroDetails.image)
-              : heroDetails.image}
+              : `${baseUrl}${heroDetails.image}`}
             alt="Avatar"
             class="showImg"
           />
