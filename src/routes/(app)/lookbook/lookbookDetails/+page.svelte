@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
-  import LookbookTable from "./lookbookTable.svelte";
+  import LookbookTable from "./lookbookTable2.svelte";
   import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
   import API from "$lib/services/api";
   import { goto } from "$app/navigation"
@@ -57,9 +57,10 @@
         <Button variant="outline" class="glow-border-content">Export</Button>
       </div>
   </div>
-  <LookbookTable    on:edit={(event) => onEditLookbook(event.detail.item.row)}
+  <!-- <LookbookTable    on:edit={(event) => onEditLookbook(event.detail.item.row)}
                     on:delete={(event) => onDeleteLookbook(event.detail.item.row)}
-                    bind:this={refreshTable}/>
+                    bind:this={refreshTable}/> -->
+    <LookbookTable />
 
 <div class="flex justify-end">
     <Button class="text-end"
