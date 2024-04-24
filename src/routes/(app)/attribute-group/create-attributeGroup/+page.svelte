@@ -21,6 +21,7 @@
   let attribute: any[] = [];
   let selectedAttributes: number[] = [];
   let selectedAttributeNames: string[] = [];
+  let validation: any = {};
 
   if (editForm) {
     id = editData.id;
@@ -35,14 +36,12 @@
     selectedAttributeNames = attribute
       .filter((attr) => selectedAttributes.includes(attr.id))
       .map((attr) => attr.name);
-    console.log("att", selectedAttributeNames, attribute, selectedAttributes);
   }
 
   async function fetchAttribute() {
     try {
       const res = await API.get("/masterdata/attribute/");
       attribute = res.data.results;
-      console.log("attribute:>>:", attribute);
     } catch (error) {
       console.log("category:fetch-attribute-group:", error);
     }
@@ -62,12 +61,22 @@
     } else {
       selectedAttributes.splice(index, 1);
     }
-    attributes = selectedAttributes;
+    attributes = selectedAttributes;    
     updateSelectedAttributeNames();
   }
 
   async function onCreateNewAttribute() {
     try {
+      validation = {};
+
+      if (name == "") {
+        validation.name = ["This field may not be blank."];
+      }
+
+      if (attributes.length == 0) {
+        validation.attributes = ["This field may not be blank."];
+      }
+
       const formData = {
         name: name,
         attributes: attributes,
@@ -77,24 +86,31 @@
         ? `/masterdata/attributegroup/${id}/update_record/`
         : "/masterdata/attributegroup/create_record/";
 
-      if (editForm) {
-        await API.put(url, formData);
+      if (validation.name || validation.attributes) {
+        toast(`Please fill the required field`);
+        console.log(validation);
+        
       } else {
-        await API.post(url, formData);
+        if (editForm) {
+          await API.put(url, formData);
+        } else {
+          await API.post(url, formData);
+        }
+
+        dispatch("newAttributeGroup");
+
+        const action = editForm
+          ? "Attribute Group Updated"
+          : "Attribute Group Created";
+
+        toast(`${action} successfully!`);
       }
-
-      dispatch("newAttributeGroup");
-
-      const action = editForm
-        ? "Attribute Group Updated"
-        : "Attribute Group Created";
-
-      toast(`${action} successfully!`);
-    } catch (error) {
+    } catch (error: any) {
       const action = editForm
         ? "Update Attribute Group"
         : "Create Attribute Group";
       console.log(`${action}:`, error);
+      validation = error.response.data;
       toast(`Failed to ${action}`);
     }
   }
@@ -120,13 +136,14 @@
     <div>
       <Label for="name">Name</Label>
       <div class="mb-2">
-        <Input required type="text" name="name" id="name" bind:value={name} />
+        <Input required type="text" name="name" id="name" bind:value={name} class="{validation.name ? 'border-red-500' : ''}"/>
+        <p class="text-red-500">{validation.name ? validation.name : ""}</p>
       </div>
     </div>
     <div>
       <div class="mt-2">
         <Select.Root>
-          <Select.Trigger class="input capitalize">
+          <Select.Trigger class="input capitalize {validation.attributes ? 'border-red-500' : ''}">
             {selectedAttributeNames
               ? selectedAttributeNames
               : "Select a Attributes"}</Select.Trigger
@@ -147,6 +164,7 @@
           </Select.Content>
         </Select.Root>
       </div>
+        <p class="text-red-500">{validation.attributes ? validation.name : ""}</p>
     </div>
     <Dialog.Footer class="justify-between space-x-2">
       <Button variant="ghost" on:click={cancelEditModel}>Cancel</Button>
