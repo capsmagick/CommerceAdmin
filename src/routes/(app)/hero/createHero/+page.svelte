@@ -6,9 +6,7 @@
   import API from "$lib/services/api";
   import { createEventDispatcher, onMount } from "svelte";
   import { toast } from "svelte-sonner";
-  import * as Card from "$lib/components/ui/card";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
-  import HeroTable from "../heroTable.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -190,15 +188,4 @@
    </div>
 </div> -->
 
-<style>
-  .showImg {
-    display: block;
-    height: 6rem;
-    width: 6rem;
-    border-radius: 20px;
-    object-fit: cover;
-  }
-  .card::-webkit-scrollbar {
-    display: none;
-  }
-</style>
+

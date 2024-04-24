@@ -426,17 +426,7 @@
 </Dialog.Root>
 
 <style>
-  .hideImg {
-    visibility: hidden;
-  }
-  .showImg {
-    display: block;
-    height: 6rem;
-    width: 6rem;
-    flex: none;
-    border-radius: 20px;
-    object-fit: cover;
-  }
+
   .image-preview-container {
     display: flex;
     flex-wrap: wrap;

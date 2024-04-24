@@ -11,7 +11,6 @@
   import Pagination from "$lib/components/ui/table-pagination/pagination.svelte";
   import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
   import CreateAttributeGroup from "./create-attributeGroup/+page.svelte";
-  import { any } from "zod";
   import { createEventDispatcher, onMount } from "svelte";
 
   const dispatch = createEventDispatcher();
