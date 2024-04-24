@@ -61,7 +61,7 @@
     } else {
       selectedAttributes.splice(index, 1);
     }
-    attributes = selectedAttributes;    
+    attributes = selectedAttributes;
     updateSelectedAttributeNames();
   }
 
@@ -89,7 +89,6 @@
       if (validation.name || validation.attributes) {
         toast(`Please fill the required field`);
         console.log(validation);
-        
       } else {
         if (editForm) {
           await API.put(url, formData);
@@ -136,14 +135,25 @@
     <div>
       <Label for="name">Name</Label>
       <div class="mb-2">
-        <Input required type="text" name="name" id="name" bind:value={name} class="{validation.name ? 'border-red-500' : ''}"/>
+        <Input
+          required
+          type="text"
+          name="name"
+          id="name"
+          bind:value={name}
+          class={validation.name ? "border-red-500" : ""}
+        />
         <p class="text-red-500">{validation.name ? validation.name : ""}</p>
       </div>
     </div>
     <div>
       <div class="mt-2">
         <Select.Root>
-          <Select.Trigger class="input capitalize {validation.attributes ? 'border-red-500' : ''}">
+          <Select.Trigger
+            class="input capitalize {validation.attributes
+              ? 'border-red-500'
+              : ''}"
+          >
             {selectedAttributeNames
               ? selectedAttributeNames
               : "Select a Attributes"}</Select.Trigger
@@ -164,7 +174,7 @@
           </Select.Content>
         </Select.Root>
       </div>
-        <p class="text-red-500">{validation.attributes ? validation.name : ""}</p>
+      <p class="text-red-500">{validation.attributes ? validation.name : ""}</p>
     </div>
     <Dialog.Footer class="justify-between space-x-2">
       <Button variant="ghost" on:click={cancelEditModel}>Cancel</Button>
