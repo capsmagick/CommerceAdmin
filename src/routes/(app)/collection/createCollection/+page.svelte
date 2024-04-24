@@ -12,11 +12,19 @@
 
   const dispatch = createEventDispatcher();
 
+  const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
+
   export let editData: any;
   export let editForm: boolean;
   let updateImage: boolean = false;
-  let collectionDetails: any = {is_in_home_page : false};
+  let collectionDetails: any = {
+    name: "",
+    description: "",
+    tags: "",
+    is_in_home_page: false,
+  };
   let tagInput: string = ""; // Holds the raw tag input from the user
+  let validation: any = {};
 
   if (editForm) {
     collectionDetails = editData;
@@ -50,14 +58,26 @@
 
   async function createCollection() {
     try {
-      console.log(collectionDetails.is_in_home_page);
+      validation = {};
+
+      if (collectionDetails.name == "") {
+        validation.name = ["This field may not be blank."];
+      }
+
+      if (collectionDetails.description == "") {
+        validation.description = ["This field may not be blank."];
+      }
+
+      if (collectionDetails.tags == "") {
+        validation.tags = ["This field may not be blank."];
+      }
+
       const form = new FormData();
       if (updateImage) {
         form.append("feature_image", collectionDetails.feature_image);
       }
       form.append("name", collectionDetails.name);
       form.append("description", collectionDetails.description);
-      form.append("collections", collectionDetails.collections);
       form.append("tags", collectionDetails.tags);
       form.append("is_in_home_page", collectionDetails.is_in_home_page);
 
@@ -65,18 +85,23 @@
         ? `/products/collection/${collectionDetails.id}/update_record/`
         : "/products/collection/create_record/";
 
-      if (editForm) {
-        await API.put(url, form);
+      if (validation.name || validation.description || validation.tags) {
+        toast(`Please fill the required field`);
       } else {
-        await API.post(url, form);
-      }
+        if (editForm) {
+          await API.put(url, form);
+        } else {
+          await API.post(url, form);
+        }
 
-      dispatch("newCollection");
-      const action = editForm ? "Collection Updated" : "Collection Created";
-      toast(`${action} successfully!`);
-    } catch (error) {
+        dispatch("newCollection");
+        const action = editForm ? "Collection Updated" : "Collection Created";
+        toast(`${action} successfully!`);
+      }
+    } catch (error: any) {
       const action = editForm ? "Update Collection" : "Create Collection";
       console.log(`${action}:`, error);
+      validation = error.response.data;
       toast(`Failed to ${action}`);
     }
   }
@@ -99,38 +124,45 @@
         id="name"
         bind:value={collectionDetails.name}
         placeholder="Name"
-        class="input"
+        class="input {validation.name ? 'border-red-500' : ''}"
         type="text"
       />
+      <p class="text-red-500">{validation.name ? validation.name : ""}</p>
     </div>
 
-    <div class="mb-3">
-      <Label for="description">Description</Label>
-      <Textarea
-        id="description"
-        bind:value={collectionDetails.description}
-        placeholder="Description"
-        class="textarea"
-      />
-    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="grid gap-2">
+        <Label for="description">Description</Label>
+        <Textarea
+          id="description"
+          bind:value={collectionDetails.description}
+          placeholder="Description"
+          class="textarea {validation.description ? 'border-red-500' : ''}"
+        />
+        <p class="text-red-500">
+          {validation.description ? validation.description : ""}
+        </p>
+      </div>
 
-    <!-- <div class="mb-3">
-<Label for="collections">Collections</Label>
-<Input id="collections" bind:value={collectionDetails.collections} placeholder="Collections" class="input"/>
-                            </div> -->
-
-    <div class="items-center gap-2 mb-3">
-      <Label for="tags">Tags</Label>
-      <Input
-        id="tags"
-        placeholder="Enter tags separated by comma"
-        bind:value={tagInput}
-      />
-      <p class=" text-blue-400 font-medium">use comma to seperate tags</p>
+      <div class="grid gap-4">
+        <Label for="tags">Tags</Label>
+        <div>
+          <Textarea
+            id="tags"
+            placeholder="Enter tags separated by comma"
+            bind:value={tagInput}
+            class={validation.tags ? "border-red-500" : ""}
+          />
+          <p class="text-red-500">{validation.tags ? validation.tags : ""}</p>
+          <p class=" text-blue-400 font-medium">use comma to seperate tags</p>
+        </div>
+      </div>
     </div>
 
     <div class="mb-3 flex align-items-center">
-      <div><Label for="is_in_home_page" class="me-3">Is In Homepage:</Label></div>
+      <div>
+        <Label for="is_in_home_page" class="me-3">Is In Homepage:</Label>
+      </div>
       <div>
         <Switch
           id="is_in_home_page"
@@ -150,7 +182,7 @@
         class:hideImg={!collectionDetails.feature_image}
         src={updateImage
           ? window.URL.createObjectURL(collectionDetails.feature_image)
-          : collectionDetails.feature_image}
+          : `${baseUrl}${collectionDetails.feature_image}`}
       />
 
       <input

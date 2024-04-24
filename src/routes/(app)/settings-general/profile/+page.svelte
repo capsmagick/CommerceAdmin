@@ -6,6 +6,8 @@
   import { onMount } from "svelte";
   import { UserStore } from "$lib/stores/data";
 
+  const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
+
   let user: any = {};
   let updateImage: boolean = false;
 
@@ -116,7 +118,7 @@
             class:hideImg={!user.profile_picture}
             src={updateImage
               ? window.URL.createObjectURL(user.profile_picture)
-              : `http://localhost:8000${user.profile_picture}`}
+              : `${baseUrl}${user.profile_picture}`}
             alt="user_profile_pic"
           />
         </div>

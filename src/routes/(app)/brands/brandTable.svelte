@@ -15,6 +15,8 @@
 
   const dispatch = createEventDispatcher();
 
+  const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
+
   export let showForm: boolean = false;
   // variables to handle pagination and table details
   let page: number = 1;
@@ -253,7 +255,7 @@
         {#if hidableCoulumns[0].value}
           <Table.Cell>
             <img
-              src={data.logo}
+              src={`${baseUrl}${data.logo}`}
               alt="Logo"
               class="w-12 h-12 object-cover rounded-full"
             /></Table.Cell

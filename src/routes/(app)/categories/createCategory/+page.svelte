@@ -20,6 +20,8 @@
 
   const dispatch = createEventDispatcher();
 
+  const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
+
   export let editData;
   export let editForm: boolean;
   let updateImage: boolean = false;
@@ -116,10 +118,27 @@
 
   async function createCategory() {
     try {
+      validation = {};
       categoryDetails.tags = tagInput
         .split(",")
         .map((tag) => tag.trim())
         .filter((tag) => tag !== "");
+
+      if (categoryDetails.name == "") {
+        validation.name = ["This field may not be blank."];
+      }
+
+      if (categoryDetails.description == "") {
+        validation.description = ["This field may not be blank."];
+      }
+
+      if (categoryDetails.handle == "") {
+        validation.handle = ["This field may not be blank."];
+      }
+
+      if (categoryDetails.tags == "") {
+        validation.tags = ["This field may not be blank."];
+      }
 
       const formData = new FormData();
 
@@ -145,16 +164,25 @@
         ? `/masterdata/category/${id}/update_record/`
         : "/masterdata/category/create_record/";
 
-      if (editForm) {
-        await API.put(url, formData);
+      if (
+        validation.name ||
+        validation.description ||
+        validation.handle ||
+        validation.tags
+      ) {
+        toast(`Please fill the required field`);
       } else {
-        await API.post(url, formData);
-      }
+        if (editForm) {
+          await API.put(url, formData);
+        } else {
+          await API.post(url, formData);
+        }
 
-      dispatch("newCategory");
-      const action = editForm ? "Category Updated" : "Category Created";
-      toast(`${action} successfully!`);
-    } catch (error:any) {
+        dispatch("newCategory");
+        const action = editForm ? "Category Updated" : "Category Created";
+        toast(`${action} successfully!`);
+      }
+    } catch (error: any) {
       const action = editForm ? "Update Category" : "Create Category";
       console.log(`${action}:`, error);
       validation = error.response.data;
@@ -242,6 +270,7 @@
         placeholder="Name"
         class="input {validation.name ? 'border-red-500' : ''}"
         type="text"
+        required
       />
       <div>
         <p class="text-red-500">{validation.name ? validation.name : ""}</p>
@@ -403,7 +432,7 @@
         class={categoryDetails.image ? "showImg" : "hideImg"}
         src={updateImage
           ? window.URL.createObjectURL(categoryDetails.image)
-          : categoryDetails.image}
+          : `${baseUrl}${categoryDetails.image}`}
       />
       <input
         type="file"

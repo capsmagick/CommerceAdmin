@@ -11,6 +11,7 @@
 
   export let editData: any;
   export let editForm: boolean;
+  let validation: any = {};
 
   let id = "";
   let name = "";
@@ -24,6 +25,16 @@
 
   async function onCreateNewAttribute() {
     try {
+      validation = {};
+
+      if (name == "") {
+        validation.name = ["This field may not be blank."];
+      }
+
+      if (value == "") {
+        validation.value = ["This field may not be blank."];
+      }
+
       const form = new FormData();
 
       form.append("name", name);
@@ -33,20 +44,25 @@
         ? `/masterdata/attribute/${id}/update_record/`
         : "/masterdata/attribute/create_record/";
 
-      if (editForm) {
-        await API.put(url, form);
+      if (validation.name || validation.value) {
+        toast(`Please fill the required field`);
       } else {
-        await API.post(url, form);
+        if (editForm) {
+          await API.put(url, form);
+        } else {
+          await API.post(url, form);
+        }
+
+        dispatch("newAttribute");
+
+        const action = editForm ? "Attribute Updated" : "Attribute Created";
+
+        toast(`${action} successfully!`);
       }
-
-      dispatch("newAttribute");
-
-      const action = editForm ? "Attribute Updated" : "Attribute Created";
-
-      toast(`${action} successfully!`);
-    } catch (error) {
+    } catch (error: any) {
       const action = editForm ? "Update Attribute" : "Create Attribute";
       console.log(`${action}:`, error);
+      validation = error.response.data;
       toast(`Failed to ${action}`);
     }
   }
@@ -60,29 +76,31 @@
   <Dialog.Content>
     <Dialog.Header class="font-bold mb-5">
       {#if editForm === false}
-        <Dialog.Description>New Attribute</Dialog.Description>
+        <Dialog.Title>New Attribute</Dialog.Title>
       {:else}
-        <Dialog.Description>Update Attribute</Dialog.Description>
+        <Dialog.Title>Update Attribute</Dialog.Title>
       {/if}
     </Dialog.Header>
-    <div>
+    <div class="grid gap-2">
       <Label
         for="name"
-        class="block text-sm font-medium leading-6 text-gray-500 mb-2"
+        class="block text-sm font-medium leading-6"
         >Name</Label
       >
-      <div class="mb-2">
-        <Input required type="text" name="name" id="name" bind:value={name} />
+      <div class="mb-2 ">
+        <Input required type="text" name="name" id="name" bind:value={name} class="{validation.name ? 'border-red-500' : ''}"/>
+        <p class="text-red-500">{validation.name ? validation.name : ""}</p>
       </div>
     </div>
-    <div>
+    <div class="grid gap-2">
       <Label
         for="value"
-        class="block text-sm font-medium leading-6 text-gray-500 mb-2"
+        class="block text-sm font-medium leading-6"
         >Value</Label
       >
-      <div class="mt-2">
-        <Input required type="text" name="value" id="value" bind:value />
+      <div>
+        <Input required type="text" name="value" id="value" bind:value class="{validation.value ? 'border-red-500' : ''}"/>
+        <p class="text-red-500">{validation.value ? validation.value : ""}</p>
         <span style="color: #17a2b8;"
           >Kindly Use comma (',') to separate the values</span
         >

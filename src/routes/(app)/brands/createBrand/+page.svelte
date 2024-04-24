@@ -12,6 +12,8 @@
 
   const dispatch = createEventDispatcher();
 
+  const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
+
   export let editData;
   export let editForm: boolean;
   let updateImage: boolean = false;
@@ -48,6 +50,16 @@
 
   async function createBrand() {
     try {
+      validation = {};
+
+      if (brandDetails.name == "") {
+        validation.name = ["This field may not be blank."];
+      }
+
+      if (brandDetails.description == "") {
+        validation.description = ["This field may not be blank."];
+      }
+
       const form = new FormData();
       if (updateImage) {
         form.append("logo", brandDetails.logo);
@@ -55,20 +67,24 @@
       form.append("name", brandDetails.name);
       form.append("description", brandDetails.description);
 
-      const url = editForm
-        ? `/masterdata/brand/${id}/update_record/`
-        : "/masterdata/brand/create_record/";
-
-      if (editForm) {
-        await API.put(url, form);
+      if (validation.name || validation.description) {
+        toast(`Please fill the required field`);
       } else {
-        await API.post(url, form);
-      }
+        const url = editForm
+          ? `/masterdata/brand/${id}/update_record/`
+          : "/masterdata/brand/create_record/";
 
-      dispatch("newBrand");
-      const action = editForm ? "Brand Updated" : "Brand Created";
-      toast(`${action} successfully!`);
-    } catch (error:any) {
+        if (editForm) {
+          await API.put(url, form);
+        } else {
+          await API.post(url, form);
+        }
+
+        dispatch("newBrand");
+        const action = editForm ? "Brand Updated" : "Brand Created";
+        toast(`${action} successfully!`);
+      }
+    } catch (error: any) {
       const action = editForm ? "Update Brand" : "Create Brand";
       console.log(`${action}:`, error);
       validation = error.response.data;
@@ -96,7 +112,7 @@
         class="input {validation.name ? 'border-red-500' : ''}"
         type="text"
       />
-        <p class="text-red-500">{validation.name ? validation.name : ""}</p>
+      <p class="text-red-500">{validation.name ? validation.name : ""}</p>
     </div>
 
     <div class="mb-3">
@@ -107,7 +123,9 @@
         placeholder="Description"
         class="textarea {validation.description ? 'border-red-500' : ''}"
       />
-        <p class="text-red-500">{validation.description ? validation.description : ""}</p>
+      <p class="text-red-500">
+        {validation.description ? validation.description : ""}
+      </p>
     </div>
 
     <div class="flex justify-between mb-3">
@@ -122,7 +140,7 @@
         class:hideImg={!brandDetails.logo}
         src={updateImage
           ? window.URL.createObjectURL(brandDetails.logo)
-          : brandDetails.logo}
+          : `${baseUrl}${brandDetails.logo}`}
       />
 
       <input

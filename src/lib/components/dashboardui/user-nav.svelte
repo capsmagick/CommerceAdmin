@@ -7,6 +7,7 @@
 	import { UserStore } from "$lib/stores/data";
 	import { onMount } from "svelte";
 
+  	const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
 
 	let user: any;
 	function getUser()  {
@@ -57,7 +58,7 @@
 	<DropdownMenu.Trigger asChild let:builder>
 		<Button variant="ghost" builders={[builder]} class="relative h-8 w-8 rounded-full">
 			<Avatar.Root class="h-8 w-8">
-				<img src={`http://localhost:8000${user?user.profile_picture:''}`} alt="" />
+				<img src={`${baseUrl}${user?user.profile_picture:''}`} alt="" />
 				<!-- <Avatar.Image src={user? user.profile_picture: ''} alt="user" /> -->
 				<!-- <Avatar.Fallback>SC</Avatar.Fallback> -->
 			</Avatar.Root>
