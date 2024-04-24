@@ -12,6 +12,8 @@
 
   const dispatch = createEventDispatcher();
 
+  const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
+
   export let editData: any;
   export let editForm: boolean;
   let updateImage: boolean = false;
@@ -180,7 +182,7 @@
         class:hideImg={!collectionDetails.feature_image}
         src={updateImage
           ? window.URL.createObjectURL(collectionDetails.feature_image)
-          : collectionDetails.feature_image}
+          : `${baseUrl}${collectionDetails.feature_image}`}
       />
 
       <input
