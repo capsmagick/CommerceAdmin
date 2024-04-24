@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
-  import LookbookTable from "./lookbookTable2.svelte";
+  import LookbookTable from "./lookbookTable.svelte";
   import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
   import API from "$lib/services/api";
   import { goto } from "$app/navigation"
