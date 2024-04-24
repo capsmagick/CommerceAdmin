@@ -68,8 +68,8 @@
     await getLookbook();
   }
   async function onView(id: any) {
-    lookbookDetailsStore.set = id;
-    goto("lookbook/lookbookDetails");
+    let lookbookId = id
+    goto(`lookbook/lookbookDetails?id=${lookbookId}`)
   }
 
   function onEdit(data: any) {
