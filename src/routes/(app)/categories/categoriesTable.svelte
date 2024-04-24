@@ -14,6 +14,8 @@
   import { createEventDispatcher, onMount } from "svelte";
 
   const dispatch = createEventDispatcher();
+  
+  const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
 
   export let showForm: boolean = false;
   // variables to handle pagination and table details
@@ -118,6 +120,7 @@
 
   onMount(() => {
     getCategory();
+    
   });
 
   function sortName() {
@@ -266,7 +269,7 @@
         {#if hidableCoulumns[0].value}
           <Table.Cell>
             <img
-              src={data.image}
+              src={`${baseUrl}${data.image}`}
               alt="Logo"
               class="w-12 h-12 object-cover rounded-full"
             /></Table.Cell
