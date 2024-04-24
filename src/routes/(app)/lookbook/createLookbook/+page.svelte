@@ -94,7 +94,7 @@
           await API.post(url, form);
         }
 
-        dispatch("newCollection");
+        dispatch("newLookbook");
         const action = editForm ? "Lookbook Updated" : "Lookbook Created";
         toast(`${action} successfully!`);
       }
