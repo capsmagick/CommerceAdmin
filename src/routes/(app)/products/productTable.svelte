@@ -162,8 +162,9 @@
   }
 
   function addLookbook(data: any) {
-    productIdStore.set(data.id);
+    editData = data;
     lookbookModalForm = true;
+    editForm = true;
   }
 
   function addToCollection(data: any) {
@@ -262,13 +263,25 @@
 <div>
   {#if lookbookModalForm}
     <AddToLookbook
-      {editData}
-      {editForm}
-      on:newLookbook={() => {
+    {editData}
+      on:cancel={() => (
+        (editData = null), (lookbookModalForm = false), (editForm = false)
+      )}
+      on:addLookbook={() => {
         lookbookModalForm = false;
       }}
-      on:cancel={() => {
-        lookbookModalForm = false;
+    />
+  {/if}
+</div>
+<div>
+  {#if showCollectionForm}
+    <AddToCollection
+      {editData}
+      on:cancel={() => (
+        (editData = null), (showCollectionForm = false), (editForm = false)
+      )}
+      on:addToCollection={() => {
+        showCollectionForm = false;
       }}
     />
   {/if}
@@ -284,19 +297,6 @@
   {/if}
 </div>
 
-<div>
-  {#if showCollectionForm}
-    <AddToCollection
-      {editData}
-      on:cancel={() => (
-        (editData = null), (showCollectionForm = false), (editForm = false)
-      )}
-      on:addToCollection={() => {
-        showCollectionForm = false;
-      }}
-    />
-  {/if}
-</div>
 
 <div class="w-full p-5">
   <div class="my-2 flex justify-between">
@@ -522,7 +522,7 @@
                 View Variant</DropdownMenu.Item
               >
               <DropdownMenu.Item on:click={() => addLookbook(data)}>
-                Add Lookbook</DropdownMenu.Item
+                Add To Lookbook</DropdownMenu.Item
               >
               <DropdownMenu.Item on:click={() => addToCollection(data)}>
                 Add To Collection</DropdownMenu.Item
