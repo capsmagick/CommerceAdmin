@@ -53,9 +53,9 @@
   async function addToCollection() {
     try{
       const formData = new FormData();
-      formData.append("product", productId);
+      formData.append("collection", collectionId);
 
-        await API.post(`/products/collection/${collectionId}/add-product/`, formData)
+        await API.post(`/products/product/${productId}/add-to-collection/`, formData)
         dispatch("addToCollection");
         toast(`Product Added to Collection`)
     }
