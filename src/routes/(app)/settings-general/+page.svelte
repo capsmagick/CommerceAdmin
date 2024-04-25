@@ -24,7 +24,7 @@ function viewAdmin() {
 <div class="m-3 bg-background text-foreground rounded-md p-4 px-6 border">
   <div class="flex h-screen mt-3">
     <div class="container justify-center">
-      <Tabs.Root align="center" justify="center">
+      <Tabs.Root>
         <Tabs.List>
           <Tabs.Trigger value="profile">Profile Settings</Tabs.Trigger>
           <Tabs.Trigger value="admin">Admin Settings</Tabs.Trigger>

@@ -4,5 +4,5 @@
 </script>
 
  <div id="admin-settings" class="setting-section">
-        <h2 class="text-2xl font-semibold mb-5">Shipping Method</h2>
+        <h2 class="text-2xl font-semibold my-5">Shipping Method</h2>
       </div>

@@ -38,9 +38,9 @@
 </script>
 
 <div id="profile" class="setting-section">
-  <h2 class="text-2xl font-semibold mb-5">Profile Settings</h2>
+  <h2 class="text-2xl font-semibold my-5">Profile Settings</h2>
   <div class="grid grid-cols-3">
-    <div class="col-span-2">
+    <div class="grid">
       <div class="grid grid-cols-2 gap-4 mb-4">
         <div>
           <Label for="fname" class="block text-sm font-medium text-gray-700"
