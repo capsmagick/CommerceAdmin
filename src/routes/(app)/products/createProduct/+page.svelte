@@ -11,7 +11,6 @@
   import { toast } from "svelte-sonner";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
 
-  
   const dispatch = createEventDispatcher();
 
   export let editForm: boolean;
@@ -24,6 +23,7 @@
   let editImage: boolean = false;
   let editTag: boolean = false;
   let tagInput: string = ""; // Holds the raw tag input from the user
+  let validation: any = {};
 
   // This function processes the tag input when the user types or pastes the tags
 
@@ -52,7 +52,7 @@
     console.log(editData);
 
     productDetails = editData;
-    console.log(productDetails.is_disabled);
+
     selectedCategory = productDetails.categories[0]
       ? productDetails.categories[0].name
       : "";
@@ -66,7 +66,6 @@
     logo: string;
     description: string;
   };
-
 
   type Categories = {
     id: string;
@@ -144,59 +143,127 @@
     }
   }
 
-  $: productDetails.tags = tagInput
-    .split(",")
-    .map((tag) => tag.trim())
-    .filter((tag) => tag !== "");
-
   async function createProduct() {
     try {
-      const form = new FormData();
-      console.log(productDetails.is_disabled);
-      if (!editBrand) {
-        productDetails.brand = productDetails.brand.id;
-      }
-      if (!editCategory) {
-        productDetails.categories = productDetails.categories[0].id;
-      }
-      form.append("name", productDetails.name);
-      form.append("short_description", productDetails.short_description);
-      form.append("description", productDetails.description);
-      form.append("sku", productDetails.sku);
-      form.append("price", productDetails.price);
-      form.append("selling_price", productDetails.selling_price);
-      form.append("condition", productDetails.condition);
-      form.append("categories", productDetails.categories);
-      form.append("brand", productDetails.brand);
-      form.append("is_disabled", productDetails.is_disabled);
-      form.append("hsn_code", productDetails.hsn_code);
-      form.append("rating", productDetails.rating);
-      form.append("noOfReviews", productDetails.noOfReviews);
-      if (editTag) {
-        form.append("tags", productDetails.tags);
-      }
-      if (editImage) {
-        for (let i = 0; i < productDetails.images.length; i++) {
-          form.append("images", productDetails.images[i]);
-        }
+      productDetails.tags = tagInput
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag !== "");
+
+      validation = {};
+
+      if (productDetails.name == "") {
+        validation.name = ["This field may not be blank."];
       }
 
-      const url = editForm
-        ? `/products/product/${productDetails.id}/update_record/`
-        : "/products/product/create_record/";
+      if (productDetails.short_description == "") {
+        validation.short_description = ["This field may not be blank."];
+      }
 
-      if (editForm) {
-        await API.put(url, form);
+      if (productDetails.description == "") {
+        validation.description = ["This field may not be blank."];
+      }
+
+      if (productDetails.sku == "") {
+        validation.sku = ["This field may not be blank."];
+      }
+
+      if (productDetails.price == "") {
+        validation.price = ["This field may not be blank."];
+      }
+
+      if (productDetails.selling_price == "") {
+        validation.selling_price = ["This field may not be blank."];
+      }
+
+      // if (productDetails.dimension == "") {
+      //   validation.dimension = ["This field may not be blank."];
+      // }
+
+      if (productDetails.categories == "") {
+        validation.categories = ["This field may not be blank."];
+      }
+
+      if (productDetails.brand == "") {
+        validation.brand = ["This field may not be blank."];
+      }
+
+      if (productDetails.hsn_code == "") {
+        validation.hsn_code = ["This field may not be blank."];
+      }
+
+      if (productDetails.tags == "") {
+        validation.tags = ["This field may not be blank."];
+      }
+
+      if (
+        validation.name ||
+        validation.short_description ||
+        validation.description ||
+        validation.sku ||
+        validation.price ||
+        validation.selling_price ||
+        validation.categories ||
+        validation.brand ||
+        validation.hsn_code ||
+        validation.dimension ||
+        validation.tags
+      ) {
+        console.log(validation);
+
+        toast(`Please fill the required field`);
       } else {
-        await API.post(url, form);
+        const form = new FormData();
+        console.log(productDetails.is_disabled);
+        if (!editBrand) {
+          productDetails.brand = productDetails.brand.id;
+        }
+        if (!editCategory) {
+          productDetails.categories = productDetails.categories[0].id;
+        }
+        form.append("name", productDetails.name);
+        form.append("short_description", productDetails.short_description);
+        form.append("description", productDetails.description);
+        form.append("sku", productDetails.sku);
+        form.append("price", productDetails.price);
+        form.append("selling_price", productDetails.selling_price);
+        // form.append("dimension", productDetails.dimension);
+        form.append("condition", productDetails.condition);
+        form.append("categories", productDetails.categories);
+        form.append("brand", productDetails.brand);
+        form.append("is_disabled", productDetails.is_disabled);
+        form.append("hsn_code", productDetails.hsn_code);
+        form.append("rating", productDetails.rating);
+        form.append("noOfReviews", productDetails.noOfReviews);
+        if (editTag) {
+          form.append("tags", productDetails.tags);
+        }
+        if (editImage) {
+          for (let i = 0; i < productDetails.images.length; i++) {
+            form.append("images", productDetails.images[i]);
+          }
+        }
+
+        const url = editForm
+          ? `/products/product/${productDetails.id}/update_record/`
+          : "/products/product/create_record/";
+
+        if (editForm) {
+          await API.put(url, form);
+        } else {
+          await API.post(url, form);
+        }
+
+        dispatch("newProduct");
+
+        const action = editForm ? "Product Updated" : "Product Created";
+        toast(`${action} successfully!`);
       }
-
-      dispatch("newProduct");
-
+    } catch (error: any) {
       const action = editForm ? "Product Updated" : "Product Created";
-      toast(`${action} successfully!`);
-    } catch (error) {
       console.error("create:product:", error);
+      validation = error.response.data;
+      toast(`Failed to ${action}`);
     }
   }
 
@@ -226,9 +293,13 @@
       // Update the reactiveImages store
       reactiveImages.set(productDetails.images);
       // Update the preview image with the last selected image
-      const img: HTMLImageElement | null = document.getElementById("selected-logo") as HTMLImageElement;
+      const img: HTMLImageElement | null = document.getElementById(
+        "selected-logo"
+      ) as HTMLImageElement;
       if (img) {
-        img.src = window.URL.createObjectURL(productDetails.images[productDetails.images.length - 1]);
+        img.src = window.URL.createObjectURL(
+          productDetails.images[productDetails.images.length - 1]
+        );
       }
       console.log("productDetails.images after update:", productDetails.images);
     }
@@ -238,6 +309,33 @@
     newImages.splice(index, 1);
     reactiveImages.set(newImages);
     productDetails.images = newImages; // Update productDetails.images
+  }
+
+  // validation for selling price and price
+  function sellingPriceValidation(event: any) {
+    const newValue = event.target.value;
+    // Regular expression to match only numeric characters
+    const numericRegex = /^[0-9]*$/;
+
+    if (!numericRegex.test(newValue)) {
+      validation.selling_price = ["Only numbers are allowed."];
+    } else {
+      productDetails.selling_price = newValue;
+      validation.selling_price = ""; // Clear validation message if input is valid
+    }
+  }
+
+  function priceValidation(event: any) {
+    const newValue = event.target.value;
+    // Regular expression to match only numeric characters
+    const numericRegex = /^[0-9]*$/;
+
+    if (!numericRegex.test(newValue)) {
+      validation.price = ["Only numbers are allowed."];
+    } else {
+      productDetails.price = newValue;
+      validation.price = ""; // Clear validation message if input is valid
+    }
   }
 </script>
 
@@ -250,12 +348,22 @@
     <div class="grid grid-cols-4 gap-4">
       <div class="grid gap-2">
         <Label for="area">Product Name</Label>
-        <Input id="area" placeholder="name" bind:value={productDetails.name} />
+        <Input
+          id="area"
+          placeholder="name"
+          bind:value={productDetails.name}
+          class={validation.name ? "border-red-500" : ""}
+        />
+        <p class="text-red-500">{validation.name ? validation.name : ""}</p>
       </div>
       <div class="grid gap-2">
         <Label for="security-level">Category</Label>
         <Select.Root>
-          <Select.Trigger class="input capitalize">
+          <Select.Trigger
+            class="input capitalize {validation.categories
+              ? 'border-red-500'
+              : ''}"
+          >
             {selectedCategory ? selectedCategory : "Select a Category"}
           </Select.Trigger>
           <Select.Content>
@@ -273,11 +381,16 @@
             </Select.Group>
           </Select.Content>
         </Select.Root>
+        <p class="text-red-500">
+          {validation.categories ? validation.categories : ""}
+        </p>
       </div>
       <div class="grid gap-2">
         <Label for="security-level">Brand</Label>
         <Select.Root>
-          <Select.Trigger class="input capitalize">
+          <Select.Trigger
+            class="input capitalize {validation.brand ? 'border-red-500' : ''}"
+          >
             {selectedBrand ? selectedBrand : "Select a Brand"}
           </Select.Trigger>
           <Select.Content>
@@ -295,6 +408,7 @@
             </Select.Group>
           </Select.Content>
         </Select.Root>
+        <p class="text-red-500">{validation.brand ? validation.brand : ""}</p>
       </div>
       <div class="grid gap-2">
         <Label for="tags">Tags</Label>
@@ -302,7 +416,9 @@
           id="tags"
           placeholder="Enter tags separated by commas"
           bind:value={tagInput}
+          class={validation.tags ? "border-red-500" : ""}
         />
+        <p class="text-red-500">{validation.tags ? validation.tags : ""}</p>
       </div>
     </div>
     <div class="grid gap-2">
@@ -311,16 +427,38 @@
         id="subject"
         placeholder="short description of the product"
         bind:value={productDetails.short_description}
+        class={validation.short_description ? "border-red-500" : ""}
       />
+      <p class="text-red-500">
+        {validation.short_description ? validation.short_description : ""}
+      </p>
     </div>
 
-    <div class="grid gap-2">
-      <Label for="description">Description</Label>
-      <Textarea
-        id="description"
-        placeholder="Please include all information relevant to your product."
-        bind:value={productDetails.description}
-      />
+    <div class="grid grid-cols-2 gap-4">
+      <div class="grid gap-2">
+        <Label for="description">Description</Label>
+        <Textarea
+          id="description"
+          placeholder="Please include all information relevant to your product."
+          bind:value={productDetails.description}
+          class={validation.description ? "border-red-500" : ""}
+        />
+        <p class="text-red-500">
+          {validation.description ? validation.description : ""}
+        </p>
+      </div>
+      <div class="grid gap-2">
+        <Label for="security-level">Dimension</Label>
+        <Textarea
+          id="dimension"
+          placeholder="Dimension"
+          bind:value={productDetails.dimension}
+          class={validation.dimension ? "border-red-500" : ""}
+        />
+        <p class="text-red-500">
+          {validation.dimension ? validation.dimension : ""}
+        </p>
+      </div>
     </div>
 
     <div class="grid grid-cols-2 gap-2">
@@ -330,11 +468,14 @@
           <div class="relative">
             <Input
               id="area"
-              class="pl-8"
-              type="number"
+              class="pl-8 {validation.selling_price ? 'border-red-500' : ''}"
               placeholder="Selling Price"
               bind:value={productDetails.selling_price}
+              on:input={sellingPriceValidation}
             />
+            <p class="text-red-500">
+              {validation.selling_price ? validation.selling_price : ""}
+            </p>
             <span class="absolute inset-y-0 left-0 flex items-center pl-2"
               >&#x20B9;</span
             >
@@ -345,11 +486,14 @@
           <div class="relative">
             <Input
               id="area"
-              class="pl-8"
-              type="number"
+              class="pl-8 {validation.price ? 'border-red-500' : ''}"
               placeholder="MRP"
               bind:value={productDetails.price}
+              on:input={priceValidation}
             />
+            <p class="text-red-500">
+              {validation.price ? validation.price : ""}
+            </p>
             <span class="absolute inset-y-0 left-0 flex items-center pl-2"
               >&#x20B9;</span
             >
@@ -363,15 +507,24 @@
             id="area"
             placeholder="HSN Code"
             bind:value={productDetails.hsn_code}
+            class={validation.hsn_code ? "border-red-500" : ""}
           />
+          <p class="text-red-500">
+            {validation.hsn_code ? validation.hsn_code : ""}
+          </p>
         </div>
         <div class="grid gap-2">
           <Label for="security-level">SKU</Label>
-          <Input id="area" placeholder="SKU" bind:value={productDetails.sku} />
+          <Input
+            id="area"
+            placeholder="SKU"
+            bind:value={productDetails.sku}
+            class={validation.sku ? "border-red-500" : ""}
+          />
+          <p class="text-red-500">{validation.sku ? validation.sku : ""}</p>
         </div>
       </div>
     </div>
-
     {#if !editForm}
       <div class="grid grid-cols-2 gap-4">
         <div class="grid gap-2">
@@ -398,23 +551,26 @@
         <div
           style="display:flex; justify-content: center; align-items: center; margin-top: 10px;"
         >
-        {#if productDetails.images.length > 0}
-          <div class="image-preview-container">
-            {#each $reactiveImages as image, index}
-              <div class="image-container">
-                <img
-                  id="selected-logo-{index}"
-                  class="selected-logo w-32 h-32 object-cover rounded-md"
-                  alt=""
-                  src={window.URL.createObjectURL(image)}
-                />
-                <button class="remove-btn" on:click={() => removeImage(index)}>
-                  &times;
-                </button>
-              </div>
-            {/each}
-          </div>
-        {/if}
+          {#if productDetails.images.length > 0}
+            <div class="image-preview-container">
+              {#each $reactiveImages as image, index}
+                <div class="image-container">
+                  <img
+                    id="selected-logo-{index}"
+                    class="selected-logo w-32 h-32 object-cover rounded-md"
+                    alt=""
+                    src={window.URL.createObjectURL(image)}
+                  />
+                  <button
+                    class="remove-btn"
+                    on:click={() => removeImage(index)}
+                  >
+                    &times;
+                  </button>
+                </div>
+              {/each}
+            </div>
+          {/if}
         </div>
       </div>
     {/if}
@@ -426,7 +582,6 @@
 </Dialog.Root>
 
 <style>
-
   .image-preview-container {
     display: flex;
     flex-wrap: wrap;

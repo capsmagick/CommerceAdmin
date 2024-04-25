@@ -9,13 +9,15 @@
 
   const dispatch = createEventDispatcher();
 
+  const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
+
   export let editData: any;
   let productData: any = {};
 
 
   if (editData) {
     productData = editData;
-    console.log("productData: ", productData);
+    console.log("productData: ", productData.images);
   }
 
   function cancelModel() {
@@ -32,19 +34,19 @@
               <div class="grid-cols-1">
                 <Carousel.Root class="w-full max-w-xs">
                   <Carousel.Content>
-                    <!-- {#each image as image, i (i)}
+                    {#each productData.images as image, i (i)}
                                 <Carousel.Item>
                                   <div class="p-1">
                                     <Card.Root>
                                       <Card.Content
                                         class="flex aspect-square items-center justify-center p-6"
                                       >
-                                         <img src={image.image} alt={`Image ${i + 1}`} />
+                                         <img src={`${baseUrl}${image.image}`} alt={`Image ${i + 1}`} />
                                       </Card.Content>
                                     </Card.Root>
                                   </div>
                                 </Carousel.Item>
-                              {/each} -->
+                              {/each}
                   </Carousel.Content>
                   <Carousel.Previous />
                   <Carousel.Next />

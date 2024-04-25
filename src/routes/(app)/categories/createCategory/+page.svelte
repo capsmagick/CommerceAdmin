@@ -43,7 +43,6 @@
   let attributeGroups: any = [];
   let selectedAttributeGroup: string;
   let parent_category: string = "";
-  let second_parent_category: string;
   let categories: any[] = [];
   let categoryOptions: { id: string; value: string; label: string }[] = [];
   let imageUpload: any;
@@ -67,6 +66,8 @@
     id = editData.id;
     tagInput = editData.tags.map((tag) => tag).join(", ");
     updateSelectionName();
+    console.log(categoryDetails.attribute_group.name)
+    selectedAttributeGroup = categoryDetails.attribute_group.name
   }
 
   async function updateSelectionName() {
@@ -74,19 +75,6 @@
       await fetchCategories();
       parent_category = categories.find(
         (cat) => cat.id === categoryDetails.parent_category
-      )?.name;
-    }
-    if (categoryDetails.second_parent_category) {
-      await fetchCategories();
-      second_parent_category = categories.find(
-        (cat) => cat.id === categoryDetails.second_parent_category
-      )?.name;
-    }
-
-    if (categoryDetails.attribute_group) {
-      await fetchAttributeGroups();
-      selectedAttributeGroup = attributeGroups.find(
-        (group: any) => group.id === categoryDetails.attribute_group
       )?.name;
     }
   }
@@ -195,14 +183,6 @@
     categoryDetails.attribute_group = selectedGroup.value;
     selectedAttributeGroup = attributeGroups.find(
       (g: any) => g.id == selectedGroup.value
-    ).name;
-    updateSelectionName();
-  }
-
-  function handleSecondaryParentCat(selectedCat: { value: number }) {
-    categoryDetails.second_parent_category = selectedCat.value;
-    second_parent_category = categories.find(
-      (g: any) => g.id == selectedCat.value
     ).name;
     updateSelectionName();
   }
