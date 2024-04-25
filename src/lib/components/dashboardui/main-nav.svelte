@@ -80,16 +80,16 @@
     //     { name: "warehouse", page: "warehouse" },
     //   ]
     // },
-    {
-      name: "Reports",
-      icon: "fa-file-invoice",
-      //route: "/inventory",
-      items: [
-        { name: "Sales Report", page: "sales-report" },
-        { name: "Product Report", page: "product-report" },
+    // {
+    //   name: "Reports",
+    //   icon: "fa-file-invoice",
+    //   //route: "/inventory",
+    //   items: [
+    //     { name: "Sales Report", page: "sales-report" },
+    //     { name: "Product Report", page: "product-report" },
 
-      ]
-    },
+    //   ]
+    // },
     // Add other menu groups following the same structure
     {
       name: "Settings",
