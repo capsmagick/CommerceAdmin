@@ -66,7 +66,8 @@
     id = editData.id;
     tagInput = editData.tags.map((tag) => tag).join(", ");
     updateSelectionName();
-    selectedAttributeGroup = categoryDetails.attribute_group.attributes.map(i => i.name)
+    console.log(categoryDetails.attribute_group.name)
+    selectedAttributeGroup = categoryDetails.attribute_group.name
   }
 
   async function updateSelectionName() {
