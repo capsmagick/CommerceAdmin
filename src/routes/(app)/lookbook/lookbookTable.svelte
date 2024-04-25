@@ -15,6 +15,8 @@
   import { goto } from "$app/navigation";
   import { lookbookDetailsStore } from "$lib/stores/data";
 
+  const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
+
   export let showForm: boolean = false;
   // variables to handle pagination and table details
   let page: number = 1;
@@ -32,7 +34,9 @@
   let editForm: boolean = false;
 
   let hidableCoulumns: any[] = [
-    { name: "Variant", value: true },
+    { name: "Featured Image", value: true },
+    { name: "Description", value: true },
+    { name: "Tags", value: true },
     { name: "Created At", value: false },
     { name: "Updated At", value: false },
     { name: "Created By", value: false },
@@ -68,8 +72,8 @@
     await getLookbook();
   }
   async function onView(id: any) {
-    lookbookDetailsStore.set = id;
-    goto("lookbook/lookbookDetails");
+    let lookbookId = id
+    goto(`lookbook/lookbookDetails?id=${lookbookId}`)
   }
 
   function onEdit(data: any) {
@@ -221,25 +225,31 @@
   <Table.Root>
     <Table.Header>
       <Table.Row>
+        {#if hidableCoulumns[0].value}
+          <Table.Head>Featured Image</Table.Head>
+        {/if}
         <Table.Head
           >Name
           <Button on:click={() => sortName()} variant="ghost"
             ><CaretSort class="w-4 h-4" /></Button
           >
         </Table.Head>
-        {#if hidableCoulumns[0].value}
-          <Table.Head>Variant</Table.Head>
-        {/if}
         {#if hidableCoulumns[1].value}
-          <Table.Head>Created At</Table.Head>
+          <Table.Head>Description</Table.Head>
         {/if}
         {#if hidableCoulumns[2].value}
-          <Table.Head>Updated At</Table.Head>
+          <Table.Head>Tags</Table.Head>
         {/if}
         {#if hidableCoulumns[3].value}
-          <Table.Head>Created By</Table.Head>
+          <Table.Head>Created At</Table.Head>
         {/if}
         {#if hidableCoulumns[4].value}
+          <Table.Head>Updated At</Table.Head>
+        {/if}
+        {#if hidableCoulumns[5].value}
+          <Table.Head>Created By</Table.Head>
+        {/if}
+        {#if hidableCoulumns[6].value}
           <Table.Head>Updated By</Table.Head>
         {/if}
         <Table.Head>Action</Table.Head>
@@ -247,20 +257,31 @@
     </Table.Header>
     {#each tableData as data}
       <Table.Row>
-        <Table.Cell>{data.name}</Table.Cell>
         {#if hidableCoulumns[0].value}
-          <Table.Cell>{data.variant}</Table.Cell>
+          <Table.Cell>
+            <img
+              src={`${baseUrl}${data.feature_image}`}
+              alt="feature_image"
+              class="w-12 h-12 object-cover rounded-full"
+            /></Table.Cell
+          >
         {/if}
+        <Table.Cell>{data.name}</Table.Cell>
         {#if hidableCoulumns[1].value}
-          <Table.Cell>{data.created_at}</Table.Cell>
-        {/if}
-        {#if hidableCoulumns[2].value}
-          <Table.Cell>{data.updated_at}</Table.Cell>
+          <Table.Cell>{data.description}</Table.Cell>
+        {/if}{#if hidableCoulumns[2].value}
+          <Table.Cell>{data.tags}</Table.Cell>
         {/if}
         {#if hidableCoulumns[3].value}
-          <Table.Cell>{data.created_by}</Table.Cell>
+          <Table.Cell>{data.created_at}</Table.Cell>
         {/if}
         {#if hidableCoulumns[4].value}
+          <Table.Cell>{data.updated_at}</Table.Cell>
+        {/if}
+        {#if hidableCoulumns[5].value}
+          <Table.Cell>{data.created_by}</Table.Cell>
+        {/if}
+        {#if hidableCoulumns[6].value}
           <Table.Cell>{data.updated_by}</Table.Cell>
         {/if}
         <Table.Cell>

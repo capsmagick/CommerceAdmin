@@ -1,283 +1,296 @@
 <script lang="ts">
+  import { Button } from "$lib/components/ui/button";
+  import { createEventDispatcher, onMount } from "svelte";
+  import * as Card from "$lib/components/ui/card/index.js";
+  import * as Dialog from "$lib/components/ui/dialog/index.js";
+  import API from "$lib/services/api";
+  import Pagination from "$lib/components/ui/table-pagination/pagination.svelte";
   import CaretSort from "svelte-radix/CaretSort.svelte";
   import ChevronDown from "svelte-radix/ChevronDown.svelte";
-  import * as Avatar from "$lib/components/ui/avatar";
-  import {
-    createTable,
-    Subscribe,
-    Render,
-    createRender,
-  } from "svelte-headless-table";
-  import {
-    addSortBy,
-    addPagination,
-    addTableFilter,
-    addSelectedRows,
-    addHiddenColumns,
-  } from "svelte-headless-table/plugins";
-  import { writable } from "svelte/store";
   import * as Table from "$lib/components/ui/table/index.js";
-  import Actions from "./lookbookTableActions.svelte";
-  import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-  import Label from "$lib/components/ui/label/label.svelte";
-  import { cn } from "$lib/utils.js";
+  import { MoreHorizontal } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
+  import ConfirmDeleteModal from "$lib/components/ui/confirmation-modal/ConfirmDeleteModal.svelte";
   import { Input } from "$lib/components/ui/input/index.js";
-  import DataTableCheckbox from "./lookbookTableCheckbox.svelte";
-  import API from "$lib/services/api";
-  import { createEventDispatcher, onMount } from "svelte";
-  import { lookbookDetailsStore } from "$lib/stores/data";
+  import { goto } from "$app/navigation";
+
   const dispatch = createEventDispatcher();
 
-  type Lookbook = {
-    id: string;
-    product: object;
-    selling_price: string;
-    stock: number;
-    created_at: string;
-    updated_at: string;
-    created_by: string;
-    updated_by: string;
-  };
+  const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
 
-  const lookbook = writable<Lookbook[]>([], (set) => {
-    getLookbookData().then((data) => {
-      set(data);
-      console.log(data);
-    });
-  });
+  let lookbookData: any = [];
+  let lookbookId: any;
+  const urlParams = new URLSearchParams(window.location.search);
+  lookbookId = urlParams.get("id");
 
+  let hidableCoulumns: any[] = [
+    { name: "Images", value: true },
+    { name: "Short Description", value: true },
+    { name: "Description", value: false },
+    { name: "Brand", value: true },
+    { name: "HSN Code", value: true },
+    { name: "Tags", value: true },
+    { name: "Number of Reviews", value: false },
+    { name: "Status", value: true },
+    { name: "Created At", value: false },
+    { name: "Updated At", value: false },
+    { name: "Created By", value: false },
+    { name: "Updated By", value: false },
+    { name: "Price", value: true },
+    { name: "Stock", value: true },
+    { name: "Categories", value: true },
+    { name: "Rating", value: false },
+  ];
 
- 
-  async function getLookbookData() {
+  async function getCollection() {
     try {
-      let lookbookId = await lookbookDetailsStore.set;
-      let res = await API.get(`/products/look-book/${lookbookId}/`);
-      let variants = res.data.variants;
-      let varDetails: any[] = [];
-
-      for(let i = 0; i <variants.length; i++){
-        let response = await API.get(`/products/variant/${variants[i]}`);
-        varDetails.push(response.data)
-      }
-      return varDetails;
-      
+      const response = await API.get(`/products/look-book/${lookbookId}`);
+      lookbookData = response.data.look_book_items.map((i) => i.product);
+      console.log("lookbookdata", lookbookData);
     } catch (error) {
-      console.error("fetch:brands:", error);
+      console.error("fetch:collection:", error);
+      return [];
     }
   }
 
-  const table = createTable(lookbook, {
-    sort: addSortBy({ disableMultiSort: true }),
-    page: addPagination(),
-    filter: addTableFilter({
-      fn: ({ filterValue, value }) => value.includes(filterValue),
-    }),
-    select: addSelectedRows(),
-    hide: addHiddenColumns(),
+  function cancelModel() {
+    dispatch("cancel");
+  }
+
+  onMount(async () => {
+    await getCollection();
   });
 
-  const columns = table.createColumns([
-    table.column({
-      header: (_, { pluginStates }) => {
-        const { allPageRowsSelected } = pluginStates.select;
-        return createRender(DataTableCheckbox, {
-          checked: allPageRowsSelected,
-        });
-      },
-      accessor: "id",
-      cell: ({ row }, { pluginStates }) => {
-        const { getRowState } = pluginStates.select;
-        const { isSelected } = getRowState(row);
-
-        return createRender(DataTableCheckbox, {
-          checked: isSelected,
-        });
-      },
-      plugins: {
-        sort: {
-          disable: true,
-        },
-        filter: {
-          exclude: true,
-        },
-      },
-    }),
-    // table.column({
-    //   header: "Name",
-    //   accessor: "product",
-    //   cell: ({ value }) => value.name,
-    //   plugins: {
-    //     filter: {
-    //       getFilterValue(value) {
-    //         return value;
-    //       },
-    //     },
-    //   },
-    // }),
-    table.column({
-      header: "Selling Price",
-      accessor: "selling_price",
-      plugins: { sort: {}, filter: { exclude: true } },
-    }),
-      table.column({
-      header: "Stock",
-      accessor: "stock",
-      plugins: { sort: {}, filter: { exclude: true } },
-    }),
-    table.column({
-      header: "Actions",
-      accessor: ({ id }) => id,
-      cell: (item) => {
-        return createRender(Actions)
-          .on("edit", (event: Actions["edit"]) => {
-            dispatch("edit", { item });
-          })
-          .on("delete", (event: Actions["delete"]) => {
-            dispatch("delete", { item });
-          });
-      },
-      plugins: {
-        sort: {
-          disable: true,
-        },
-      },
-    }),
-  ]);
-
-  const {
-    headerRows,
-    pageRows,
-    tableAttrs,
-    tableBodyAttrs,
-    flatColumns,
-    pluginStates,
-    rows,
-  } = table.createViewModel(columns);
-
-  const { sortKeys } = pluginStates.sort;
-
-  const { hiddenColumnIds } = pluginStates.hide;
-  const ids = flatColumns.map((c) => c.id);
-  let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
-
-  let initialHiddenColumns = ["updated_ay", "created_by", "updated_by"];
-
-  $: hideForId = Object.fromEntries(
-    ids.map((id) => [id, !initialHiddenColumns.includes(id)])
-  );
-
-  $: $hiddenColumnIds = Object.entries(hideForId)
-    .filter(([, hide]) => !hide)
-    .map(([id]) => id);
-
-  const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
-  const { filterValue } = pluginStates.filter;
-
-  const { selectedDataIds } = pluginStates.select;
-
-  const hideableCols = [
-    "created_at",
-    "updated_at",
-    "updated_ay",
-    "created_by",
-    "updated_by",
-  ];
-
-
+  function pageLimit(event: any, value: any) {}
+  function goBack() {
+    goto("/lookbook/");
+  }
 </script>
 
-<div class="w-full">
-  <div class="mb-4 p-4 flex items-center gap-4">
-    <Input
-      class="max-w-sm"
-      placeholder="Filter Lookboook..."
-      type="text"
-      bind:value={$filterValue}
-    />
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild let:builder>
-        <Button variant="outline" class="ml-auto" builders={[builder]}>
-          Columns <ChevronDown class="ml-2 h-4 w-4" />
-        </Button>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content>
-        {#each flatColumns as col}
-          {#if hideableCols.includes(col.id)}
-            <DropdownMenu.CheckboxItem bind:checked={hideForId[col.id]}>
-              {col.header}
-            </DropdownMenu.CheckboxItem>
-          {/if}
-        {/each}
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
-  </div>
-    <!-- <div class="flex justify-center my-3"><Label class="text-center text-xl">{lookbookData ? lookbookData.name : ''}</Label></div> -->
+<div
+  class="m-3 bg-background text-foreground rounded-md p-4 px-6 border"
+  style="height: calc(100vh - 80px);"
+>
+  <div class="w-full p-5">
+    <div class="my-2 flex justify-between">
+      <div>
+        <Input
+          class="max-w-sm"
+          placeholder="Search Lookbook..."
+          type="text"
+        />
+      </div>
+      <div class="flex">
+        <div class="mr-2">
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              <Button variant="outline" size="sm">
+                Column
+                <ChevronDown class="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              {#each hidableCoulumns as column}
+                <DropdownMenu.CheckboxItem bind:checked={column.value}
+                  >{column.name}</DropdownMenu.CheckboxItem
+                >
+              {/each}
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        </div>
+        <div>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              <Button variant="outline" size="sm">
+                10
+                <ChevronDown class="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              <DropdownMenu.Item on:click={(event) => pageLimit(event, 10)}
+                >10</DropdownMenu.Item
+              >
+              <DropdownMenu.Item on:click={(event) => pageLimit(event, 20)}
+                >20</DropdownMenu.Item
+              >
+              <DropdownMenu.Item on:click={(event) => pageLimit(event, 25)}
+                >25</DropdownMenu.Item
+              >
+              <DropdownMenu.Item on:click={(event) => pageLimit(event, 50)}
+                >50</DropdownMenu.Item
+              >
+              <DropdownMenu.Item on:click={(event) => pageLimit(event, 100)}
+                >100</DropdownMenu.Item
+              >
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        </div>
+      </div>
+    </div>
 
-  <div class="rounded-md border">
-    <Table.Root {...$tableAttrs}>
+    <Table.Root>
       <Table.Header>
-        {#each $headerRows as headerRow}
-          <Subscribe rowAttrs={headerRow.attrs()}>
-            <Table.Row>
-              {#each headerRow.cells as cell (cell.id)}
-                <Subscribe
-                  attrs={cell.attrs()}
-                  let:attrs
-                  props={cell.props()}
-                  let:props>
-                  <Table.Head
-                    {...attrs}
-                    class={cn("[&:has([role=checkbox])]:pl-3")}>
-                    {#if cell.id === "customerName"}
-                      <Button variant="ghost" on:click={props.sort.toggle}>
-                        <Render of={cell.render()} />
-                        <CaretSort
-                          class={cn($sortKeys[0]?.id === cell.id && "text-foreground",
-                            "ml-2 h-4 w-4"
-                          )}/>
-                      </Button>
-                    {:else}
-                      <Render of={cell.render()} />
-                    {/if}
-                  </Table.Head>
-                </Subscribe>
-              {/each}
-            </Table.Row>
-          </Subscribe>
-        {/each}
+        <Table.Row>
+          {#if hidableCoulumns[0].value}
+            <Table.Head>Images</Table.Head>
+          {/if}
+          <Table.Head>
+            Product Name
+            <Button variant="ghost"><CaretSort class="w-4 h-4" /></Button>
+          </Table.Head>
+          {#if hidableCoulumns[1].value}
+            <Table.Head>Short Description</Table.Head>
+          {/if}
+          {#if hidableCoulumns[2].value}
+            <Table.Head>Description</Table.Head>
+          {/if}
+          {#if hidableCoulumns[3].value}
+            <Table.Head>Brand</Table.Head>
+          {/if}
+          {#if hidableCoulumns[4].value}
+            <Table.Head>HSN Code</Table.Head>
+          {/if}
+          {#if hidableCoulumns[5].value}
+            <Table.Head>Tags</Table.Head>
+          {/if}
+          {#if hidableCoulumns[6].value}
+            <Table.Head>Number of Reviews</Table.Head>
+          {/if}
+          {#if hidableCoulumns[7].value}
+            <Table.Head>Status</Table.Head>
+          {/if}
+          {#if hidableCoulumns[8].value}
+            <Table.Head>Created At</Table.Head>
+          {/if}
+          {#if hidableCoulumns[9].value}
+            <Table.Head>Updated At</Table.Head>
+          {/if}
+          {#if hidableCoulumns[10].value}
+            <Table.Head>Created By</Table.Head>
+          {/if}
+          {#if hidableCoulumns[11].value}
+            <Table.Head>Updated By</Table.Head>
+          {/if}
+          {#if hidableCoulumns[12].value}
+            <Table.Head>Price</Table.Head>
+          {/if}
+          {#if hidableCoulumns[13].value}
+            <Table.Head>Stock</Table.Head>
+          {/if}
+          {#if hidableCoulumns[14].value}
+            <Table.Head>Categories</Table.Head>
+          {/if}
+          {#if hidableCoulumns[15].value}
+            <Table.Head>Rating</Table.Head>
+          {/if}
+          <Table.Head>Action</Table.Head>
+        </Table.Row>
       </Table.Header>
-      <Table.Body {...$tableBodyAttrs}>
-        {#each $pageRows as row (row.id)}
-          <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-            <Table.Row
-              {...rowAttrs}
-              data-state={$selectedDataIds[row.id] && "selected"}>
-              {#each row.cells as cell (cell.id)}
-                <Subscribe attrs={cell.attrs()} let:attrs>
-                  <Table.Cell class="[&:has([role=checkbox])]:pl-3" {...attrs}>
-                      <Render of={cell.render()} />
-                  </Table.Cell>
-                </Subscribe>
-              {/each}
-            </Table.Row>
-          </Subscribe>
-        {/each}
-      </Table.Body>
+      {#each lookbookData as data}
+        <Table.Row>
+          {#if hidableCoulumns[0].value}
+            <Table.Cell>
+              {#if data.images && data.images.length > 0}
+                <img
+                  src={`${baseUrl}${data.images[0].image}`}
+                  alt="product_image"
+                  class="w-12 h-12 object-cover rounded-full"
+                />
+              {:else}
+                <span>No image available</span>
+              {/if}
+              <!-- {logImageUrl(data)} -->
+            </Table.Cell>
+          {/if}
+          <Table.Cell>{data.name}</Table.Cell>
+          {#if hidableCoulumns[1].value}
+            <Table.Cell>{data.short_description}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[2].value}
+            <Table.Cell>{data.description}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[3].value}
+            <Table.Cell>{data.brand.name}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[4].value}
+            <Table.Cell>{data.hsn_code}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[5].value}
+            <Table.Cell>{data.tags.map((i) => i.name).join(" ,")}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[6].value}
+            <Table.Cell>{data.no_of_reviews} reviews</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[7].value}
+            <Table.Cell>{data.is_disabled ? "Inactive" : "Active"}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[8].value}
+            <Table.Cell>{data.created_at}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[9].value}
+            <Table.Cell>{data.updated_at}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[10].value}
+            <Table.Cell>{data.created_by}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[11].value}
+            <Table.Cell>{data.updated_by}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[12].value}
+            <Table.Cell>{data.price}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[13].value}
+            <Table.Cell>{data.stock}</Table.Cell>
+          {/if}
+          {#if hidableCoulumns[14].value}
+            <Table.Cell
+              >{data.categories
+                .map((category) => category.name)
+                .join(", ")}</Table.Cell
+            >
+          {/if}
+          {#if hidableCoulumns[15].value}
+            <Table.Cell>{data.rating} stars</Table.Cell>
+          {/if}
+          <Table.Cell>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild let:builder>
+                <Button builders={[builder]} variant="ghost"
+                  ><MoreHorizontal class="h-4 w-4" /></Button
+                >
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content class="absolute">
+                <!-- <DropdownMenu.Item on:click={() => onViewProduct(data)}>
+                <i class="fa fa-eye sm mr-2"> </i>View</DropdownMenu.Item
+              >
+              <DropdownMenu.Item on:click={() => onEditProduct(data)}>
+                <i class="fa fa-pencil sm mr-2"> </i>Edit</DropdownMenu.Item
+              >
+              <DropdownMenu.Item on:click={() => onDelete(data.id, data.name)}>
+                <i class="fa fa-trash sm mr-2" style="color:red">
+                </i>Delete</DropdownMenu.Item
+              >
+              <DropdownMenu.Item on:click={() => addVariant(data)}>
+                Add Variant</DropdownMenu.Item
+              >
+              <DropdownMenu.Item on:click={() => viewVariant(data)}>
+                View Variant</DropdownMenu.Item
+              >
+              <DropdownMenu.Item on:click={() => addLookbook(data)}>
+                Add Lookbook</DropdownMenu.Item
+              >
+              <DropdownMenu.Item on:click={() => addToCollection(data)}>
+                Add To Collection</DropdownMenu.Item
+              > -->
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          </Table.Cell>
+        </Table.Row>
+      {/each}
     </Table.Root>
   </div>
-  <div class="flex items-center justify-end space-x-2 py-4">
-    <div class="flex-1 text-sm text-muted-foreground">
-      {Object.keys($selectedDataIds).length} of{" "}
-      {$rows.length} row(s) selected.
-    </div>
-    <Button
-      variant="outline"
-      size="sm"
-      on:click={() => ($pageIndex = $pageIndex - 1)}
-        disabled={!$hasPreviousPage}>Previous</Button>
-    <Button variant="outline" size="sm" disabled={!$hasNextPage}
-        on:click={() => ($pageIndex = $pageIndex + 1)}>
-      Next</Button>
+  <div class="flex justify-end">
+    <Button class="text-end" on:click={goBack}>Go Back</Button>
   </div>
 </div>

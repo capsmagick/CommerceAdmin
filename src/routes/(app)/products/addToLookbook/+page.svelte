@@ -1,145 +1,134 @@
 <script lang="ts">
-  import { Input } from "$lib/components/ui/input";
-  import { Label } from "$lib/components/ui/label";
-  import * as Select from "$lib/components/ui/select";
   import { Button } from "$lib/components/ui/button";
-  import API from "$lib/services/api";
   import { createEventDispatcher, onMount } from "svelte";
-  import { toast } from "svelte-sonner";
-  import { productIdStore } from "../../../../lib/stores/data";
-  import { writable } from "svelte/store";
+  import * as Card from "$lib/components/ui/card/index.js";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
+  import API from "$lib/services/api";
+  import { cn } from "$lib/utils.js";
+  import { tick } from "svelte";
+  import * as Command from "$lib/components/ui/command/index.js";
+  import * as Popover from "$lib/components/ui/popover/index.js";
+  import Check from "lucide-svelte/icons/check";
+  import CaretSort from "svelte-radix/CaretSort.svelte";
+  import { Label } from "$lib/components/ui/label";
+  import { toast } from "svelte-sonner";
 
   const dispatch = createEventDispatcher();
 
-  export let editData;
-  export let editForm: boolean;
+  let id = "";
   let productId: any;
-  let selectedVariant: string;
+  export let editData: any;
+  let lookbook: any = [];
+  let lookbookOptions: { id: string; value: string; label: string }[] = [];
+  let lookbookId: any;
+  let open: boolean = false;
 
-  type Variant = {
-    id: string;
-    name: string;
-  };
-
-  productIdStore.subscribe((value) => {
-    productId = value;
-  });
-
-  export const variants = writable<Variant[]>([], (set) => {
-    getVariant().then((data) => {
-      set(data);
-    });
-  });
-
-  let lookbookDetails = {
-    id: "",
-    name: "",
-    variants: "",
-  };
-
-  if (editForm) {
-    lookbookDetails = editData;
+  if (editData) {
+    productId = editData.id;
   }
-  async function getVariant() {
-    try {
-      const response = await API.get(`/products/variant/?product=${productId}`);
-      return response.data.results;
-    } catch (error) {
-      console.error("fetch:Variant:", error);
-    }
-  }
-  async function createLookbook() {
-    try {
-      const form = new FormData();
-
-      form.append("name", lookbookDetails.name);
-      // form.append("variants", JSON.stringify(lookbookDetails.variants));
-      form.append("variants", lookbookDetails.variants);
-
-      const url = editForm
-        ? `/products/look-book/${lookbookDetails.id}/update_record/`
-        : "/products/look-book/create_record/";
-
-      if (editForm) {
-        await API.put(url, form);
-      } else {
-        await API.post(url, form);
-      }
-
-      dispatch("newLookbook");
-      const action = editForm ? "Lookbook Updated" : "Lookbook Created";
-      toast(`${action} successfully!`);
-    } catch (error) {
-      const action = editForm ? "Update Lookbook" : "Create Lookbook";
-      console.log(`${action}:`, error);
-      toast(`Failed to ${action}`);
-    }
-  }
-
   function cancelModel() {
     dispatch("cancel");
   }
 
-  function handleBrandChange(selectedVariantId: string) {
-    const variantArray = $variants;
-    lookbookDetails.variants = selectedVariantId;
-    const foundBrand = variantArray.find((g: any) => g.id == selectedVariantId);
-    if (foundBrand) {
-      selectedVariant = foundBrand.name;
+  async function getLookbook() {
+    try {
+      const response = await API.get("/products/look-book/");
+      lookbook = response.data.results;
+
+      lookbookOptions = lookbook.map((i: any) => ({
+        id: i.id,
+        value: i.name,
+        label: i.name,
+      }));
+    } catch (error) {
+      console.error("fetch:Lookbook:", error);
+      return [];
     }
+  }
+
+  async function addToLookbook() {
+    try {
+      const formData = new FormData();
+      formData.append("look_book", lookbookId);
+
+      await API.post(
+        `/products/product/${productId}/add-to-lookbook/`,
+        formData
+      );
+      dispatch("addToLookbook");
+      toast(`Product Added to Lookbook`);
+    } catch (error: any) {
+      console.error("Add to:Lookbook:", error);
+    }
+  }
+
+  onMount(async () => {
+    await getLookbook();
+  });
+
+  $: selectedParentCategory =
+    lookbookOptions.find((f) => f.value === id)?.label ?? "Select Lookbook";
+
+  function closeAndFocusTrigger(triggerId: string) {
+    open = false;
+    tick().then(() => {
+      document.getElementById(triggerId)?.focus();
+    });
   }
 </script>
 
-        <Dialog.Root
-          open={true}
-          onOpenChange={cancelModel}
-          preventScroll={true}
-        >
-          <Dialog.Header class="font-bold mb-5">
-            <Dialog.Title
-              >{editForm ? "Update Lookbook" : "New Lookbook"}</Dialog.Title
+<Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
+  <Dialog.Content>
+    <Dialog.Title>Add To Lookbook</Dialog.Title>
+    <div class="flex justify-center">
+      <div class="grid gap-3">
+        <Label for="Lookbook">Lookbook</Label>
+
+        <Popover.Root bind:open let:ids>
+          <Popover.Trigger asChild let:builder>
+            <Button
+              builders={[builder]}
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              class="w-[200px] justify-between"
             >
-          </Dialog.Header>
-          <Dialog.Content>
-            <div class="mb-3">
-              <Label for="name">Name</Label>
-              <Input
-                id="name"
-                bind:value={lookbookDetails.name}
-                placeholder="Name"
-                class="input"
-              />
-            </div>
-            <div class="grid gap-2">
-              <Label for="security-level">Variant</Label>
-              <Select.Root>
-                <Select.Trigger class="input capitalize">
-                  {selectedVariant ? selectedVariant : "Select a Variant"}
-                </Select.Trigger>
-                <Select.Content>
-                  <Select.Group>
-                    {#each $variants as variant}
-                      <Select.Item
-                        value={variant.id}
-                        label={variant.name}
-                        class="capitalize card"
-                        on:click={() => handleBrandChange(variant.id)}
-                      >
-                        {variant.name}
-                      </Select.Item>
-                    {/each}
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
-            </div>
-            <Dialog.Footer class="justify-between space-x-2">
-              <Button
-                type="button"
-                variant="ghost"
-                on:click={cancelModel}>Cancel</Button
-              >
-              <Button type="submit" on:click={createLookbook}>Save</Button>
-            </Dialog.Footer>
-          </Dialog.Content>
-        </Dialog.Root>
+              {selectedParentCategory}
+              <CaretSort class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </Popover.Trigger>
+          <Popover.Content class="w-[200px] p-0">
+            <Command.Root>
+              <Command.Input placeholder="Search lookbook..." class="h-9" />
+              <Command.Empty>No lookbook found.</Command.Empty>
+              <Command.Group>
+                {#each lookbookOptions as lookbook}
+                  <Command.Item
+                    value={lookbook.value}
+                    onSelect={(currentValue) => {
+                      id = currentValue;
+                      closeAndFocusTrigger(ids.trigger);
+                      lookbookId = lookbook.id;
+                    }}
+                  >
+                    <Check
+                      class={cn(
+                        "mr-2 h-4 w-4",
+                        id !== lookbook.id && "text-transparent"
+                      )}
+                    />
+                    {lookbook.label}
+                  </Command.Item>
+                {/each}
+              </Command.Group>
+            </Command.Root>
+          </Popover.Content>
+        </Popover.Root>
+      </div>
+    </div>
+    <Dialog.Footer class="justify-between space-x-2">
+      <Button variant="ghost" on:click={() => cancelModel()}>Cancel</Button>
+      <Button on:click={() => addToLookbook()}>Save</Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>

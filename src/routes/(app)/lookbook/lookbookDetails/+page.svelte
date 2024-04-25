@@ -57,9 +57,10 @@
         <Button variant="outline" class="glow-border-content">Export</Button>
       </div>
   </div>
-  <LookbookTable    on:edit={(event) => onEditLookbook(event.detail.item.row)}
+  <!-- <LookbookTable    on:edit={(event) => onEditLookbook(event.detail.item.row)}
                     on:delete={(event) => onDeleteLookbook(event.detail.item.row)}
-                    bind:this={refreshTable}/>
+                    bind:this={refreshTable}/> -->
+    <LookbookTable />
 
 <div class="flex justify-end">
     <Button class="text-end"
