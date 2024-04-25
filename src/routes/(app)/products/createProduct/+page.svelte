@@ -155,6 +155,7 @@
       if (productDetails.name == "") {
         validation.name = ["This field may not be blank."];
       }
+
       if (productDetails.short_description == "") {
         validation.short_description = ["This field may not be blank."];
       }
@@ -175,8 +176,8 @@
         validation.selling_price = ["This field may not be blank."];
       }
 
-      if (productDetails.condition == "") {
-        validation.condition = ["This field may not be blank."];
+      if (productDetails.dimension == "") {
+        validation.dimension = ["This field may not be blank."];
       }
 
       if (productDetails.categories == "") {
@@ -202,10 +203,10 @@
         validation.sku ||
         validation.price ||
         validation.selling_price ||
-        validation.condition ||
         validation.categories ||
         validation.brand ||
         validation.hsn_code ||
+        validation.dimension ||
         validation.tags
       ) {
         console.log(validation);
@@ -226,6 +227,7 @@
         form.append("sku", productDetails.sku);
         form.append("price", productDetails.price);
         form.append("selling_price", productDetails.selling_price);
+        form.append("dimension", productDetails.dimension);
         form.append("condition", productDetails.condition);
         form.append("categories", productDetails.categories);
         form.append("brand", productDetails.brand);
@@ -310,7 +312,7 @@
   }
 
   // validation for selling price and price
-   function sellingPriceValidation(event: any) {
+  function sellingPriceValidation(event: any) {
     const newValue = event.target.value;
     // Regular expression to match only numeric characters
     const numericRegex = /^[0-9]*$/;
@@ -323,7 +325,7 @@
     }
   }
 
-     function priceValidation(event: any) {
+  function priceValidation(event: any) {
     const newValue = event.target.value;
     // Regular expression to match only numeric characters
     const numericRegex = /^[0-9]*$/;
@@ -335,7 +337,6 @@
       validation.price = ""; // Clear validation message if input is valid
     }
   }
-  
 </script>
 
 <Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
@@ -433,17 +434,31 @@
       </p>
     </div>
 
-    <div class="grid gap-2">
-      <Label for="description">Description</Label>
-      <Textarea
-        id="description"
-        placeholder="Please include all information relevant to your product."
-        bind:value={productDetails.description}
-        class={validation.description ? "border-red-500" : ""}
-      />
-      <p class="text-red-500">
-        {validation.description ? validation.description : ""}
-      </p>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="grid gap-2">
+        <Label for="description">Description</Label>
+        <Textarea
+          id="description"
+          placeholder="Please include all information relevant to your product."
+          bind:value={productDetails.description}
+          class={validation.description ? "border-red-500" : ""}
+        />
+        <p class="text-red-500">
+          {validation.description ? validation.description : ""}
+        </p>
+      </div>
+      <div class="grid gap-2">
+        <Label for="security-level">Dimension</Label>
+        <Textarea
+          id="dimension"
+          placeholder="Dimension"
+          bind:value={productDetails.dimension}
+          class={validation.dimension ? "border-red-500" : ""}
+        />
+        <p class="text-red-500">
+          {validation.dimension ? validation.dimension : ""}
+        </p>
+      </div>
     </div>
 
     <div class="grid grid-cols-2 gap-2">
@@ -456,7 +471,7 @@
               class="pl-8 {validation.selling_price ? 'border-red-500' : ''}"
               placeholder="Selling Price"
               bind:value={productDetails.selling_price}
-              on:input = {sellingPriceValidation}
+              on:input={sellingPriceValidation}
             />
             <p class="text-red-500">
               {validation.selling_price ? validation.selling_price : ""}
@@ -474,7 +489,7 @@
               class="pl-8 {validation.price ? 'border-red-500' : ''}"
               placeholder="MRP"
               bind:value={productDetails.price}
-              on:input = {priceValidation}
+              on:input={priceValidation}
             />
             <p class="text-red-500">
               {validation.price ? validation.price : ""}
@@ -510,7 +525,6 @@
         </div>
       </div>
     </div>
-
     {#if !editForm}
       <div class="grid grid-cols-2 gap-4">
         <div class="grid gap-2">
