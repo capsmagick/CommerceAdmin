@@ -1,5 +1,5 @@
 <script lang="ts">
-      import { Button } from "$lib/components/ui/button";
+  import { Button } from "$lib/components/ui/button";
   import { createEventDispatcher, onMount } from "svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
@@ -13,23 +13,20 @@
   import { Label } from "$lib/components/ui/label";
   import { toast } from "svelte-sonner";
 
-
-
-
-
   const dispatch = createEventDispatcher();
 
-    let id = "";
-    let productId:any;
-    export let editData: any;
-    let collections:any = [];
-    let collectionOptions: { id: string; value: string; label: string }[] = [];
-    let collectionId:any;
-    let open: boolean = false;
+  let id = "";
+  let productId: any;
+  export let editData: any;
+  let collections: any = [];
+  let collectionOptions: { id: string; value: string; label: string }[] = [];
+  let collectionId: any;
+  let open: boolean = false;
+  let validation: any = {};
 
-    if(editData){
-        productId = editData.id        
-    }
+  if (editData) {
+    productId = editData.id;
+  }
   function cancelModel() {
     dispatch("cancel");
   }
@@ -43,7 +40,7 @@
         id: i.id,
         value: i.name,
         label: i.name,
-      }));      
+      }));
     } catch (error) {
       console.error("fetch:collection:", error);
       return [];
@@ -51,26 +48,37 @@
   }
 
   async function addToCollection() {
-    try{
-      const formData = new FormData();
-      formData.append("collection", collectionId);
+    try {
+      validation = {};
 
-        await API.post(`/products/product/${productId}/add-to-collection/`, formData)
+      if (!collectionId) {
+        validation.collectionId = ["This field may not be blank."];
+      }
+
+      if (validation.collectionId) {
+        toast(`Please fill the required field`);
+      } else {
+        const formData = new FormData();
+        formData.append("collection", collectionId);
+
+        await API.post(
+          `/products/product/${productId}/add-to-collection/`,
+          formData
+        );
         dispatch("addToCollection");
-        toast(`Product Added to Collection`)
-    }
-    catch(error:any){
-        console.error("Add to:Collection:", error);
+        toast(`Product Added to Collection`);
+      }
+    } catch (error: any) {
+      console.error("Add to:Collection:", error);
     }
   }
 
-  onMount(async()=>{
-    await getCollection()
-  })
+  onMount(async () => {
+    await getCollection();
+  });
 
-    $: selectedParentCategory =
-    collectionOptions.find((f) => f.value === id)?.label ??
-    "Select Collection";
+  $: selectedParentCategory =
+    collectionOptions.find((f) => f.value === id)?.label ?? "Select Collection";
 
   // We want to refocus the trigger button when the user selects
   // an item from the list so users can continue navigating the
@@ -85,53 +93,55 @@
 
 <Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
   <Dialog.Content>
-        <Dialog.Title> Add To Collection</Dialog.Title>
+    <Dialog.Title>Add To Collection</Dialog.Title>
     <div class="flex justify-center">
-         <div class="grid gap-3">
-          <Label for="collection">Collection</Label>
+      <div class="grid gap-3">
+        <Label for="collection">Collection</Label>
 
-          <Popover.Root bind:open let:ids>
-            <Popover.Trigger asChild let:builder>
-              <Button
-                builders={[builder]}
-                variant="outline"
-                role="combobox"
-                aria-expanded={open}
-                class="w-[200px] justify-between"
-              >
-                {selectedParentCategory}
-                <CaretSort class="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </Popover.Trigger>
-            <Popover.Content class="w-[200px] p-0">
-              <Command.Root>
-                <Command.Input placeholder="Search category..." class="h-9" />
-                <Command.Empty>No category found.</Command.Empty>
-                <Command.Group>
-                  {#each collectionOptions as category}
-                    <Command.Item
-                      value={category.value}
-                      onSelect={(currentValue) => {
-                        id = currentValue;
-                        closeAndFocusTrigger(ids.trigger);
-                        collectionId = category.id;
-                      }}
-                    >
-                      <Check
-                        class={cn(
-                          "mr-2 h-4 w-4",
-                          id !== category.id && "text-transparent"
-                        )}
-                      />
-                      {category.label}
-                    </Command.Item>
-                  {/each}
-                </Command.Group>
-              </Command.Root>
-            </Popover.Content>
-          </Popover.Root>
-        </div>
-
+        <Popover.Root bind:open let:ids>
+          <Popover.Trigger asChild let:builder>
+            <Button
+              builders={[builder]}
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              class="w-[200px] justify-between {validation.collectionId ? 'border-red-500' : ''}"
+            >
+              {selectedParentCategory}
+              <CaretSort class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </Popover.Trigger>
+          <Popover.Content class="w-[200px] p-0">
+            <Command.Root>
+              <Command.Input placeholder="Search category..." class="h-9" />
+              <Command.Empty>No category found.</Command.Empty>
+              <Command.Group>
+                {#each collectionOptions as category}
+                  <Command.Item
+                    value={category.value}
+                    onSelect={(currentValue) => {
+                      id = currentValue;
+                      closeAndFocusTrigger(ids.trigger);
+                      collectionId = category.id;
+                    }}
+                  >
+                    <Check
+                      class={cn(
+                        "mr-2 h-4 w-4",
+                        id !== category.id && "text-transparent"
+                      )}
+                    />
+                    {category.label}
+                  </Command.Item>
+                {/each}
+              </Command.Group>
+            </Command.Root>
+          </Popover.Content>
+        </Popover.Root>
+        <p class="text-red-500">
+              {validation.collectionId ? validation.collectionId : ""}
+            </p>
+      </div>
     </div>
     <Dialog.Footer class="justify-between space-x-2">
       <Button variant="ghost" on:click={() => cancelModel()}>Cancel</Button>
