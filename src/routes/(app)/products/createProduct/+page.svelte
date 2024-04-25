@@ -308,6 +308,34 @@
     reactiveImages.set(newImages);
     productDetails.images = newImages; // Update productDetails.images
   }
+
+  // validation for selling price and price
+   function sellingPriceValidation(event: any) {
+    const newValue = event.target.value;
+    // Regular expression to match only numeric characters
+    const numericRegex = /^[0-9]*$/;
+
+    if (!numericRegex.test(newValue)) {
+      validation.selling_price = ["Only numbers are allowed."];
+    } else {
+      productDetails.selling_price = newValue;
+      validation.selling_price = ""; // Clear validation message if input is valid
+    }
+  }
+
+     function priceValidation(event: any) {
+    const newValue = event.target.value;
+    // Regular expression to match only numeric characters
+    const numericRegex = /^[0-9]*$/;
+
+    if (!numericRegex.test(newValue)) {
+      validation.price = ["Only numbers are allowed."];
+    } else {
+      productDetails.price = newValue;
+      validation.price = ""; // Clear validation message if input is valid
+    }
+  }
+  
 </script>
 
 <Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
@@ -426,9 +454,9 @@
             <Input
               id="area"
               class="pl-8 {validation.selling_price ? 'border-red-500' : ''}"
-              type="number"
               placeholder="Selling Price"
               bind:value={productDetails.selling_price}
+              on:input = {sellingPriceValidation}
             />
             <p class="text-red-500">
               {validation.selling_price ? validation.selling_price : ""}
@@ -444,9 +472,9 @@
             <Input
               id="area"
               class="pl-8 {validation.price ? 'border-red-500' : ''}"
-              type="number"
               placeholder="MRP"
               bind:value={productDetails.price}
+              on:input = {priceValidation}
             />
             <p class="text-red-500">
               {validation.price ? validation.price : ""}
