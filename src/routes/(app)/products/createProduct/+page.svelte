@@ -176,9 +176,9 @@
         validation.selling_price = ["This field may not be blank."];
       }
 
-      if (productDetails.dimension == "") {
-        validation.dimension = ["This field may not be blank."];
-      }
+      // if (productDetails.dimension == "") {
+      //   validation.dimension = ["This field may not be blank."];
+      // }
 
       if (productDetails.categories == "") {
         validation.categories = ["This field may not be blank."];
@@ -227,7 +227,7 @@
         form.append("sku", productDetails.sku);
         form.append("price", productDetails.price);
         form.append("selling_price", productDetails.selling_price);
-        form.append("dimension", productDetails.dimension);
+        // form.append("dimension", productDetails.dimension);
         form.append("condition", productDetails.condition);
         form.append("categories", productDetails.categories);
         form.append("brand", productDetails.brand);
