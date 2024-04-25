@@ -31,6 +31,7 @@
   let attribute_group: any;
   let isSubscribed = false;
   let unsubscribe: () => void;
+  let validation: any = {};
 
   let variantDetails: any = {
     product: "",
@@ -173,35 +174,58 @@
 
   async function createVariant() {
     try {
-      // console.log("Variant Details before API call:", variantDetails);
-      const form = new FormData();
-      const pro = variantDetails.product.id;
-      form.append("product", variantDetails.product.id);
-      form.append("stock", variantDetails.stock);
-      form.append("selling_price", variantDetails.selling_price);
-      form.append("attributes", JSON.stringify(variantDetails.attributes));
-      if (updateImage && variantDetails.images) {
-        form.append("images", variantDetails.images);
+      validation = {};
+
+      if (variantDetails.attributes == "") {
+        validation.attributes = ["This field may not be blank."];
       }
 
-      console.log("image uploading:", variantDetails.images);
-      console.log("attributes:", variantDetails.attributes);
-      const url = editForm
-        ? `/products/variant/${variantDetails.id}/update_record/`
-        : "/products/variant/create_record/";
+      if (variantDetails.stock == "") {
+        validation.stock = ["This field may not be blank."];
+      }
 
-      if (editForm) {
-        await API.put(url, form);
+      if (variantDetails.selling_price == "") {
+        validation.selling_price = ["This field may not be blank."];
+      }
+
+      if (
+        validation.attributes ||
+        validation.stock ||
+        validation.selling_price 
+      ) {
+        toast(`Please fill the required field`);
       } else {
-        await API.post(url, form);
-      }
+        // console.log("Variant Details before API call:", variantDetails);
+        const form = new FormData();
+        const pro = variantDetails.product.id;
+        form.append("product", variantDetails.product.id);
+        form.append("stock", variantDetails.stock);
+        form.append("selling_price", variantDetails.selling_price);
+        form.append("attributes", JSON.stringify(variantDetails.attributes));
+        if (updateImage && variantDetails.images) {
+          form.append("images", variantDetails.images);
+        }
 
-      dispatch("newVariant");
-      const action = editForm ? "Variant Updated" : "Variant Created";
-      toast(`${action} successfully!`);
-    } catch (error) {
+        console.log("image uploading:", variantDetails.images);
+        console.log("attributes:", variantDetails.attributes);
+        const url = editForm
+          ? `/products/variant/${variantDetails.id}/update_record/`
+          : "/products/variant/create_record/";
+
+        if (editForm) {
+          await API.put(url, form);
+        } else {
+          await API.post(url, form);
+        }
+
+        dispatch("newVariant");
+        const action = editForm ? "Variant Updated" : "Variant Created";
+        toast(`${action} successfully!`);
+      }
+    } catch (error: any) {
       const action = editForm ? "Update Variant" : "Create Variant";
       console.log(`${action}:`, error);
+      validation = error.response.data;
       toast(`Failed to ${action}`);
     }
     // onDestroy(() => {
@@ -227,7 +251,6 @@
     await fetchAttributegroup();
     await handleAttributeGroupData();
   });
-
 </script>
 
 <Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
@@ -244,7 +267,7 @@
         </div>
         <div class="mb-3 pl-4" style="min-width: 150px; max-width: 250px;">
           <Select.Root>
-            <Select.Trigger class="input capitalize">
+            <Select.Trigger class="input capitalize {validation.attributes ? 'border-red-500' : ''}">
               {#if selectedAttributeValues.has(detail.name)}
                 {selectedAttributeValues.get(detail.name)}
               {:else}
@@ -269,6 +292,7 @@
               </Select.Group>
             </Select.Content>
           </Select.Root>
+        <p class="text-red-500">{validation.attributes ? validation.attributes : ""}</p>
         </div>
       </div>
     {/each}
@@ -279,7 +303,9 @@
         type="number"
         bind:value={variantDetails.stock}
         placeholder="Stock"
+        class="{validation.stock ? 'border-red-500' : ''}"
       />
+      <p class="text-red-500">{validation.stock ? validation.stock : ""}</p>
     </div>
     <div class="mb-3">
       <Label for="selling_price">Selling Price</Label>
@@ -288,7 +314,9 @@
         type="number"
         bind:value={variantDetails.selling_price}
         placeholder="Selling Price"
+        class="{validation.selling_price ? 'border-red-500' : ''}"
       />
+      <p class="text-red-500">{validation.selling_price ? validation.selling_price : ""}</p>
     </div>
     {#if !editForm}
       <div class="flex items-center justify-evenly gap-2">
