@@ -6,6 +6,8 @@ dist
 /package
 .env
 .env.*
+package-lock.json
+package.json
 .svelte-kit
 !.env.example
 vite.config.js.timestamp-*
