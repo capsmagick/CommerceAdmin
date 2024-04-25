@@ -2,7 +2,7 @@
   import { UserStore } from "$lib/stores/data";
   import "../../../app.css";
   import logo from "$lib/images/SIGNUP_LOGO.png";
-  import axios, { AxiosError, isAxiosError } from 'axios';
+  import  { AxiosError } from 'axios';
   import API from "$lib/services/api";
   import { goto } from "$app/navigation";
   import { Input } from "$lib/components/ui/input";

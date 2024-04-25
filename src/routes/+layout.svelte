@@ -9,18 +9,22 @@
     let unsubscribe: () => void; 
     onMount(() => {
 
-   
         localStorage.setItem("lastVisitedRoute", window.location.pathname);
      
         (async () => {
             const authStatus = await isAuthenticated; // Assuming isAuthenticated is a Promise
+            
             if (authStatus) {
-                const lastVisitedRoute = localStorage.getItem("lastVisitedRoute");
-                if (lastVisitedRoute) {
-                    goto(lastVisitedRoute);
-                } else {
-                    goto("/dashboard");
-                }
+                
+                goto('/dashboard');
+
+                // const lastVisitedRoute = localStorage.getItem("lastVisitedRoute");
+                // console.log("last visited rout :",lastVisitedRoute)
+                // if (lastVisitedRoute) {
+                //     goto(lastVisitedRoute);
+                // } else {
+                //     goto("/dashboard");
+                // }
                 // goto('/dashboard'); // Navigate to the app route if authenticated
             } else {
                 goto('/login'); // Navigate to the auth route if not authenticated
@@ -35,13 +39,8 @@
     
 </script>
 <div>
-
     <ModeWatcher/>
     <Toaster/>
-
-
     <LoadingIndicator/>
-
-
     <slot/>
 </div>

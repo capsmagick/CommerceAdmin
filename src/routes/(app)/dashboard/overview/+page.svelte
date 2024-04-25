@@ -22,7 +22,7 @@ import Users from "lucide-svelte/icons/users";
 						<Card.Header
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
-							<Card.Title class="text-sm font-medium">Total Revenue</Card.Title>
+							<Card.Title class="text-sm font-medium">Total Orders</Card.Title>
 							<DollarSign class="h-4 w-4 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
@@ -46,7 +46,7 @@ import Users from "lucide-svelte/icons/users";
 						<Card.Header
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
-							<Card.Title class="text-sm font-medium">Sales</Card.Title>
+							<Card.Title class="text-sm font-medium">Total Sales</Card.Title>
 							<CreditCard class="h-4 w-4 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
@@ -68,7 +68,7 @@ import Users from "lucide-svelte/icons/users";
 				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
 					<Card.Root class="col-span-4">
 						<Card.Header>
-							<Card.Title>Overview</Card.Title>
+							<Card.Title>Monthly Sales</Card.Title>
 						</Card.Header>
 						<Card.Content>
 							<Overview />
@@ -76,8 +76,8 @@ import Users from "lucide-svelte/icons/users";
 					</Card.Root>
 					<Card.Root class="col-span-3">
 						<Card.Header>
-							<Card.Title>Recent Sales</Card.Title>
-							<Card.Description>You made 265 sales this month.</Card.Description>
+							<Card.Title>Best Selling Products</Card.Title>
+							<Card.Description>These are the top selling products.</Card.Description>
 						</Card.Header>
 						<Card.Content>
 							<RecentSales />
@@ -94,24 +94,7 @@ import Users from "lucide-svelte/icons/users";
 						</Card.Content>
 					</Card.Root>
 
-					<Card.Root class="col-span-4">
-						<Card.Header>
-							<Card.Title>Market Effectiveness </Card.Title>
-						</Card.Header>
-						<Card.Content>
-							<RecentSales />
-						</Card.Content>
-					</Card.Root>
 				</div>
-				<div  class="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-					<Card.Root class="col-span-4">
-						<Card.Header>
-							<Card.Title>Trends and Insights </Card.Title>
-						</Card.Header>
-						<Card.Content>
-							<RecentSales />
-						</Card.Content>
-					</Card.Root>
-				</div>
+			
 			</Tabs.Content>
 </div>

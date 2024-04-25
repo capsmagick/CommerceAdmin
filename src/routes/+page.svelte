@@ -2,6 +2,11 @@
   import LoadingIndicator from '$lib/components/LoadingIndicator.svelte';
 </script>
 
-<LoadingIndicator />
+<div>
+  
+    <LoadingIndicator />
+  
+</div>
+
 
 
