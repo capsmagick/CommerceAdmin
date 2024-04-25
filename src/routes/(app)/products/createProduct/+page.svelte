@@ -337,6 +337,22 @@
       validation.price = ""; // Clear validation message if input is valid
     }
   }
+    const wordLimit = 201;
+  // form validation for short descreption
+  function handleInputChange(event: any) {
+    const newValue = event.target.value;
+    const words = newValue.trim().split(/\s+/); // Split the value into words
+    const remainingWords = wordLimit - words.length;
+
+    if (remainingWords < 0) {
+      // If the word limit is exceeded, truncate the input value
+      validation.short_description = ["Exceeds Word Limit (maximum 200 words)"];
+    } else {
+      // Update the productDetails and clear validation message
+      productDetails.short_description = newValue;
+      validation.short_description = "";
+    }
+  }
 </script>
 
 <Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
@@ -422,12 +438,23 @@
       </div>
     </div>
     <div class="grid gap-2">
-      <Label for="subject">Short description</Label>
+      <div class=" flex justify-between">
+        <Label for="subject">Short description</Label>
+      
+              <p class=" text-blue-500 font-semibold">
+        Remaining words: {Math.max(
+          0,
+          wordLimit - productDetails.short_description.trim().split(/\s+/).length
+        )}
+      </p>
+      </div>
+     
       <Input
         id="subject"
         placeholder="short description of the product"
         bind:value={productDetails.short_description}
         class={validation.short_description ? "border-red-500" : ""}
+        on:input={handleInputChange}
       />
       <p class="text-red-500">
         {validation.short_description ? validation.short_description : ""}
