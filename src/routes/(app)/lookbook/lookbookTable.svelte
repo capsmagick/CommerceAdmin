@@ -5,7 +5,7 @@
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import { onMount } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import API from "$lib/services/api";
   import { MoreHorizontal } from "lucide-svelte";
   import { toast } from "svelte-sonner";
@@ -13,7 +13,8 @@
   import Pagination from "$lib/components/ui/table-pagination/pagination.svelte";
   import CreateLookbook from "./createLookbook/+page.svelte";
   import { goto } from "$app/navigation";
-  import { lookbookDetailsStore } from "$lib/stores/data";
+
+  const dispatch = createEventDispatcher();
 
   const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
 
@@ -50,7 +51,6 @@
       );
       totalItems = res.data.total;
       tableData = res.data.results;
-      console.log(tableData);
     } catch (error) {
       console.error("fetch:lookbook:", error);
       return [];
@@ -98,7 +98,7 @@
   }
 
   function confirmDelete() {
-    API.delete(`/masterdata/look-book/${deletingLookbook.id}/delete_record/`)
+    API.delete(`/products/look-book/${deletingLookbook.id}/delete_record/`)
       .then(() => {
         closeDeleteModal();
         getLookbook();
