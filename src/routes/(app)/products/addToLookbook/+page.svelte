@@ -22,6 +22,7 @@
   let lookbookOptions: { id: string; value: string; label: string }[] = [];
   let lookbookId: any;
   let open: boolean = false;
+  let validation: any = {};
 
   if (editData) {
     productId = editData.id;
@@ -48,17 +49,30 @@
 
   async function addToLookbook() {
     try {
-      const formData = new FormData();
-      formData.append("look_book", lookbookId);
+      validation = {};
 
-      await API.post(
-        `/products/product/${productId}/add-to-lookbook/`,
-        formData
-      );
-      dispatch("addToLookbook");
-      toast(`Product Added to Lookbook`);
+      if (!lookbookId) {
+        validation.lookbookId = ["This field may not be blank."];
+      }
+
+      if (validation.lookbookId) {
+        toast(`Please fill the required field`);
+      } else {
+        const formData = new FormData();
+        formData.append("look_book", lookbookId);
+
+        await API.post(
+          `/products/product/${productId}/add-to-lookbook/`,
+          formData
+        );
+        dispatch("addToLookbook");
+        toast(`Product Added to Lookbook`);
+      }
     } catch (error: any) {
       console.error("Add to:Lookbook:", error);
+      validation = error.response.data;
+      toast(`Failed to add Lookbook`);
+
     }
   }
 
@@ -91,7 +105,7 @@
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              class="w-[200px] justify-between"
+              class="w-[200px] justify-between {validation.lookbookId ? 'border-red-500' : ''}"
             >
               {selectedParentCategory}
               <CaretSort class="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -124,6 +138,7 @@
             </Command.Root>
           </Popover.Content>
         </Popover.Root>
+        <p class="text-red-500">{validation.lookbookId ? validation.lookbookId : ""}</p>
       </div>
     </div>
     <Dialog.Footer class="justify-between space-x-2">
