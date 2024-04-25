@@ -10,7 +10,6 @@
 	import Sales from "./sales/+page.svelte";
 	import Analytics from "./analytics/+page.svelte";
 	import Orders from "./orders/+page.svelte";
-	import Reports from "./reports/+page.svelte";
 </script>
 
 
@@ -30,12 +29,10 @@
 			<Tabs.List>
 				<Tabs.Trigger value="overview">Overview</Tabs.Trigger>
 				<Tabs.Trigger value="analytics">Analytics</Tabs.Trigger>
-				<Tabs.Trigger value="reports">Reports</Tabs.Trigger>
 				<Tabs.Trigger value="orders">Orders</Tabs.Trigger>
 				<Tabs.Trigger value="sales">Sales</Tabs.Trigger>
 			</Tabs.List>
 			<OverviewPage />
-			<Reports />
 			<Analytics />
 			<Orders />
 			<Sales />

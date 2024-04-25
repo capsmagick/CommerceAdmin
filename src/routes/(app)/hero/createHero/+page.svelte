@@ -183,9 +183,16 @@
   </Dialog.Content>
 </Dialog.Root>
 
-<!-- </div>
-       </div>
-   </div>
-</div> -->
 
 
+<style>
+    .showImg {
+      display: block;
+      height: 6rem;
+      width: 6rem;
+      flex: none;
+      border-radius: 20px;
+      object-fit: cover;
+    }
+  
+</style>
