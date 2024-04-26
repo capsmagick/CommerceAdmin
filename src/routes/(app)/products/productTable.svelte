@@ -267,7 +267,7 @@
       on:cancel={() => (
         (editData = null), (lookbookModalForm = false), (editForm = false)
       )}
-      on:addLookbook={() => {
+      on:addToLookbook={() => {
         lookbookModalForm = false;
       }}
     />
