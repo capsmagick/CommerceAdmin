@@ -20,9 +20,14 @@
   const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
 
   let lookbookData: any = [];
-  let lookbookId: any;
   const urlParams = new URLSearchParams(window.location.search);
-  lookbookId = urlParams.get("id");
+
+  let id: any = urlParams.get("id");
+  id? localStorage.setItem('lookbookId', id):"";
+  let lookbookId: any = localStorage.getItem('lookbookId');
+
+// On the second page where you need the ID:
+const storedId = localStorage.getItem('myId');
 
   let hidableCoulumns: any[] = [
     { name: "Images", value: true },
