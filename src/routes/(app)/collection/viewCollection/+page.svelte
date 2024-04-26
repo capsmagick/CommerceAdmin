@@ -20,9 +20,13 @@
   const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
 
   let collectionData: any = [];
-  let collectionId: any;
+
   const urlParams = new URLSearchParams(window.location.search);
-  collectionId = urlParams.get("id");
+
+  let id: any = urlParams.get("id");
+  id? localStorage.setItem('collectionId', id):"";
+  let collectionId: any = localStorage.getItem("collectionId");
+
 
   let hidableCoulumns: any[] = [
     { name: "Images", value: true },
@@ -64,6 +68,7 @@
 
   function pageLimit(event: any, value: any) {}
   function goBack() {
+    localStorage.removeItem("collectionId");
     goto("/collection/");
   }
 </script>

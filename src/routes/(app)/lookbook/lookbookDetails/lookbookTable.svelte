@@ -24,10 +24,9 @@
 
   let id: any = urlParams.get("id");
   id? localStorage.setItem('lookbookId', id):"";
-  let lookbookId: any = localStorage.getItem('lookbookId');
+  let lookbookId: any = localStorage.getItem("lookbookId");
 
-// On the second page where you need the ID:
-const storedId = localStorage.getItem('myId');
+  // On the second page where you need the ID:
 
   let hidableCoulumns: any[] = [
     { name: "Images", value: true },
@@ -68,7 +67,9 @@ const storedId = localStorage.getItem('myId');
   });
 
   function pageLimit(event: any, value: any) {}
+
   function goBack() {
+    localStorage.removeItem("lookbookId");
     goto("/lookbook/");
   }
 </script>
@@ -80,11 +81,7 @@ const storedId = localStorage.getItem('myId');
   <div class="w-full p-5">
     <div class="my-2 flex justify-between">
       <div>
-        <Input
-          class="max-w-sm"
-          placeholder="Search Lookbook..."
-          type="text"
-        />
+        <Input class="max-w-sm" placeholder="Search Lookbook..." type="text" />
       </div>
       <div class="flex">
         <div class="mr-2">
