@@ -267,7 +267,7 @@
       on:cancel={() => (
         (editData = null), (lookbookModalForm = false), (editForm = false)
       )}
-      on:addLookbook={() => {
+      on:addToLookbook={() => {
         lookbookModalForm = false;
       }}
     />
@@ -303,7 +303,7 @@
     <div>
       <Input
         class="max-w-sm"
-        placeholder="Search Categories..."
+        placeholder="Search Products..."
         type="text"
         on:input={(event) => searchName(event)}
       />

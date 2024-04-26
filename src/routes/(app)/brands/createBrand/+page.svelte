@@ -99,7 +99,7 @@
 </script>
 
 <Dialog.Root open={true} onOpenChange={cancelModel}>
-  <Dialog.Content>
+  <Dialog.Content class="max-w-md">
     <Dialog.Header class="font-bold mb-5">
       <Dialog.Title>{editForm ? "Update Brand" : "New Brand"}</Dialog.Title>
     </Dialog.Header>
