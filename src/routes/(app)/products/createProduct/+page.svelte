@@ -337,14 +337,13 @@
       validation.price = ""; // Clear validation message if input is valid
     }
   }
-    const wordLimit = 201;
+    const charLimit  = 200;
   // form validation for short descreption
   function handleInputChange(event: any) {
     const newValue = event.target.value;
-    const words = newValue.trim().split(/\s+/); // Split the value into words
-    const remainingWords = wordLimit - words.length;
+    const remainingChars  = charLimit  - newValue.length;
 
-    if (remainingWords < 0) {
+    if (remainingChars  < 0) {
       // If the word limit is exceeded, truncate the input value
       validation.short_description = ["Exceeds Word Limit (maximum 200 words)"];
     } else {
@@ -442,9 +441,9 @@
         <Label for="subject">Short description</Label>
       
               <p class=" text-blue-500 font-semibold">
-        Remaining words: {Math.max(
+        Remaining Letters: {Math.max(
           0,
-          wordLimit - productDetails.short_description.trim().split(/\s+/).length
+          charLimit  - productDetails.short_description.length
         )}
       </p>
       </div>
