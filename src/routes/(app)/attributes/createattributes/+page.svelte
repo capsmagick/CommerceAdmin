@@ -73,7 +73,7 @@
 </script>
 
 <Dialog.Root open={true} onOpenChange={cancelEditModel}>
-  <Dialog.Content>
+  <Dialog.Content class="max-w-md">
     <Dialog.Header class="font-bold mb-5">
       {#if editForm === false}
         <Dialog.Title>New Attribute</Dialog.Title>

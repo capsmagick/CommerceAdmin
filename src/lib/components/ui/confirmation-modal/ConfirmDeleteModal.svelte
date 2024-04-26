@@ -19,7 +19,7 @@
 </script>
 
 <Dialog.Root open={true} onOpenChange={cancelDelete}>
-  <Dialog.Content>
+  <Dialog.Content class="max-w-md">
     <Dialog.Header>
       <Dialog.Description class="text-lg font-semibold mb-4"
         >Confirm Delete</Dialog.Description

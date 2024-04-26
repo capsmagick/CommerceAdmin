@@ -92,7 +92,7 @@
 </script>
 
 <Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
-  <Dialog.Content>
+  <Dialog.Content class="max-w-sm">
     <Dialog.Title>Add To Lookbook</Dialog.Title>
     <div class="flex justify-center">
       <div class="grid gap-3">

@@ -254,7 +254,7 @@
 </script>
 
 <Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
-  <Dialog.Content>
+  <Dialog.Content class="max-w-md">
     <Dialog.Header>
       <Dialog.Title>
         {editForm ? "Update Variant" : "New Variant"}</Dialog.Title
