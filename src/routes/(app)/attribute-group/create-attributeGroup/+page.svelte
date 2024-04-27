@@ -10,6 +10,7 @@
   import { Label } from "$lib/components/ui/label";
   import { Input } from "$lib/components/ui/input";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
+  import type { number } from "zod";
 
   export let editData: any;
   export let editForm: boolean;
@@ -26,7 +27,7 @@
   if (editForm) {
     id = editData.id;
     name = editData.name;
-    attributes = editData.attributes.map(i=>i.id);
+    attributes = editData.attributes.map((i: any)=>i.id);
     selectedAttributes = attributes;
     updateSelectedAttributeNames();
   }
@@ -46,13 +47,6 @@
       console.log("category:fetch-attribute-group:", error);
     }
   }
-
-  // function handleAttributeChange(selectedAttribute: { value: number }) {
-  //     attributes = selectedAttribute.value;
-  //     selectedAttribute = attribute.find(
-  //         (g: any) => g.id == selectedAttribute.value
-  //     ).name;
-  // }
 
   function handleAttributeChange(selectedAttribute: { value: number }) {
     const index = selectedAttributes.indexOf(selectedAttribute.value);
