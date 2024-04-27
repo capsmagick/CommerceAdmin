@@ -19,11 +19,12 @@
   import AddToCollection from "./addToCollection/+page.svelte"
   import ImageUploadDialog from "$lib/components/ui/image-upload/ImageUploadDialog.svelte";
 
+
   let dispatch = createEventDispatcher();
 
   export let showForm: boolean = false;
   let showVariantForm: boolean = false;
-  let showCollectionForm: boolean = false
+  let showCollectionForm: boolean = false;
   let lookbookModalForm: boolean = false;
   let viewProduct = false;
 
@@ -278,7 +279,7 @@
 <div>
   {#if lookbookModalForm}
     <AddToLookbook
-    {editData}
+      {editData}
       on:cancel={() => (
         (editData = null), (lookbookModalForm = false), (editForm = false)
       )}
@@ -311,7 +312,6 @@
     />
   {/if}
 </div>
-
 
 <div class="w-full p-5">
   <div class="my-2 flex justify-between">
@@ -436,6 +436,7 @@
         {#if hidableCoulumns[0].value}
           <Table.Cell>
             {#if data.images && data.images.length > 0}
+
             <button
               type="button"
               class="focus:outline-none"
@@ -445,11 +446,13 @@
                   openImageUploadDialog(data.id, data.images)
                 }
               }}>
+
               <img
                 src={`${baseUrl}${data.images[0].image}`}
                 alt="product_image"
                 class="w-12 h-12 object-cover rounded-full"
               />
+
             </button>
             <!-- <img
               src={`${baseUrl}${data.images[0].image}`}
@@ -457,6 +460,7 @@
               class="w-12 h-12 object-cover rounded-full"
               on:click={() => openImageUploadModal(data.id, data.images)}
             /> -->
+
             {:else}
               <span>No image available</span>
             {/if}
@@ -477,7 +481,7 @@
           <Table.Cell>{data.hsn_code}</Table.Cell>
         {/if}
         {#if hidableCoulumns[5].value}
-          <Table.Cell>{data.tags.map((i) => i.name).join(" ,")}</Table.Cell>
+          <Table.Cell>{data.tags}</Table.Cell>
         {/if}
         {#if hidableCoulumns[6].value}
           <Table.Cell>{data.no_of_reviews} reviews</Table.Cell>

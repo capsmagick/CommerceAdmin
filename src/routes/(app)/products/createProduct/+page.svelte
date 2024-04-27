@@ -235,9 +235,7 @@
         form.append("hsn_code", productDetails.hsn_code);
         form.append("rating", productDetails.rating);
         form.append("noOfReviews", productDetails.noOfReviews);
-        if (editTag) {
-          form.append("tags", productDetails.tags);
-        }
+        form.append("tags", productDetails.tags);
         if (editImage) {
           for (let i = 0; i < productDetails.images.length; i++) {
             form.append("images", productDetails.images[i]);
@@ -337,13 +335,13 @@
       validation.price = ""; // Clear validation message if input is valid
     }
   }
-    const charLimit  = 200;
+  const charLimit = 200;
   // form validation for short descreption
   function handleInputChange(event: any) {
     const newValue = event.target.value;
-    const remainingChars  = charLimit  - newValue.length;
+    const remainingChars = charLimit - newValue.length;
 
-    if (remainingChars  < 0) {
+    if (remainingChars < 0) {
       // If the word limit is exceeded, truncate the input value
       validation.short_description = ["Exceeds Word Limit (maximum 200 words)"];
     } else {
@@ -355,7 +353,7 @@
 </script>
 
 <Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
-  <Dialog.Content>
+  <Dialog.Content class=" max-h-svh overflow-y-auto">
     <Dialog.Header>
       <Dialog.Title>{editForm ? "Edit Product" : "Add Product"}</Dialog.Title>
     </Dialog.Header>
@@ -439,15 +437,15 @@
     <div class="grid gap-2">
       <div class=" flex justify-between">
         <Label for="subject">Short description</Label>
-      
-              <p class=" text-blue-500 font-semibold">
-        Remaining Letters: {Math.max(
-          0,
-          charLimit  - productDetails.short_description.length
-        )}
-      </p>
+
+        <p class=" text-blue-500 font-semibold">
+          Remaining Letters: {Math.max(
+            0,
+            charLimit - productDetails.short_description.length
+          )}
+        </p>
       </div>
-     
+
       <Input
         id="subject"
         placeholder="short description of the product"
