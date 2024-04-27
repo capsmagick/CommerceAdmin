@@ -15,9 +15,9 @@
   import CreateVariant from "./variant/createVariant/+page.svelte";
   import { goto } from "$app/navigation";
   import AddToLookbook from "./addToLookbook/+page.svelte";
-  import { productIdStore } from "../../../lib/stores/data";
   import ViewProduct from "./viewProduct/+page.svelte";
   import AddToCollection from "./addToCollection/+page.svelte"
+  import ImageUploadDialog from "$lib/components/ui/image-upload/ImageUploadDialog.svelte";
 
   let dispatch = createEventDispatcher();
 
@@ -26,6 +26,10 @@
   let showCollectionForm: boolean = false
   let lookbookModalForm: boolean = false;
   let viewProduct = false;
+
+  let showImageUploadDialog = false;
+  let selectedProductId: string | undefined;
+  let selectedProductImages: { id: string; image: string }[] = [];
 
   // variables to handle pagination and table details
   let page: number = 1;
@@ -64,17 +68,6 @@
   ];
 
   const baseUrl: string = import.meta.env.VITE_BASE_URL as string;
-
-  // function logImageUrl(data: any): string {
-  //   console.log('Product:', data.name);
-  //   if (data.images && data.images.length > 0) {
-  //     const imageUrl: string = `${baseUrl}${data.images[0].image}`;
-  //     console.log('Image URL:', imageUrl);
-  //   } else {
-  //     console.log('No image available for', data.name);
-  //   }
-  //   return '';
-  // }
 
   async function getProducts() {
     try {
@@ -220,7 +213,29 @@
     per_page = value;
     getProducts();
   }
+
+  function openImageUploadDialog(productId: string, productImages: { id: string; image: string }[]) {
+    selectedProductId = productId;
+    selectedProductImages = productImages;
+    showImageUploadDialog = true;
+  }
+
+  // function handleImagesUpdated(event: CustomEvent<{ id: string; image: string }[]>) {
+  //   // Update the product's image list with the new images
+  //   const updatedImages = event.detail;
+  //   // ... update your data accordingly
+  // }
 </script>
+
+{#if showImageUploadDialog}
+  <ImageUploadDialog
+    open={showImageUploadDialog}
+    productId={selectedProductId || ''}
+    currentImages={selectedProductImages}
+    baseUrl={baseUrl}
+  />
+  {/if}
+  <!-- on:imagesUpdated={handleImagesUpdated} -->
 
 <div>
   {#if showDeleteModal}
@@ -421,11 +436,27 @@
         {#if hidableCoulumns[0].value}
           <Table.Cell>
             {#if data.images && data.images.length > 0}
-            <img
+            <button
+              type="button"
+              class="focus:outline-none"
+              on:click={() => openImageUploadDialog(data.id, data.images)}
+              on:keydown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  openImageUploadDialog(data.id, data.images)
+                }
+              }}>
+              <img
+                src={`${baseUrl}${data.images[0].image}`}
+                alt="product_image"
+                class="w-12 h-12 object-cover rounded-full"
+              />
+            </button>
+            <!-- <img
               src={`${baseUrl}${data.images[0].image}`}
               alt="product_image"
               class="w-12 h-12 object-cover rounded-full"
-            />
+              on:click={() => openImageUploadModal(data.id, data.images)}
+            /> -->
             {:else}
               <span>No image available</span>
             {/if}
