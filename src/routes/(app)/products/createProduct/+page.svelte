@@ -353,7 +353,7 @@
 </script>
 
 <Dialog.Root open={true} onOpenChange={cancelModel} preventScroll={true}>
-  <Dialog.Content>
+  <Dialog.Content class=" max-h-svh overflow-y-auto">
     <Dialog.Header>
       <Dialog.Title>{editForm ? "Edit Product" : "Add Product"}</Dialog.Title>
     </Dialog.Header>
