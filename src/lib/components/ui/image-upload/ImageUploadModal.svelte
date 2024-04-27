@@ -8,11 +8,9 @@
     export let currentImages: { id: string; image: string }[] = [];
     export let baseUrl: string;
   
-    let newImages: { id: string; image: string }[] = [];
+    let newImages: File[] = [];
     let dispatch = createEventDispatcher();
 
-    const thumbnailSize = 200;
-  
     async function uploadImages() {
       try {
         for (const file of newImages) {
