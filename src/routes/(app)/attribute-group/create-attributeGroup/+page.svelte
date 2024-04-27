@@ -26,8 +26,8 @@
   if (editForm) {
     id = editData.id;
     name = editData.name;
-    attributes = editData.attributes;
-    selectedAttributes = attributes.map(i=>i.id);
+    attributes = editData.attributes.map(i=>i.id);
+    selectedAttributes = attributes;
     updateSelectedAttributeNames();
   }
 
