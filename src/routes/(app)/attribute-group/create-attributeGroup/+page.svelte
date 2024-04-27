@@ -27,7 +27,7 @@
     id = editData.id;
     name = editData.name;
     attributes = editData.attributes;
-    selectedAttributes = attributes;
+    selectedAttributes = attributes.map(i=>i.id);
     updateSelectedAttributeNames();
   }
 
