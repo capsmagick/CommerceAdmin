@@ -25,7 +25,7 @@
       // ... update your data accordingly
     }
 
-    async function saveImagesInternal() {
+    async function saveImages() {
       try {
         if (!newImages || newImages.length === 0) return;
 
@@ -36,7 +36,6 @@
           formData.append("product", productId);
           await API.post("/products/product-image/create_record/", formData);
         }
-        newImages = []; 
         
         // Fetch updated images from the server
         const res = await API.get(`/products/product/${productId}`);
@@ -46,7 +45,9 @@
         }));
 
         dispatch("imagesUpdated", updatedImages);
+        dispatch("updateTableData", { productId, updatedImages });
         newImages = [];
+        closeDialog();
       } catch (error) {
         console.error("Error uploading images:", error);
       }
@@ -66,7 +67,7 @@
         bind:newImages/>
       <Dialog.Footer>
         <Button variant="ghost" on:click={closeDialog}>Cancel</Button>
-        <Button on:click={saveImagesInternal}>save</Button>
+        <Button on:click={saveImages}>save</Button>
       </Dialog.Footer>
     </Dialog.Content>
   </Dialog.Root>
