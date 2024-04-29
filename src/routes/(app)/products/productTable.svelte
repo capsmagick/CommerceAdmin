@@ -562,6 +562,9 @@
                 <i class="fa fa-trash sm mr-2" style="color:red">
                 </i>Delete</DropdownMenu.Item
               >
+              <DropdownMenu.Item on:click={() => openImageUploadDialog(data.id, data.images)}>
+                <i class="fa fa-image mr-2"></i> Add Image</DropdownMenu.Item
+              >
               <DropdownMenu.Item on:click={() => addVariant(data)}>
                 Add Variant</DropdownMenu.Item
               >
