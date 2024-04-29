@@ -221,6 +221,10 @@
     showImageUploadDialog = true;
   }
 
+  function closeImageUploadDialog() {
+    showImageUploadDialog = false;
+  }
+
   // function handleImagesUpdated(event: CustomEvent<{ id: string; image: string }[]>) {
   //   // Update the product's image list with the new images
   //   const updatedImages = event.detail;
@@ -234,6 +238,7 @@
     productId={selectedProductId || ''}
     currentImages={selectedProductImages}
     baseUrl={baseUrl}
+    on:close={closeImageUploadDialog}
   />
   {/if}
   <!-- on:imagesUpdated={handleImagesUpdated} -->
