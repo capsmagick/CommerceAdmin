@@ -8,24 +8,15 @@
     export let currentImages: { id: string; image: string }[] = [];
     export let baseUrl: string;
     export let newImages: File[] = [];
+    export let imagesToDelete: string[] = [];
   
     let fileInput: HTMLInputElement;
     let dispatch = createEventDispatcher();
 
     async function deleteImage(imageId: string) {
-      try {
-        await API.delete(`/products/product-image/${imageId}/delete_record/`);
-
-        const res = await API.get(`/products/product/${productId}`);
-        const updatedImages = res.data.images.map((image: { id: string; image: string }) => ({
-          id: image.id,
-          image: `${baseUrl}${image.image}`,
-        }));
-
-        dispatch("imagesUpdated", updatedImages);
-      } catch (error) {
-        console.error("Error deleting image:", error);
-      }
+      imagesToDelete = [...imagesToDelete, imageId];
+      // Remove the image from the currentImages array
+      currentImages = currentImages.filter(img => img.id !== imageId);
     }
 
     function handleFileInput(event: Event) {

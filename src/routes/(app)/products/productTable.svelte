@@ -225,17 +225,8 @@
     showImageUploadDialog = false;
   }
 
-  function handleUpdateTableData(event: CustomEvent<{ productId: string; updatedImages: { id: string; image: string }[] }>) {
-    const { productId, updatedImages } = event.detail;
-
-    const updatedTableData = tableData.map((product) => {
-      if (product.id === productId) {
-        return { ...product, images: updatedImages };
-      }
-      return product;
-    });
+  function handleUpdateTableData() {
     getProducts();
-    tableData = updatedTableData;
   }
 </script>
 

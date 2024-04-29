@@ -13,6 +13,7 @@
     export let baseUrl: string;
 
     let newImages: File[] = [];
+    let imagesToDelete: string[] = []
   
     function closeDialog() {
       dispatch('close');
@@ -25,9 +26,25 @@
       // ... update your data accordingly
     }
 
+    async function deleteImages() {
+      try {
+        for (const imageId of imagesToDelete) {
+          await API.delete(`/products/product-image/${imageId}/delete_record/`);
+        }
+        imagesToDelete = [];
+        dispatch("updateTableData");
+        closeDialog();
+      } catch (error) {
+        console.error("Error deleting images:", error);
+      }
+    }
+
     async function saveImages() {
       try {
-        if (!newImages || newImages.length === 0) return;
+        if (!newImages || newImages.length === 0){
+          await deleteImages();
+          return;
+        } 
 
         for (const file of newImages) {
           const formData = new FormData();
@@ -36,6 +53,8 @@
           formData.append("product", productId);
           await API.post("/products/product-image/create_record/", formData);
         }
+
+        await deleteImages();
         
         // Fetch updated images from the server
         const res = await API.get(`/products/product/${productId}`);
@@ -45,7 +64,7 @@
         }));
 
         dispatch("imagesUpdated", updatedImages);
-        dispatch("updateTableData", { productId, updatedImages });
+        dispatch("updateTableData");
         newImages = [];
         closeDialog();
       } catch (error) {
@@ -64,7 +83,8 @@
         {currentImages}
         {baseUrl}
         on:imagesUpdated={handleImagesUpdated}
-        bind:newImages/>
+        bind:newImages
+        bind:imagesToDelete/>
       <Dialog.Footer>
         <Button variant="ghost" on:click={closeDialog}>Cancel</Button>
         <Button on:click={saveImages}>save</Button>
