@@ -36,7 +36,6 @@
       );
       totalItems = res.data.total;
       tableData = res.data.results;
-      console.log(tableData);
     } catch (error) {
       console.error("fetch:returns:", error);
       return [];

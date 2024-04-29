@@ -51,7 +51,6 @@
     try {
       const response = await API.get(`/products/collection/${collectionId}`);
       collectionData = response.data.collection_items.map((i) => i.product);
-      console.log(collectionData);
     } catch (error) {
       console.error("fetch:collection:", error);
       return [];

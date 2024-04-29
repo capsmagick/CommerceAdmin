@@ -1,8 +1,6 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
   import { createEventDispatcher, onMount } from "svelte";
-  import * as Card from "$lib/components/ui/card/index.js";
-  import * as Dialog from "$lib/components/ui/dialog/index.js";
   import API from "$lib/services/api";
   import Pagination from "$lib/components/ui/table-pagination/pagination.svelte";
   import CaretSort from "svelte-radix/CaretSort.svelte";
@@ -23,8 +21,11 @@
   const urlParams = new URLSearchParams(window.location.search);
 
   let id: any = urlParams.get("id");
-  id? localStorage.setItem('lookbookId', id):"";
+  id ? localStorage.setItem("lookbookId", id) : "";
   let lookbookId: any = localStorage.getItem("lookbookId");
+
+  let showDeleteModal = false;
+  let deletingLookbookProduct: any;
 
   // On the second page where you need the ID:
 
@@ -50,8 +51,7 @@
   async function getCollection() {
     try {
       const response = await API.get(`/products/look-book/${lookbookId}`);
-      lookbookData = response.data.look_book_items.map((i) => i.product);
-      console.log("lookbookdata", lookbookData);
+      lookbookData = response.data.look_book_items;
     } catch (error) {
       console.error("fetch:collection:", error);
       return [];
@@ -72,7 +72,44 @@
     localStorage.removeItem("lookbookId");
     goto("/lookbook/");
   }
+
+  function onDelete(id: any, name: any) {
+    showDeleteModal = true;
+    deletingLookbookProduct = {
+      id: id,
+      name: name,
+    };
+  }
+
+  function confirmDelete() {
+    API.delete(
+      `/products/look-book-items/${deletingLookbookProduct.id}/delete_record/`
+    )
+      .then(() => {
+        closeDeleteModal();
+        getCollection();
+        toast("Lookbook Item Deleted Successfully!");
+      })
+      .catch((error) => {
+        console.error("Error deleting Lookbook:", error);
+        closeDeleteModal();
+      });
+  }
+
+  function closeDeleteModal() {
+    showDeleteModal = false;
+  }
 </script>
+
+<div>
+  {#if showDeleteModal}
+    <ConfirmDeleteModal
+      attribute={deletingLookbookProduct.name}
+      on:confirm={confirmDelete}
+      on:cancel={closeDeleteModal}
+    />
+  {/if}
+</div>
 
 <div
   class="m-3 bg-background text-foreground rounded-md p-4 px-6 border"
@@ -193,9 +230,9 @@
         <Table.Row>
           {#if hidableCoulumns[0].value}
             <Table.Cell>
-              {#if data.images && data.images.length > 0}
+              {#if data.product.images && data.product.images.length > 0}
                 <img
-                  src={`${baseUrl}${data.images[0].image}`}
+                  src={`${baseUrl}${data.product.images[0].image}`}
                   alt="product_image"
                   class="w-12 h-12 object-cover rounded-full"
                 />
@@ -205,55 +242,57 @@
               <!-- {logImageUrl(data)} -->
             </Table.Cell>
           {/if}
-          <Table.Cell>{data.name}</Table.Cell>
+          <Table.Cell>{data.product.name}</Table.Cell>
           {#if hidableCoulumns[1].value}
-            <Table.Cell>{data.short_description}</Table.Cell>
+            <Table.Cell>{data.product.short_description}</Table.Cell>
           {/if}
           {#if hidableCoulumns[2].value}
-            <Table.Cell>{data.description}</Table.Cell>
+            <Table.Cell>{data.product.description}</Table.Cell>
           {/if}
           {#if hidableCoulumns[3].value}
-            <Table.Cell>{data.brand.name}</Table.Cell>
+            <Table.Cell>{data.product.brand.name}</Table.Cell>
           {/if}
           {#if hidableCoulumns[4].value}
-            <Table.Cell>{data.hsn_code}</Table.Cell>
+            <Table.Cell>{data.product.hsn_code}</Table.Cell>
           {/if}
           {#if hidableCoulumns[5].value}
-            <Table.Cell>{data.tags.map((i) => i.name).join(" ,")}</Table.Cell>
+            <Table.Cell>{data.product.tags}</Table.Cell>
           {/if}
           {#if hidableCoulumns[6].value}
-            <Table.Cell>{data.no_of_reviews} reviews</Table.Cell>
+            <Table.Cell>{data.product.no_of_reviews} reviews</Table.Cell>
           {/if}
           {#if hidableCoulumns[7].value}
-            <Table.Cell>{data.is_disabled ? "Inactive" : "Active"}</Table.Cell>
+            <Table.Cell
+              >{data.product.is_disabled ? "Inactive" : "Active"}</Table.Cell
+            >
           {/if}
           {#if hidableCoulumns[8].value}
-            <Table.Cell>{data.created_at}</Table.Cell>
+            <Table.Cell>{data.product.created_at}</Table.Cell>
           {/if}
           {#if hidableCoulumns[9].value}
-            <Table.Cell>{data.updated_at}</Table.Cell>
+            <Table.Cell>{data.product.updated_at}</Table.Cell>
           {/if}
           {#if hidableCoulumns[10].value}
-            <Table.Cell>{data.created_by}</Table.Cell>
+            <Table.Cell>{data.product.created_by}</Table.Cell>
           {/if}
           {#if hidableCoulumns[11].value}
-            <Table.Cell>{data.updated_by}</Table.Cell>
+            <Table.Cell>{data.product.updated_by}</Table.Cell>
           {/if}
           {#if hidableCoulumns[12].value}
-            <Table.Cell>{data.price}</Table.Cell>
+            <Table.Cell>{data.product.price}</Table.Cell>
           {/if}
           {#if hidableCoulumns[13].value}
-            <Table.Cell>{data.stock}</Table.Cell>
+            <Table.Cell>{data.product.stock}</Table.Cell>
           {/if}
           {#if hidableCoulumns[14].value}
             <Table.Cell
-              >{data.categories
+              >{data.product.categories
                 .map((category) => category.name)
                 .join(", ")}</Table.Cell
             >
           {/if}
           {#if hidableCoulumns[15].value}
-            <Table.Cell>{data.rating} stars</Table.Cell>
+            <Table.Cell>{data.product.rating} stars</Table.Cell>
           {/if}
           <Table.Cell>
             <DropdownMenu.Root>
@@ -263,28 +302,12 @@
                 >
               </DropdownMenu.Trigger>
               <DropdownMenu.Content class="absolute">
-                <!-- <DropdownMenu.Item on:click={() => onViewProduct(data)}>
-                <i class="fa fa-eye sm mr-2"> </i>View</DropdownMenu.Item
-              >
-              <DropdownMenu.Item on:click={() => onEditProduct(data)}>
-                <i class="fa fa-pencil sm mr-2"> </i>Edit</DropdownMenu.Item
-              >
-              <DropdownMenu.Item on:click={() => onDelete(data.id, data.name)}>
-                <i class="fa fa-trash sm mr-2" style="color:red">
-                </i>Delete</DropdownMenu.Item
-              >
-              <DropdownMenu.Item on:click={() => addVariant(data)}>
-                Add Variant</DropdownMenu.Item
-              >
-              <DropdownMenu.Item on:click={() => viewVariant(data)}>
-                View Variant</DropdownMenu.Item
-              >
-              <DropdownMenu.Item on:click={() => addLookbook(data)}>
-                Add Lookbook</DropdownMenu.Item
-              >
-              <DropdownMenu.Item on:click={() => addToCollection(data)}>
-                Add To Collection</DropdownMenu.Item
-              > -->
+                <DropdownMenu.Item
+                  on:click={() => onDelete(data.id, data.product.name)}
+                >
+                  <i class="fa fa-trash sm mr-2" style="color:red">
+                  </i>Delete</DropdownMenu.Item
+                >
               </DropdownMenu.Content>
             </DropdownMenu.Root>
           </Table.Cell>

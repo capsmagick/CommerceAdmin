@@ -28,7 +28,6 @@
     UserStore.subscribe((userData) => {
       if (userData) {
         user = userData;
-        console.log(user);
       } else {
         return null;
       }

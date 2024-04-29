@@ -29,5 +29,5 @@
       </Button>
     </div>
   </div>
-  <LookbookTable {showForm} on:cancel={() => (showForm = false)}/>
+  <LookbookTable {showForm} on:cancel={() => (showForm = false)} on:newLookbook={() => (showForm = false)}/>
 </div>
