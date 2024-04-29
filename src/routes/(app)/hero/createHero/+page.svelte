@@ -15,14 +15,13 @@
   export let editData;
   export let editForm: boolean;
   let updateImage: boolean = false;
+  let validation: any = {};
 
-
-
-  let heroDetails:any = {
+  let heroDetails: any = {
     id: "",
     title: "",
     cta_text: "",
-    image:"",
+    image: "",
     short_description: "",
     link: "",
   };
@@ -46,32 +45,57 @@
 
   async function createHero() {
     try {
-      const form = new FormData();
-      if (updateImage) {
-        form.append("image", heroDetails.image);
+      validation = {};
+
+      if (heroDetails.title == "") {
+        validation.title = ["This field may not be blank."];
       }
-      form.append("short_description", heroDetails.short_description);
-      form.append("title", heroDetails.title);
-      form.append("cta_text", heroDetails.cta_text);
-      form.append("link", heroDetails.link);
-      // form.append("name", heroDetails.name);
 
-      const url = editForm
-        ? `/cms/hero-section/${heroDetails.id}/update_record/`
-        : "/cms/hero-section/create_record/";
+      if (heroDetails.short_description == "") {
+        validation.short_description = ["This field may not be blank."];
+      }
 
-      if (editForm) {
-        await API.put(url, form);
+      if (heroDetails.cta_text == "") {
+        validation.cta_text = ["This field may not be blank."];
+      }
+
+      if (heroDetails.link == "") {
+        validation.link = ["This field may not be blank."];
+      }
+
+      if (validation.short_description || validation.title ||  validation.cta_text || validation.link ) {
+        console.log(validation);
+        console.log(heroDetails)
+        toast(`Please fill the required field`);
       } else {
-        await API.post(url, form);
-      }
+        const form = new FormData();
+        if (updateImage) {
+          form.append("image", heroDetails.image);
+        }
+        form.append("short_description", heroDetails.short_description);
+        form.append("title", heroDetails.title);
+        form.append("cta_text", heroDetails.cta_text);
+        form.append("link", heroDetails.link);
+        // form.append("name", heroDetails.name);
 
-      dispatch("newHero");
-      const action = editForm ? "Hero Updated" : "Hero Created";
-      toast(`${action} successfully!`);
-    } catch (error) {
+        const url = editForm
+          ? `/cms/hero-section/${heroDetails.id}/update_record/`
+          : "/cms/hero-section/create_record/";
+
+        if (editForm) {
+          await API.put(url, form);
+        } else {
+          await API.post(url, form);
+        }
+
+        dispatch("newHero");
+        const action = editForm ? "Hero Updated" : "Hero Created";
+        toast(`${action} successfully!`);
+      }
+    } catch (error: any) {
       const action = editForm ? "Update Hero" : "Create Hero";
       console.log(`${action}:`, error);
+      validation = error.response.data;
       toast(`Failed to ${action}`);
     }
   }
@@ -80,28 +104,8 @@
     dispatch("cancel");
     updateImage = false;
   }
-//   function handleClickOutside(event: any) {
-//     if (!event.target.closest(".card")) {
-//       cancelModel();
-//     }
-//   }
-
-//   onMount(() => {
-//     const timeout = setTimeout(() => {
-//       document.addEventListener("mousedown", handleClickOutside);
-//     }, 100);
-
-//     return () => {
-//       clearTimeout(timeout);
-//       document.removeEventListener("mousedown", handleClickOutside);
-//     };
-//   });
 </script>
 
-<!-- <div class="fixed bg-background inset-0 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5);">
-   <div class="flex items-center justify-center">
-       <div class="glow-border">
-           <div class="card glow-border-content bg-background text-foreground overflow-y-auto" style="max-height:90vh;"> -->
 <Dialog.Root open={true} onOpenChange={cancelModel}>
   <Dialog.Content>
     <Dialog.Header class="font-bold mb-5">
@@ -114,9 +118,10 @@
       <Input
         id="title"
         bind:value={heroDetails.title}
-        placeholder="title"
-        class="textarea"
+        placeholder="Title"
+        class="textarea {validation.title ? "border-red-500" : ""}"
       />
+        <p class="text-red-500">{validation.title ? validation.title : ""}</p>
     </div>
 
     <div class="mb-3">
@@ -125,8 +130,9 @@
         id="short_description"
         bind:value={heroDetails.short_description}
         placeholder="Description"
-        class="textarea"
+        class="textarea {validation.short_description ? "border-red-500" : ""}"
       />
+        <p class="text-red-500">{validation.short_description ? validation.short_description : ""}</p>
     </div>
 
     <div class="mb-3">
@@ -135,8 +141,9 @@
         id="cta_text"
         bind:value={heroDetails.cta_text}
         placeholder="CTA Button Name"
-        class="textarea"
+        class="textarea {validation.cta_text ? "border-red-500" : ""}"
       />
+        <p class="text-red-500">{validation.cta_text ? validation.cta_text : ""}</p>
     </div>
 
     <div class="mb-3">
@@ -145,8 +152,9 @@
         id="link"
         bind:value={heroDetails.link}
         placeholder="CTA Link"
-        class="textarea"
+        class="textarea {validation.link ? "border-red-500" : ""}"
       />
+        <p class="text-red-500">{validation.link ? validation.link : ""}</p>
     </div>
 
     <div class="flex justify-between mb-3">
@@ -183,16 +191,13 @@
   </Dialog.Content>
 </Dialog.Root>
 
-
-
 <style>
-    .showImg {
-      display: block;
-      height: 6rem;
-      width: 6rem;
-      flex: none;
-      border-radius: 20px;
-      object-fit: cover;
-    }
-  
+  .showImg {
+    display: block;
+    height: 6rem;
+    width: 6rem;
+    flex: none;
+    border-radius: 20px;
+    object-fit: cover;
+  }
 </style>
