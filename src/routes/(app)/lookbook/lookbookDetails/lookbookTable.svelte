@@ -52,7 +52,6 @@
     try {
       const response = await API.get(`/products/look-book/${lookbookId}`);
       lookbookData = response.data.look_book_items;
-      console.log("lookbook", lookbookData);
     } catch (error) {
       console.error("fetch:collection:", error);
       return [];
