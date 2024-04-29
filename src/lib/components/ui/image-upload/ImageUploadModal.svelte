@@ -3,51 +3,20 @@
     import { createEventDispatcher } from "svelte";
     import { XCircle } from "lucide-svelte";
     import Button from "../button/button.svelte";
-    import Input from "../input/input.svelte";
+
     export let productId: string;
     export let currentImages: { id: string; image: string }[] = [];
     export let baseUrl: string;
+    export let newImages: File[] = [];
+    export let imagesToDelete: string[] = [];
   
-    let newImages: File[] = [];
     let fileInput: HTMLInputElement;
     let dispatch = createEventDispatcher();
 
-    async function uploadImages() {
-      try {
-        for (const file of newImages) {
-          const formData = new FormData();
-          formData.append(`image`, file);
-          formData.append("alt_text", "Product Image");
-          formData.append("product", productId);
-          await API.post("/products/product-image/create_record/", formData);
-        }
-        newImages = []; 
-        // Fetch updated images from the server
-        const res = await API.get(`/products/product/${productId}`);
-        const updatedImages = res.data.images.map((image: { id: string; image: string }) => ({
-          id: image.id,
-          image: `${baseUrl}${image.image}`,
-        }));
-        dispatch("imagesUpdated", updatedImages);
-      } catch (error) {
-        console.error("Error uploading images:", error);
-      }
-    }
-
     async function deleteImage(imageId: string) {
-      try {
-        await API.delete(`/products/product-image/${imageId}/delete_record/`);
-
-        const res = await API.get(`/products/product/${productId}`);
-        const updatedImages = res.data.images.map((image: { id: string; image: string }) => ({
-          id: image.id,
-          image: `${baseUrl}${image.image}`,
-        }));
-
-        dispatch("imagesUpdated", updatedImages);
-      } catch (error) {
-        console.error("Error deleting image:", error);
-      }
+      imagesToDelete = [...imagesToDelete, imageId];
+      // Remove the image from the currentImages array
+      currentImages = currentImages.filter(img => img.id !== imageId);
     }
 
     function handleFileInput(event: Event) {
@@ -94,7 +63,4 @@
         <input type="file" multiple hidden on:change={handleFileInput} bind:this={fileInput}/>
         <Button variant="outline" on:click={() => fileInput.click()}>Upload Image</Button>
       </div>
-      <Button on:click={(event) => uploadImages()} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        Upload
-      </Button>
 </div>
