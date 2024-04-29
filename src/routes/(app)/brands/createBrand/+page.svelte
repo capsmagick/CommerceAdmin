@@ -140,7 +140,7 @@
         class:hideImg={!brandDetails.logo}
         src={updateImage
           ? window.URL.createObjectURL(brandDetails.logo)
-          : `${baseUrl}${brandDetails.logo}`}
+          : (editForm ?`${baseUrl}${brandDetails.logo}`: '')}
       />
 
       <input

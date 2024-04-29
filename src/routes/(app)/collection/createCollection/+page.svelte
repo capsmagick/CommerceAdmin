@@ -182,7 +182,7 @@
         class:hideImg={!collectionDetails.feature_image}
         src={updateImage
           ? window.URL.createObjectURL(collectionDetails.feature_image)
-          : `${baseUrl}${collectionDetails.feature_image}`}
+          : (editForm ?`${baseUrl}${collectionDetails.feature_image}`: '')}
       />
 
       <input

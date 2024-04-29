@@ -182,7 +182,7 @@
         class:hideImg={!lookbookDetails.feature_image}
         src={updateImage
           ? window.URL.createObjectURL(lookbookDetails.feature_image)
-          : `${baseUrl}${lookbookDetails.feature_image}`}
+          : (editForm ?`${baseUrl}${lookbookDetails.feature_image}`: '')}
       />
 
       <input

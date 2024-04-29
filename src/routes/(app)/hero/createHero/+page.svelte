@@ -166,7 +166,7 @@
           <img
             src={updateImage
               ? window.URL.createObjectURL(heroDetails.image)
-              : `${baseUrl}${heroDetails.image}`}
+              : (editForm ? `${baseUrl}${heroDetails.image}`: '')}
             alt="Avatar"
             class="showImg"
           />

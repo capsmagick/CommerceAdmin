@@ -154,7 +154,7 @@
         class={adminDetails.profile_picture ? "showImg" : "hideImg"}
         src={updateImage
           ? window.URL.createObjectURL(adminDetails.profile_picture)
-          : `${baseUrl}${adminDetails.profile_picture}`}
+          : (editForm ? `${baseUrl}${adminDetails.profile_picture}`: '')}
       />
       <input
         type="file"

@@ -66,7 +66,6 @@
     id = editData.id;
     tagInput = editData.tags.map((tag) => tag).join(", ");
     updateSelectionName();
-    console.log(categoryDetails.attribute_group.name)
     selectedAttributeGroup = categoryDetails.attribute_group.name
   }
 
@@ -412,7 +411,7 @@
         class={categoryDetails.image ? "showImg" : "hideImg"}
         src={updateImage
           ? window.URL.createObjectURL(categoryDetails.image)
-          : `${baseUrl}${categoryDetails.image}`}
+          : (editForm ?`${baseUrl}${categoryDetails.image}`:'')}
       />
       <input
         type="file"
