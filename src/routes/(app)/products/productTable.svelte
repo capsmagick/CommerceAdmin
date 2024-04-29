@@ -449,7 +449,6 @@
         {#if hidableCoulumns[0].value}
           <Table.Cell>
             {#if data.images && data.images.length > 0}
-
             <button
               type="button"
               class="focus:outline-none"
@@ -459,25 +458,25 @@
                   openImageUploadDialog(data.id, data.images)
                 }
               }}>
-
               <img
                 src={`${baseUrl}${data.images[0].image}`}
                 alt="product_image"
                 class="w-12 h-12 object-cover rounded-full"
               />
-
             </button>
-            <!-- <img
-              src={`${baseUrl}${data.images[0].image}`}
-              alt="product_image"
-              class="w-12 h-12 object-cover rounded-full"
-              on:click={() => openImageUploadModal(data.id, data.images)}
-            /> -->
-
             {:else}
-              <span>No image available</span>
+              <button
+                type="button"
+                class="focus:outline-none bg-gray-200 w-12 h-12 rounded-full flex items-center justify-center"
+                on:click={() => openImageUploadDialog(data.id, [])}
+                on:keydown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    openImageUploadDialog(data.id, []);
+                  }
+                }}>
+                <span class="text-gray-500">No Image</span>
+              </button>
             {/if}
-            <!-- {logImageUrl(data)} -->
           </Table.Cell>
         {/if}
         <Table.Cell>{data.name}</Table.Cell>
