@@ -67,11 +67,11 @@
           <XCircle size="20" />
         </Button>
         <div class="w-full h-full overflow-hidden rounded-lg">
-            <img
-            src={`${baseUrl}${image.image}`}
-            alt="product_image"
-            class="w-full h-full object-cover"
-            />
+          {#if image.image.startsWith('data:')}
+            <img src={image.image} alt="product_image" class="w-full h-full object-cover" />
+          {:else}
+            <img src={`${baseUrl}${image.image}`} alt="product_image" class="w-full h-full object-cover" />
+          {/if}
           </div>
         </div>
         {/each}
