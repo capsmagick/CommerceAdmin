@@ -1,8 +1,6 @@
 import axios from "axios";
 import Cookies from 'js-cookie'
 
-// let serviceBaseUrlDev = 'http://localhost:8000/api/';
-let serviceBaseUrlProd = 'https://manage.signupcasuals.com:8443/api/'
 
 let onRejected = function (error) {
     return Promise.reject(error);
@@ -21,10 +19,10 @@ const getTokenFromResponse = function () {
 }
 
 
-function createAxiosInstance(serviceBaseUrl= 'https://localhost:8443/api/') {
+function createAxiosInstance() {
 
     const axiosInstance = axios.create({
-        baseURL: serviceBaseUrlProd,
+        baseURL: '/api',
         withCredentials: true,
         xsrfHeaderName: 'X-CSRFToken', // Verify this matches the CSRF token header name used in your backend
         xsrfCookieName: 'csrftoken',   // Verify this matches the CSRF token cookie name used in your backend
@@ -54,7 +52,6 @@ function createAxiosInstance(serviceBaseUrl= 'https://localhost:8443/api/') {
     return axiosInstance
 }
 
-// const api = createAxiosInstance(serviceBaseUrlDev);
-const api = createAxiosInstance(serviceBaseUrlProd);
+const api = createAxiosInstance();
 
 export default api;
