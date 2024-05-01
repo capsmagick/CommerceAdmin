@@ -13,7 +13,8 @@
     export let baseUrl: string;
 
     let newImages: File[] = [];
-    let imagesToDelete: string[] = []
+    let imagesToDelete: string[] = [];
+    let deselectedNewImages: File[] = [];
   
     function closeDialog() {
       dispatch('close');
@@ -32,8 +33,6 @@
           await API.delete(`/products/product-image/${imageId}/delete_record/`);
         }
         imagesToDelete = [];
-        dispatch("updateTableData");
-        closeDialog();
       } catch (error) {
         console.error("Error deleting images:", error);
       }
@@ -41,12 +40,17 @@
 
     async function saveImages() {
       try {
-        if (!newImages || newImages.length === 0){
-          await deleteImages();
-          return;
-        } 
+        await deleteImages();
 
-        for (const file of newImages) {
+        if (!newImages || newImages.length === 0) {
+          dispatch("updateTableData");
+          closeDialog();
+          return;
+        }
+
+        const selectedNewImages = newImages.filter(file => !deselectedNewImages.includes(file));
+
+        for (const file of selectedNewImages) {
           const formData = new FormData();
           formData.append(`image`, file);
           formData.append("alt_text", "Product Image");
@@ -54,7 +58,6 @@
           await API.post("/products/product-image/create_record/", formData);
         }
 
-        await deleteImages();
         
         // Fetch updated images from the server
         const res = await API.get(`/products/product/${productId}`);
@@ -66,6 +69,7 @@
         dispatch("imagesUpdated", updatedImages);
         dispatch("updateTableData");
         newImages = [];
+        deselectedNewImages = [];
         closeDialog();
       } catch (error) {
         console.error("Error uploading images:", error);
@@ -79,12 +83,12 @@
         <Dialog.Title>Upload Images</Dialog.Title>
       </Dialog.Header>
       <ImageUploadModal
-        {productId}
         {currentImages}
         {baseUrl}
         on:imagesUpdated={handleImagesUpdated}
         bind:newImages
-        bind:imagesToDelete/>
+        bind:imagesToDelete
+        bind:deselectedNewImages/>
       <Dialog.Footer>
         <Button variant="ghost" on:click={closeDialog}>Cancel</Button>
         <Button on:click={saveImages}>save</Button>
